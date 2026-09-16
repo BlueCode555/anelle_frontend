@@ -6,18 +6,18 @@ $header-height: 80px;
 $sidebar-width: 260px;
 $sidebar-collapsed-width: 80px;
 
-// header
-$header-background: #fff;
-$header-color: #525b69;
-$header-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
-$brand-color: #161c25;
+// header — brun chocolat fonce pour trancher avec le corps creme
+$header-background: #4a2e17;
+$header-color: #ecdcc0;
+$header-shadow: 0 1px 20px 0 rgba(30, 18, 9, 0.25);
+$brand-color: #e8c874;
 
-// Menu
-$sidebar-background: #fff;
-$sidebar-color: #4b5565;
-$sidebar-active-color: $secondary;
-$sidebar-caption: #121926;
-$sidebar-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
+// Menu — meme traitement que le header pour une nav immersive
+$sidebar-background: #4a2e17;
+$sidebar-color: #ecdcc0;
+$sidebar-active-color: #e8c874;
+$sidebar-caption: #c9a568;
+$sidebar-shadow: 0 1px 20px 0 rgba(30, 18, 9, 0.25);
 
 // card block
 

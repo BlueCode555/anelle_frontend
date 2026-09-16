@@ -1,0 +1,122 @@
+.anelle-home {
+  min-height: 100vh;
+  background-color: #fbf6ec;
+  scroll-behavior: smooth;
+}
+
+// ── Header ──────────────────────────────────────────────
+.site-header {
+  background: #4a2e17;
+
+  .navbar-brand {
+    color: #e8c874;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-links a {
+    color: #ecdcc0;
+    text-decoration: none;
+    font-size: 0.95rem;
+
+    &:hover {
+      color: #e8c874;
+    }
+  }
+
+  .btn-outline-light {
+    border-color: #e8c874;
+    color: #e8c874;
+
+    &:hover {
+      background: #e8c874;
+      border-color: #e8c874;
+      color: #4a2e17;
+    }
+  }
+}
+
+// ── Hero ────────────────────────────────────────────────
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 6rem 1rem 7rem;
+  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
+  color: #fbf6ec;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232, 200, 116, 0.25) 0%, rgba(232, 200, 116, 0) 70%);
+    pointer-events: none;
+  }
+
+  &::before {
+    width: 420px;
+    height: 420px;
+    top: -180px;
+    left: -120px;
+  }
+
+  &::after {
+    width: 520px;
+    height: 520px;
+    bottom: -260px;
+    right: -160px;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    padding: 0.35rem 1rem;
+    border: 1px solid rgba(232, 200, 116, 0.5);
+    border-radius: 50rem;
+    font-size: 0.85rem;
+    color: #e8c874;
+  }
+
+  .hero-subtitle {
+    max-width: 560px;
+    color: #ecdcc0;
+  }
+}
+
+// ── Features / A propos ────────────────────────────────
+.features {
+  .feature-icon {
+    font-size: 2.5rem;
+    color: #c9a227;
+  }
+}
+
+// ── Services ────────────────────────────────────────────
+.service-card {
+  border: 1px solid #e6d9c3;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(74, 46, 23, 0.12);
+  }
+}
+
+// ── Footer ──────────────────────────────────────────────
+.site-footer {
+  background: #4a2e17;
+  color: #ecdcc0;
+
+  h2 {
+    color: #e8c874;
+  }
+
+  .footer-copy {
+    color: rgba(236, 220, 192, 0.6);
+  }
+}

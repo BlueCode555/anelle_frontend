@@ -1,0 +1,107 @@
+<div class="anelle-home">
+  <header class="site-header">
+    <nav class="navbar navbar-expand-md py-3 px-3 px-md-5">
+      <a class="navbar-brand fw-bold text-uppercase" href="#top">Arnelle Institut</a>
+      <div class="d-none d-md-flex gap-4 nav-links">
+        <a href="#top">Accueil</a>
+        <a href="#services">Services</a>
+        <a href="#apropos">A propos</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <a href="#contact" class="btn btn-sm btn-outline-light d-none d-md-inline-block">Nous contacter</a>
+    </nav>
+  </header>
+
+  <section id="top" class="hero d-flex flex-column align-items-center text-center px-3">
+    <span class="hero-tag mb-3">Pedicure &middot; Manucure &middot; Soins du corps</span>
+    <h1 class="display-4 fw-bold mb-3">Arnelle Institut</h1>
+    <p class="lead mb-4 hero-subtitle">
+      Offrez a votre peau et vos ongles le soin qu'ils meritent, dans un cadre chaleureux et professionnel.
+    </p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <a href="#services" class="btn btn-secondary btn-lg px-4">Voir nos services</a>
+      <a href="#contact" class="btn btn-outline-light btn-lg px-4">Nous contacter</a>
+    </div>
+  </section>
+
+  <section id="apropos" class="features py-5 px-3">
+    <div class="row g-4 justify-content-center text-center">
+      <div class="col-12 col-md-4">
+        <i class="ti ti-sparkles feature-icon"></i>
+        <h5 class="mt-3">Produits de qualite</h5>
+        <p class="text-muted">Des soins realises avec des produits selectionnes pour leur efficacite et leur douceur.</p>
+      </div>
+      <div class="col-12 col-md-4">
+        <i class="ti ti-heart-handshake feature-icon"></i>
+        <h5 class="mt-3">Accueil personnalise</h5>
+        <p class="text-muted">Chaque rendez-vous est pense pour votre confort, dans un cadre calme et chaleureux.</p>
+      </div>
+      <div class="col-12 col-md-4">
+        <i class="ti ti-shield-check feature-icon"></i>
+        <h5 class="mt-3">Hygiene rigoureuse</h5>
+        <p class="text-muted">Un protocole d'hygiene strict applique a chaque prestation, pour votre securite.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="services" class="services py-5 px-3">
+    <h2 class="text-center mb-2">Nos services</h2>
+    <p class="text-center text-muted mb-4">Decouvrez nos prestations, classees par categorie.</p>
+
+    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4" *ngIf="categories().length">
+      <button
+        type="button"
+        class="btn btn-sm"
+        [class.btn-secondary]="activeCategory() === null"
+        [class.btn-outline-secondary]="activeCategory() !== null"
+        (click)="selectCategory(null)"
+      >
+        Toutes
+      </button>
+      <button
+        type="button"
+        class="btn btn-sm"
+        *ngFor="let cat of categories()"
+        [class.btn-secondary]="activeCategory() === cat.code"
+        [class.btn-outline-secondary]="activeCategory() !== cat.code"
+        (click)="selectCategory(cat.code)"
+      >
+        {{ cat.libelle }}
+      </button>
+    </div>
+
+    <div *ngIf="loading()" class="text-center text-muted py-5">Chargement des services...</div>
+
+    <div *ngIf="error()" class="alert alert-warning text-center mx-auto" style="max-width: 480px">
+      Impossible de charger le catalogue pour le moment. Veuillez reessayer plus tard.
+    </div>
+
+    <div *ngIf="!loading() && !error() && filteredServices().length === 0" class="text-center text-muted py-5">
+      Aucun service disponible pour le moment.
+    </div>
+
+    <div class="row g-4" *ngIf="!loading() && filteredServices().length">
+      <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of filteredServices()">
+        <div class="card h-100 service-card">
+          <div class="card-body d-flex flex-column">
+            <span class="badge text-bg-secondary align-self-start mb-2">{{ service.categorieLibelle }}</span>
+            <h5 class="card-title">{{ service.nomService }}</h5>
+            <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <span class="text-muted small">{{ service.dureeMinutes }} min</span>
+              <span class="fw-bold text-primary fs-5">{{ formatTarif(service.tarif) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact" class="site-footer px-3 py-5 text-center">
+    <h2 class="mb-3">Nous contacter</h2>
+    <p class="mb-1">Adresse a definir</p>
+    <p class="mb-1">Telephone a definir</p>
+    <p class="mb-4">contact&#64;arnelleinstitut.com</p>
+    <p class="small mb-0 footer-copy">&copy; {{ currentYear }} Arnelle Institut. Tous droits reserves.</p>
+  </footer>
+</div>

@@ -4,12 +4,20 @@
 // consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
 
 // Color System of Berry
+// Palette Anelle : Creme / Beige nude / Brun chocolat / Dore (accent)
+
+$creme: #fbf6ec;
+$beige-nude: #e6d9c3;
+$chocolat: #6b4423;
+$chocolat-dark: #4a2e17;
+$dore: #c9a227;
+$dore-dark: #a6841f;
 
 // BLUE Primary Color
 
-$blue-700: #1c76da;
-$purple-500: #673ab7;
-$purple-700: #542ca7;
+$blue-700: $chocolat;
+$purple-500: $dore;
+$purple-700: $dore-dark;
 
 $yellow-100: #ffecb5;
 $yellow-200: #ffe083;
@@ -22,7 +30,7 @@ $yellow-800: #ffab04;
 $yellow-900: #ff9e02;
 
 // Assign Main Theme Color
-$blue: $blue-500;
+$blue: $blue-700;
 $purple: $purple-500;
 
 // scss-docs-start colors-map
@@ -31,8 +39,8 @@ $colors: (
   'purple': $purple
 );
 
-$primary: $blue; // change
-$secondary: $indigo; // change
+$primary: $blue; // change - brun chocolat
+$secondary: $purple; // change - dore
 
 // scss-docs-start theme-colors-map
 $theme-colors: (
@@ -73,7 +81,7 @@ $position-values: (
   100: 100%
 );
 
-$body-bg: #eceff1; // change
+$body-bg: $creme; // change
 $body-text-align: null;
 $link-color: $primary;
 $link-decoration: none;
@@ -130,7 +138,7 @@ $border-widths: (
   5: 5px
 );
 
-$border-color: #eeeeee;
+$border-color: $beige-nude;
 
 $border-radius: 8px; // change
 $border-radius-lg: 10px; // change
@@ -366,17 +374,17 @@ $nav-pills-link-active-bg: $component-active-bg;
 //menu
 $menu-dark-background: #ffffff;
 $menu-dark-text-color: #616161;
-$menu-light-background: #fff;
-$menu-light-text-color: #3f4d67;
+$menu-light-background: $creme;
+$menu-light-text-color: $chocolat;
 
 //theme
-$theme-background: #f4f7fa;
-$theme-font-color: #888;
-$theme-heading-color: #111;
+$theme-background: $creme;
+$theme-font-color: #8a7660;
+$theme-heading-color: $chocolat-dark;
 
-$form-bg: #f0f3f6;
-$theme-color: linear-gradient(-135deg, #673ab7 0%, #673ab7 100%);
-$theme-color2: linear-gradient(-135deg, #899fd4 0%, #a389d4 100%);
+$form-bg: #f5efe1;
+$theme-color: linear-gradient(-135deg, #{$chocolat} 0%, #{$chocolat-dark} 100%);
+$theme-color2: linear-gradient(-135deg, #{$dore} 0%, #{$dore-dark} 100%);
 
 $theme-colors: map-merge(
   (

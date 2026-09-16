@@ -1,0 +1,55 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Services</h5>
+    <a [routerLink]="['/services/new']" class="btn btn-primary btn-sm">
+      <i class="ti ti-plus me-1"></i>Nouveau service
+    </a>
+  </div>
+  <div class="card-body">
+    <div *ngIf="loading()" class="text-center text-muted py-4">Chargement...</div>
+
+    <div *ngIf="error()" class="alert alert-danger">Impossible de charger les services.</div>
+
+    <div *ngIf="!loading() && !error() && services().length === 0" class="text-center text-muted py-4">
+      Aucun service pour le moment.
+    </div>
+
+    <div class="table-responsive" *ngIf="!loading() && services().length">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Nom</th>
+            <th>Categorie</th>
+            <th>Duree</th>
+            <th>Tarif</th>
+            <th>Statut</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let service of services()">
+            <td><span class="badge text-bg-secondary">{{ service.code }}</span></td>
+            <td>{{ service.nomService }}</td>
+            <td class="text-muted">{{ service.categorieLibelle }}</td>
+            <td>{{ service.dureeMinutes }} min</td>
+            <td class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
+            <td>
+              <span class="badge" [class.text-bg-success]="service.actif" [class.text-bg-secondary]="!service.actif">
+                {{ service.actif ? 'Actif' : 'Inactif' }}
+              </span>
+            </td>
+            <td class="text-end">
+              <a [routerLink]="['/services', service.id, 'edit']" class="btn btn-sm btn-outline-primary me-1">
+                <i class="ti ti-edit"></i>
+              </a>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(service)">
+                <i class="ti ti-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

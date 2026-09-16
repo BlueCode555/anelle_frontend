@@ -10,7 +10,7 @@ const appRoutes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: '/default',
+        redirectTo: '/accueil',
         pathMatch: 'full'
       },
       {
@@ -18,16 +18,28 @@ const appRoutes: Routes = [
         loadComponent: () => import('./demo/dashboard/default/default.component').then((c) => c.DefaultComponent)
       },
       {
-        path: 'typography',
-        loadComponent: () => import('./demo/elements/typography/typography.component').then((c) => c.TypographyComponent)
+        path: 'categories',
+        loadComponent: () => import('./admin/categorie/categorie-list/categorie-list.component').then((c) => c.CategorieListComponent)
       },
       {
-        path: 'color',
-        loadComponent: () => import('./demo/elements/element-color/element-color.component').then((c) => c.ElementColorComponent)
+        path: 'categories/new',
+        loadComponent: () => import('./admin/categorie/categorie-form/categorie-form.component').then((c) => c.CategorieFormComponent)
       },
       {
-        path: 'sample-page',
-        loadComponent: () => import('./demo/other/sample-page/sample-page.component').then((c) => c.SamplePageComponent)
+        path: 'categories/:id/edit',
+        loadComponent: () => import('./admin/categorie/categorie-form/categorie-form.component').then((c) => c.CategorieFormComponent)
+      },
+      {
+        path: 'services',
+        loadComponent: () => import('./admin/service/service-list/service-list.component').then((c) => c.ServiceListComponent)
+      },
+      {
+        path: 'services/new',
+        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
+      },
+      {
+        path: 'services/:id/edit',
+        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
       }
     ]
   },
@@ -35,6 +47,10 @@ const appRoutes: Routes = [
     path: '',
     component: GuestComponent,
     children: [
+      {
+        path: 'accueil',
+        loadComponent: () => import('./public/home/home.component').then((c) => c.HomeComponent)
+      },
       {
         path: 'login',
         loadComponent: () => import('./demo/pages/authentication/login/login.component').then((c) => c.LoginComponent)
