@@ -12,16 +12,30 @@
     </nav>
   </header>
 
-  <section id="top" class="hero d-flex flex-column align-items-center text-center px-3">
-    <span class="hero-tag mb-3">Pedicure &middot; Manucure &middot; Soins du corps</span>
-    <h1 class="display-4 fw-bold mb-3">Arnelle Institut</h1>
-    <p class="lead mb-4 hero-subtitle">
-      Offrez a votre peau et vos ongles le soin qu'ils meritent, dans un cadre chaleureux et professionnel.
-    </p>
-    <div class="d-flex flex-wrap justify-content-center gap-3">
-      <a href="#services" class="btn btn-secondary btn-lg px-4">Voir nos services</a>
-      <a href="#contact" class="btn btn-outline-light btn-lg px-4">Nous contacter</a>
+  <section id="top" class="hero px-3">
+    <div class="row align-items-center g-5">
+      <div class="col-12 col-lg-6 text-center text-lg-start">
+        <span class="hero-tag mb-3 d-inline-block">Pedicure &middot; Manucure &middot; Soins du corps</span>
+        <h1 class="display-4 fw-bold mb-3">Arnelle Institut</h1>
+        <p class="lead mb-4 hero-subtitle">
+          Offrez a votre peau et vos ongles le soin qu'ils meritent, dans un cadre chaleureux et professionnel.
+        </p>
+        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
+          <a href="#services" class="btn btn-secondary btn-lg px-4">Voir nos services</a>
+          <a href="#contact" class="btn btn-outline-light btn-lg px-4">Nous contacter</a>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 text-center">
+        <div class="hero-portrait-frame mx-auto">
+          <img src="assets/images/home/hero-portrait.jpg" alt="Cliente d'Arnelle Institut" class="hero-portrait" />
+        </div>
+      </div>
     </div>
+  </section>
+
+  <section class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3">
+    <span><i class="ti ti-gift me-2"></i>Offre de bienvenue : profitez d'un tarif reduit sur votre premiere visite</span>
+    <a href="#contact" class="btn btn-sm btn-dark">En profiter</a>
   </section>
 
   <section id="apropos" class="features py-5 px-3">
@@ -41,6 +55,20 @@
         <h5 class="mt-3">Hygiene rigoureuse</h5>
         <p class="text-muted">Un protocole d'hygiene strict applique a chaque prestation, pour votre securite.</p>
       </div>
+    </div>
+  </section>
+
+  <section class="gallery py-5 px-3">
+    <h2 class="text-center mb-2">Notre univers</h2>
+    <p class="text-center text-muted mb-4">Un apercu de nos soins et de l'attention portee a chaque prestation.</p>
+    <div class="gallery-carousel-wrap mx-auto">
+      <ngb-carousel [interval]="4500" [showNavigationIndicators]="true" [pauseOnHover]="true">
+        <ng-template ngbSlide *ngFor="let img of galleryImages">
+          <div class="gallery-slide">
+            <img [src]="img.src" [alt]="img.alt" />
+          </div>
+        </ng-template>
+      </ngb-carousel>
     </div>
   </section>
 
@@ -84,7 +112,10 @@
       <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of filteredServices()">
         <div class="card h-100 service-card">
           <div class="card-body d-flex flex-column">
-            <span class="badge text-bg-secondary align-self-start mb-2">{{ service.categorieLibelle }}</span>
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="badge text-bg-secondary">{{ service.categorieLibelle }}</span>
+              <i class="ti {{ categoryIcon(service.categorieCode) }} service-icon"></i>
+            </div>
             <h5 class="card-title">{{ service.nomService }}</h5>
             <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
             <div class="d-flex justify-content-between align-items-center mt-3">
@@ -95,6 +126,12 @@
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="cta text-center px-3 py-5">
+    <h2 class="mb-3">Prete a prendre soin de vous ?</h2>
+    <p class="mb-4 cta-subtitle">Reservez votre prochain rendez-vous des aujourd'hui.</p>
+    <a href="#contact" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
   </section>
 
   <footer id="contact" class="site-footer px-3 py-5 text-center">

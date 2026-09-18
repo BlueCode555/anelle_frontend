@@ -49,5 +49,5 @@ Fait :
 A faire :
 - Ecrans de gestion (CRUD) Categorie et Service dans le back-office (menu admin)
 - Authentification reelle via Keycloak (actuellement les pages login/register ne sont pas branchees)
-- Entites/ecrans Praticienne, Assistante, Disponibilite, Notification
+- Entites/ecrans Estheticienne, Assistante, Disponibilite, Notification
 - Logo definitif (en attente de validation avec la cliente)

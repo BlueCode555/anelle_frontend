@@ -1,24 +1,25 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormField, form, required } from '@angular/forms/signals';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/catalogue.model';
 
 @Component({
   selector: 'app-service-form',
-  imports: [CommonModule, FormsModule, RouterModule, FormField],
+  imports: [CommonModule, FormsModule, FormField],
   templateUrl: './service-form.component.html',
   styleUrl: './service-form.component.scss'
 })
 export class ServiceFormComponent implements OnInit {
   private catalogue = inject(CatalogueService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  activeModal = inject(NgbActiveModal);
 
-  serviceId = signal<number | null>(null);
+  // Set by the opener (list component) via modalRef.componentInstance.serviceId before the modal renders.
+  serviceId: number | null = null;
+
   categories = signal<CategorieResponse[]>([]);
   submitted = signal(false);
   saving = signal(false);
@@ -45,13 +46,10 @@ export class ServiceFormComponent implements OnInit {
   ngOnInit(): void {
     this.catalogue.listCategories().subscribe((page) => this.categories.set(page.content));
 
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) {
+    if (!this.serviceId) {
       return;
     }
-    const id = Number(idParam);
-    this.serviceId.set(id);
-    this.catalogue.getService(id).subscribe((service) => {
+    this.catalogue.getService(this.serviceId).subscribe((service) => {
       this.serviceModel.set({
         code: service.code,
         nomService: service.nomService,
@@ -75,11 +73,10 @@ export class ServiceFormComponent implements OnInit {
 
     this.saving.set(true);
     const value = this.serviceModel();
-    const id = this.serviceId();
-    const request = id ? this.catalogue.updateService(id, value) : this.catalogue.createService(value);
+    const request = this.serviceId ? this.catalogue.updateService(this.serviceId, value) : this.catalogue.createService(value);
 
     request.subscribe({
-      next: () => this.router.navigate(['/services']),
+      next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(err?.error?.message ?? 'Une erreur est survenue.');

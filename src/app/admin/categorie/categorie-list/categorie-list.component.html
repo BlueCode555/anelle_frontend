@@ -1,9 +1,9 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between align-items-center">
     <h5 class="mb-0">Categories</h5>
-    <a [routerLink]="['/categories/new']" class="btn btn-primary btn-sm">
+    <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">
       <i class="ti ti-plus me-1"></i>Nouvelle categorie
-    </a>
+    </button>
   </div>
   <div class="card-body">
     <div *ngIf="loading()" class="text-center text-muted py-4">Chargement...</div>
@@ -30,9 +30,9 @@
             <td>{{ cat.libelle }}</td>
             <td class="text-muted">{{ cat.description }}</td>
             <td class="text-end">
-              <a [routerLink]="['/categories', cat.id, 'edit']" class="btn btn-sm btn-outline-primary me-1">
+              <button type="button" class="btn btn-sm btn-outline-primary me-1" (click)="openEdit(cat)">
                 <i class="ti ti-edit"></i>
-              </a>
+              </button>
               <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(cat)">
                 <i class="ti ti-trash"></i>
               </button>

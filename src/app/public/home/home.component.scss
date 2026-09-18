@@ -66,9 +66,17 @@
     right: -160px;
   }
 
-  > * {
+  .row {
     position: relative;
     z-index: 1;
+  }
+
+  .row > div {
+    animation: fade-in-up 0.7s ease both;
+  }
+
+  .row > div:nth-child(2) {
+    animation-delay: 0.12s;
   }
 
   .hero-tag {
@@ -84,6 +92,39 @@
     max-width: 560px;
     color: #ecdcc0;
   }
+
+  .hero-portrait-frame {
+    max-width: 380px;
+    border-radius: 1.5rem;
+    padding: 0.5rem;
+    background: linear-gradient(135deg, rgba(232, 200, 116, 0.5), rgba(232, 200, 116, 0));
+  }
+
+  .hero-portrait {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 1.1rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Promo banner ────────────────────────────────────────
+.promo-banner {
+  background: linear-gradient(90deg, #e8c874 0%, #c9a227 100%);
+  color: #3d2410;
+  font-weight: 600;
 }
 
 // ── Features / A propos ────────────────────────────────
@@ -92,6 +133,36 @@
     font-size: 2.5rem;
     color: #c9a227;
   }
+}
+
+// ── Gallery carousel ────────────────────────────────────
+.gallery-carousel-wrap {
+  max-width: 640px;
+
+  ::ng-deep .carousel {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(74, 46, 23, 0.15);
+  }
+
+  ::ng-deep .carousel-indicators > * {
+    background-color: #c9a227;
+  }
+
+  ::ng-deep .carousel-control-prev-icon,
+  ::ng-deep .carousel-control-next-icon {
+    background-color: rgba(74, 46, 23, 0.55);
+    border-radius: 50%;
+    padding: 1.1rem;
+    background-size: 55%;
+  }
+}
+
+.gallery-slide img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
 }
 
 // ── Services ────────────────────────────────────────────
@@ -104,6 +175,21 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 24px rgba(74, 46, 23, 0.12);
+  }
+
+  .service-icon {
+    font-size: 1.4rem;
+    color: #c9a227;
+  }
+}
+
+// ── Call to action ──────────────────────────────────────
+.cta {
+  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
+  color: #fbf6ec;
+
+  .cta-subtitle {
+    color: #ecdcc0;
   }
 }
 

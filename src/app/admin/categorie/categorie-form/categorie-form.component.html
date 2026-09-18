@@ -1,60 +1,58 @@
-<div class="card">
-  <div class="card-header">
-    <h5 class="mb-0">{{ categorieId() ? 'Modifier la categorie' : 'Nouvelle categorie' }}</h5>
-  </div>
-  <div class="card-body">
-    <form (ngSubmit)="onSubmit($event)">
-      <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
+<div class="modal-header">
+  <h5 class="modal-title">{{ categorieId ? 'Modifier la categorie' : 'Nouvelle categorie' }}</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form id="categorieForm" (ngSubmit)="onSubmit($event)">
+    <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
-      <div class="mb-3">
-        <label class="form-label" for="code">Code</label>
-        <input
-          id="code"
-          type="text"
-          class="form-control"
-          placeholder="Ex. PEDICURE"
-          [formField]="categorieForm.code"
-          [class.is-invalid]="submitted() && categorieForm.code().invalid()"
-        />
-        @if (submitted() && categorieForm.code().invalid()) {
-          <div class="invalid-feedback">
-            @for (error of categorieForm.code().errors(); track error.kind) {
-              <div>{{ error.message }}</div>
-            }
-          </div>
-        }
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="code">Code</label>
+      <input
+        id="code"
+        type="text"
+        class="form-control"
+        placeholder="Ex. PEDICURE"
+        [formField]="categorieForm.code"
+        [class.is-invalid]="submitted() && categorieForm.code().invalid()"
+      />
+      @if (submitted() && categorieForm.code().invalid()) {
+        <div class="invalid-feedback">
+          @for (error of categorieForm.code().errors(); track error.kind) {
+            <div>{{ error.message }}</div>
+          }
+        </div>
+      }
+    </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="libelle">Libelle</label>
-        <input
-          id="libelle"
-          type="text"
-          class="form-control"
-          placeholder="Ex. Pedicure"
-          [formField]="categorieForm.libelle"
-          [class.is-invalid]="submitted() && categorieForm.libelle().invalid()"
-        />
-        @if (submitted() && categorieForm.libelle().invalid()) {
-          <div class="invalid-feedback">
-            @for (error of categorieForm.libelle().errors(); track error.kind) {
-              <div>{{ error.message }}</div>
-            }
-          </div>
-        }
-      </div>
+    <div class="mb-3">
+      <label class="form-label" for="libelle">Libelle</label>
+      <input
+        id="libelle"
+        type="text"
+        class="form-control"
+        placeholder="Ex. Pedicure"
+        [formField]="categorieForm.libelle"
+        [class.is-invalid]="submitted() && categorieForm.libelle().invalid()"
+      />
+      @if (submitted() && categorieForm.libelle().invalid()) {
+        <div class="invalid-feedback">
+          @for (error of categorieForm.libelle().errors(); track error.kind) {
+            <div>{{ error.message }}</div>
+          }
+        </div>
+      }
+    </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="description">Description</label>
-        <textarea id="description" class="form-control" rows="3" [formField]="categorieForm.description"></textarea>
-      </div>
-
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary" [disabled]="saving()">
-          {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
-        </button>
-        <a [routerLink]="['/categories']" class="btn btn-outline-secondary">Annuler</a>
-      </div>
-    </form>
-  </div>
+    <div class="mb-3">
+      <label class="form-label" for="description">Description</label>
+      <textarea id="description" class="form-control" rows="3" [formField]="categorieForm.description"></textarea>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="submit" form="categorieForm" class="btn btn-primary" [disabled]="saving()">
+    {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
+  </button>
 </div>

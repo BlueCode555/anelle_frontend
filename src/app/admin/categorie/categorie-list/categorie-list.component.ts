@@ -1,18 +1,20 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse } from 'src/app/theme/shared/service/catalogue.model';
+import { CategorieFormComponent } from '../categorie-form/categorie-form.component';
 
 @Component({
   selector: 'app-categorie-list',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './categorie-list.component.html',
   styleUrl: './categorie-list.component.scss'
 })
 export class CategorieListComponent implements OnInit {
   private catalogue = inject(CatalogueService);
+  private modalService = inject(NgbModal);
 
   categories = signal<CategorieResponse[]>([]);
   loading = signal(true);
@@ -35,6 +37,27 @@ export class CategorieListComponent implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  openCreate(): void {
+    const ref = this.modalService.open(CategorieFormComponent, { centered: true });
+    ref.result.then(
+      (result) => {
+        if (result === 'saved') this.load();
+      },
+      () => {}
+    );
+  }
+
+  openEdit(categorie: CategorieResponse): void {
+    const ref = this.modalService.open(CategorieFormComponent, { centered: true });
+    ref.componentInstance.categorieId = categorie.id;
+    ref.result.then(
+      (result) => {
+        if (result === 'saved') this.load();
+      },
+      () => {}
+    );
   }
 
   remove(categorie: CategorieResponse): void {

@@ -22,24 +22,8 @@ const appRoutes: Routes = [
         loadComponent: () => import('./admin/categorie/categorie-list/categorie-list.component').then((c) => c.CategorieListComponent)
       },
       {
-        path: 'categories/new',
-        loadComponent: () => import('./admin/categorie/categorie-form/categorie-form.component').then((c) => c.CategorieFormComponent)
-      },
-      {
-        path: 'categories/:id/edit',
-        loadComponent: () => import('./admin/categorie/categorie-form/categorie-form.component').then((c) => c.CategorieFormComponent)
-      },
-      {
         path: 'services',
         loadComponent: () => import('./admin/service/service-list/service-list.component').then((c) => c.ServiceListComponent)
-      },
-      {
-        path: 'services/new',
-        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
-      },
-      {
-        path: 'services/:id/edit',
-        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
       }
     ]
   },

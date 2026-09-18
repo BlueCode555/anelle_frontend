@@ -1,24 +1,25 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormField, form, required } from '@angular/forms/signals';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieForm } from 'src/app/theme/shared/service/catalogue.model';
 
 @Component({
   selector: 'app-categorie-form',
-  imports: [CommonModule, FormsModule, RouterModule, FormField],
+  imports: [CommonModule, FormsModule, FormField],
   templateUrl: './categorie-form.component.html',
   styleUrl: './categorie-form.component.scss'
 })
 export class CategorieFormComponent implements OnInit {
   private catalogue = inject(CatalogueService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  activeModal = inject(NgbActiveModal);
 
-  categorieId = signal<number | null>(null);
+  // Set by the opener (list component) via modalRef.componentInstance.categorieId before the modal renders.
+  categorieId: number | null = null;
+
   submitted = signal(false);
   saving = signal(false);
   serverError = signal('');
@@ -35,13 +36,10 @@ export class CategorieFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) {
+    if (!this.categorieId) {
       return;
     }
-    const id = Number(idParam);
-    this.categorieId.set(id);
-    this.catalogue.getCategorie(id).subscribe((categorie) => {
+    this.catalogue.getCategorie(this.categorieId).subscribe((categorie) => {
       this.categorieModel.set({
         code: categorie.code,
         libelle: categorie.libelle,
@@ -61,11 +59,12 @@ export class CategorieFormComponent implements OnInit {
 
     this.saving.set(true);
     const value = this.categorieModel();
-    const id = this.categorieId();
-    const request = id ? this.catalogue.updateCategorie(id, value) : this.catalogue.createCategorie(value);
+    const request = this.categorieId
+      ? this.catalogue.updateCategorie(this.categorieId, value)
+      : this.catalogue.createCategorie(value);
 
     request.subscribe({
-      next: () => this.router.navigate(['/categories']),
+      next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(err?.error?.message ?? 'Une erreur est survenue.');

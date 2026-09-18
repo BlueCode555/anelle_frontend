@@ -1,128 +1,126 @@
-<div class="card">
-  <div class="card-header">
-    <h5 class="mb-0">{{ serviceId() ? 'Modifier le service' : 'Nouveau service' }}</h5>
-  </div>
-  <div class="card-body">
-    <form (ngSubmit)="onSubmit($event)">
-      <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
+<div class="modal-header">
+  <h5 class="modal-title">{{ serviceId ? 'Modifier le service' : 'Nouveau service' }}</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <form id="serviceForm" (ngSubmit)="onSubmit($event)">
+    <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label" for="code">Code</label>
-          <input
-            id="code"
-            type="text"
-            class="form-control"
-            placeholder="Ex. PED-CLASSIQUE"
-            [formField]="serviceForm.code"
-            [class.is-invalid]="submitted() && serviceForm.code().invalid()"
-          />
-          @if (submitted() && serviceForm.code().invalid()) {
-            <div class="invalid-feedback">
-              @for (error of serviceForm.code().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="col-md-6 mb-3">
-          <label class="form-label" for="categorieCode">Categorie</label>
-          <select
-            id="categorieCode"
-            class="form-select"
-            [formField]="serviceForm.categorieCode"
-            [class.is-invalid]="submitted() && serviceForm.categorieCode().invalid()"
-          >
-            <option value="" disabled>Choisir une categorie</option>
-            <option *ngFor="let cat of categories()" [value]="cat.code">{{ cat.libelle }}</option>
-          </select>
-          @if (submitted() && serviceForm.categorieCode().invalid()) {
-            <div class="invalid-feedback">
-              @for (error of serviceForm.categorieCode().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label" for="nomService">Nom du service</label>
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="code">Code</label>
         <input
-          id="nomService"
+          id="code"
           type="text"
           class="form-control"
-          placeholder="Ex. Pedicure classique"
-          [formField]="serviceForm.nomService"
-          [class.is-invalid]="submitted() && serviceForm.nomService().invalid()"
+          placeholder="Ex. PED-CLASSIQUE"
+          [formField]="serviceForm.code"
+          [class.is-invalid]="submitted() && serviceForm.code().invalid()"
         />
-        @if (submitted() && serviceForm.nomService().invalid()) {
+        @if (submitted() && serviceForm.code().invalid()) {
           <div class="invalid-feedback">
-            @for (error of serviceForm.nomService().errors(); track error.kind) {
+            @for (error of serviceForm.code().errors(); track error.kind) {
               <div>{{ error.message }}</div>
             }
           </div>
         }
       </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="description">Description</label>
-        <textarea id="description" class="form-control" rows="3" [formField]="serviceForm.description"></textarea>
-      </div>
-
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="dureeMinutes">Duree (minutes)</label>
-          <input
-            id="dureeMinutes"
-            type="number"
-            class="form-control"
-            [formField]="serviceForm.dureeMinutes"
-            [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()"
-          />
-          @if (submitted() && serviceForm.dureeMinutes().invalid()) {
-            <div class="invalid-feedback">
-              @for (error of serviceForm.dureeMinutes().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="tarif">Tarif (CAD)</label>
-          <input
-            id="tarif"
-            type="number"
-            step="0.01"
-            class="form-control"
-            [formField]="serviceForm.tarif"
-            [class.is-invalid]="submitted() && serviceForm.tarif().invalid()"
-          />
-          @if (submitted() && serviceForm.tarif().invalid()) {
-            <div class="invalid-feedback">
-              @for (error of serviceForm.tarif().errors(); track error.kind) {
-                <div>{{ error.message }}</div>
-              }
-            </div>
-          }
-        </div>
-
-        <div class="col-md-4 mb-3 d-flex align-items-end">
-          <div class="form-check">
-            <input id="actif" type="checkbox" class="form-check-input" [formField]="serviceForm.actif" />
-            <label class="form-check-label" for="actif">Service actif (visible sur le site)</label>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="categorieCode">Categorie</label>
+        <select
+          id="categorieCode"
+          class="form-select"
+          [formField]="serviceForm.categorieCode"
+          [class.is-invalid]="submitted() && serviceForm.categorieCode().invalid()"
+        >
+          <option value="" disabled>Choisir une categorie</option>
+          <option *ngFor="let cat of categories()" [value]="cat.code">{{ cat.libelle }}</option>
+        </select>
+        @if (submitted() && serviceForm.categorieCode().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of serviceForm.categorieCode().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
           </div>
+        }
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="nomService">Nom du service</label>
+      <input
+        id="nomService"
+        type="text"
+        class="form-control"
+        placeholder="Ex. Pedicure classique"
+        [formField]="serviceForm.nomService"
+        [class.is-invalid]="submitted() && serviceForm.nomService().invalid()"
+      />
+      @if (submitted() && serviceForm.nomService().invalid()) {
+        <div class="invalid-feedback">
+          @for (error of serviceForm.nomService().errors(); track error.kind) {
+            <div>{{ error.message }}</div>
+          }
         </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="description">Description</label>
+      <textarea id="description" class="form-control" rows="3" [formField]="serviceForm.description"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="dureeMinutes">Duree (minutes)</label>
+        <input
+          id="dureeMinutes"
+          type="number"
+          class="form-control"
+          [formField]="serviceForm.dureeMinutes"
+          [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()"
+        />
+        @if (submitted() && serviceForm.dureeMinutes().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of serviceForm.dureeMinutes().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
       </div>
 
-      <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-primary" [disabled]="saving()">
-          {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
-        </button>
-        <a [routerLink]="['/services']" class="btn btn-outline-secondary">Annuler</a>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="tarif">Tarif (CAD)</label>
+        <input
+          id="tarif"
+          type="number"
+          step="0.01"
+          class="form-control"
+          [formField]="serviceForm.tarif"
+          [class.is-invalid]="submitted() && serviceForm.tarif().invalid()"
+        />
+        @if (submitted() && serviceForm.tarif().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of serviceForm.tarif().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
       </div>
-    </form>
-  </div>
+
+      <div class="col-md-4 mb-3 d-flex align-items-end">
+        <div class="form-check">
+          <input id="actif" type="checkbox" class="form-check-input" [formField]="serviceForm.actif" />
+          <label class="form-check-label" for="actif">Service actif (visible sur le site)</label>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="submit" form="serviceForm" class="btn btn-primary" [disabled]="saving()">
+    {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
+  </button>
 </div>

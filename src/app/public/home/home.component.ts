@@ -1,12 +1,13 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from '../../theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceResponse } from '../../theme/shared/service/catalogue.model';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule],
+  imports: [CommonModule, NgbCarouselModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -52,4 +53,20 @@ export class HomeComponent implements OnInit {
   formatTarif(tarif: number): string {
     return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
   }
+
+  private readonly categoryIcons: Record<string, string> = {
+    PEDICURE: 'ti-shoe',
+    MANUCURE: 'ti-hand-stop',
+    SOINS_CORPS: 'ti-massage'
+  };
+
+  categoryIcon(categorieCode: string): string {
+    return this.categoryIcons[categorieCode] ?? 'ti-sparkles';
+  }
+
+  // TODO: remplacer/completer avec les vraies photos d'Arnelle Institut au fur et a mesure.
+  galleryImages: { src: string; alt: string }[] = [
+    { src: 'assets/images/home/soin-visage.jpg', alt: "Soin du visage chez Arnelle Institut" },
+    { src: 'assets/images/home/manucure.jpg', alt: 'Manucure chez Arnelle Institut' }
+  ];
 }

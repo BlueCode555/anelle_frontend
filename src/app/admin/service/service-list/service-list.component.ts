@@ -1,18 +1,20 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { ServiceResponse } from 'src/app/theme/shared/service/catalogue.model';
+import { ServiceFormComponent } from '../service-form/service-form.component';
 
 @Component({
   selector: 'app-service-list',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule],
   templateUrl: './service-list.component.html',
   styleUrl: './service-list.component.scss'
 })
 export class ServiceListComponent implements OnInit {
   private catalogue = inject(CatalogueService);
+  private modalService = inject(NgbModal);
 
   services = signal<ServiceResponse[]>([]);
   loading = signal(true);
@@ -39,6 +41,27 @@ export class ServiceListComponent implements OnInit {
 
   formatTarif(tarif: number): string {
     return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+  }
+
+  openCreate(): void {
+    const ref = this.modalService.open(ServiceFormComponent, { centered: true });
+    ref.result.then(
+      (result) => {
+        if (result === 'saved') this.load();
+      },
+      () => {}
+    );
+  }
+
+  openEdit(service: ServiceResponse): void {
+    const ref = this.modalService.open(ServiceFormComponent, { centered: true });
+    ref.componentInstance.serviceId = service.id;
+    ref.result.then(
+      (result) => {
+        if (result === 'saved') this.load();
+      },
+      () => {}
+    );
   }
 
   remove(service: ServiceResponse): void {
