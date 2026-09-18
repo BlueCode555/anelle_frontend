@@ -65,8 +65,9 @@ export class HomeComponent implements OnInit {
   }
 
   // TODO: remplacer/completer avec les vraies photos d'Arnelle Institut au fur et a mesure.
-  galleryImages: { src: string; alt: string }[] = [
-    { src: 'assets/images/home/soin-visage.jpg', alt: "Soin du visage chez Arnelle Institut" },
-    { src: 'assets/images/home/manucure.jpg', alt: 'Manucure chez Arnelle Institut' }
+  galleryImages: { src: string; alt: string; caption: string }[] = [
+    { src: 'assets/images/home/soin-visage.jpg', alt: 'Soin du visage chez Arnelle Institut', caption: 'Soins du visage' },
+    { src: 'assets/images/home/manucure.jpg', alt: 'Manucure chez Arnelle Institut', caption: 'Manucure' },
+    { src: 'assets/images/home/hero-portrait.jpg', alt: 'Ambiance Arnelle Institut', caption: "L'experience Arnelle" }
   ];
 }

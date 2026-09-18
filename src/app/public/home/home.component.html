@@ -58,14 +58,15 @@
     </div>
   </section>
 
-  <section class="gallery py-5 px-3">
-    <h2 class="text-center mb-2">Notre univers</h2>
-    <p class="text-center text-muted mb-4">Un apercu de nos soins et de l'attention portee a chaque prestation.</p>
+  <section class="gallery py-5">
+    <h2 class="text-center mb-2 px-3">Notre univers</h2>
+    <p class="text-center text-muted mb-4 px-3">Un apercu de nos soins et de l'attention portee a chaque prestation.</p>
     <div class="gallery-carousel-wrap mx-auto">
-      <ngb-carousel [interval]="4500" [showNavigationIndicators]="true" [pauseOnHover]="true">
+      <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
         <ng-template ngbSlide *ngFor="let img of galleryImages">
           <div class="gallery-slide">
             <img [src]="img.src" [alt]="img.alt" />
+            <div class="gallery-caption">{{ img.caption }}</div>
           </div>
         </ng-template>
       </ngb-carousel>
@@ -134,11 +135,54 @@
     <a href="#contact" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
   </section>
 
-  <footer id="contact" class="site-footer px-3 py-5 text-center">
-    <h2 class="mb-3">Nous contacter</h2>
-    <p class="mb-1">Adresse a definir</p>
-    <p class="mb-1">Telephone a definir</p>
-    <p class="mb-4">contact&#64;arnelleinstitut.com</p>
-    <p class="small mb-0 footer-copy">&copy; {{ currentYear }} Arnelle Institut. Tous droits reserves.</p>
+  <footer id="contact" class="site-footer px-3 px-lg-5 py-5">
+    <div class="row g-5">
+      <div class="col-12 col-md-6 col-lg-3">
+        <h5 class="footer-heading">Arnelle Institut</h5>
+        <p class="footer-text">
+          Une bulle de bien-etre dediee aux soins du visage, des mains et du corps, dans un cadre chaleureux et
+          professionnel.
+        </p>
+        <a href="#services" class="footer-cta">Reservation</a>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <h5 class="footer-heading">Liens utiles</h5>
+        <ul class="footer-links">
+          <li><a href="#services">Reservation en ligne</a></li>
+          <li><a href="#services">Nos services</a></li>
+          <li><a href="#">Mentions legales</a></li>
+          <li><a href="#">Politique de confidentialite</a></li>
+        </ul>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <h5 class="footer-heading">Contact</h5>
+        <p class="mb-1">Adresse a definir</p>
+        <p class="mb-1">contact&#64;arnelleinstitut.com</p>
+        <p class="mb-3">Telephone a definir</p>
+        <div class="d-flex gap-3 footer-social">
+          <a href="#" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3">
+        <h5 class="footer-heading">Horaires</h5>
+        <ul class="footer-hours">
+          <li><span>Lundi</span><span>Ferme</span></li>
+          <li><span>Mardi</span><span>9h30 - 19h00</span></li>
+          <li><span>Mercredi</span><span>9h30 - 19h00</span></li>
+          <li><span>Jeudi</span><span>9h30 - 19h00</span></li>
+          <li><span>Vendredi</span><span>9h30 - 19h00</span></li>
+          <li><span>Samedi</span><span>10h00 - 14h00</span></li>
+          <li><span>Dimanche</span><span>Ferme</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="footer-divider" />
+
+    <p class="small text-center footer-copy mb-0">&copy; {{ currentYear }} Arnelle Institut. Tous droits reserves.</p>
   </footer>
 </div>
