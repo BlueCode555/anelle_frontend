@@ -18,13 +18,13 @@ export interface NavigationItem {
 export const NavigationItems: NavigationItem[] = [
   {
     id: 'dashboard',
-    title: 'Dashboard',
+    title: 'Accueil',
     type: 'group',
     icon: 'icon-navigation',
     children: [
       {
         id: 'default',
-        title: 'Dashboard',
+        title: 'Tableau de bord',
         type: 'item',
         classes: 'nav-item',
         url: '/default',
@@ -54,38 +54,6 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item',
         url: '/services',
         icon: 'ti ti-sparkles'
-      }
-    ]
-  },
-  {
-    id: 'page',
-    title: 'Pages',
-    type: 'group',
-    icon: 'icon-navigation',
-    children: [
-      {
-        id: 'Authentication',
-        title: 'Authentication',
-        type: 'collapse',
-        icon: 'ti ti-key',
-        children: [
-          {
-            id: 'login',
-            title: 'Login',
-            type: 'item',
-            url: '/login',
-            target: true,
-            breadcrumbs: false
-          },
-          {
-            id: 'register',
-            title: 'Register',
-            type: 'item',
-            url: '/register',
-            target: true,
-            breadcrumbs: false
-          }
-        ]
       }
     ]
   },

@@ -44,10 +44,13 @@ Definie dans `src/scss/settings/bootstrap-variables.scss` et `theme-variables.sc
 
 Fait :
 - Page d'accueil publique dynamique (categories + services depuis l'API, filtre par categorie)
-- Theme applique (couleurs, header/sidebar, nettoyage des demos du template)
+- Carrousel d'accueil alimente par les images envoyees sur les categories/services (photos par defaut sinon)
+- Theme applique (couleurs, header/sidebar, nettoyage des elements du template Berry)
+- Dashboard avec statistiques reelles (categories, services actifs, tarif moyen, services par categorie)
+- Ecrans de gestion Categorie et Service en popup, avec envoi d'image
 
 A faire :
-- Ecrans de gestion (CRUD) Categorie et Service dans le back-office (menu admin)
-- Authentification reelle via Keycloak (actuellement les pages login/register ne sont pas branchees)
+- Authentification reelle via Keycloak : sans token, creer/modifier/supprimer et l'envoi d'images sont refuses (401).
+  Les pages `/login` et `/register` sont des restes du template et ne sont pas branchees.
 - Entites/ecrans Estheticienne, Assistante, Disponibilite, Notification
 - Logo definitif (en attente de validation avec la cliente)

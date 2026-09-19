@@ -49,4 +49,12 @@ export class CatalogueService {
   deleteService(id: number) {
     return this.api.delete('services', id);
   }
+
+  uploadImage(file: File) {
+    return this.api.upload<{ url: string }>('files', file);
+  }
+
+  imageSrc(url?: string | null): string | null {
+    return url ? this.api.absoluteUrl(url) : null;
+  }
 }

@@ -18,6 +18,7 @@
       <table class="table table-hover align-middle">
         <thead>
           <tr>
+            <th style="width: 72px">Image</th>
             <th>Code</th>
             <th>Libelle</th>
             <th>Description</th>
@@ -26,6 +27,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let cat of categories()">
+            <td>
+              <img *ngIf="imageSrc(cat.imageUrl) as src; else noImg" [src]="src" alt="" class="row-thumb" />
+              <ng-template #noImg><span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span></ng-template>
+            </td>
             <td><span class="badge text-bg-secondary">{{ cat.code }}</span></td>
             <td>{{ cat.libelle }}</td>
             <td class="text-muted">{{ cat.description }}</td>

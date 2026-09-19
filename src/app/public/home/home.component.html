@@ -61,9 +61,9 @@
   <section class="gallery py-5">
     <h2 class="text-center mb-2 px-3">Notre univers</h2>
     <p class="text-center text-muted mb-4 px-3">Un apercu de nos soins et de l'attention portee a chaque prestation.</p>
-    <div class="gallery-carousel-wrap mx-auto">
+    <div class="gallery-carousel-wrap mx-auto" *ngIf="galleryImages().length">
       <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
-        <ng-template ngbSlide *ngFor="let img of galleryImages">
+        <ng-template ngbSlide *ngFor="let img of galleryImages()">
           <div class="gallery-slide">
             <img [src]="img.src" [alt]="img.alt" />
             <div class="gallery-caption">{{ img.caption }}</div>

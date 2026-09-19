@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
@@ -24,6 +24,8 @@ export class ServiceFormComponent implements OnInit {
   submitted = signal(false);
   saving = signal(false);
   serverError = signal('');
+  uploading = signal(false);
+  uploadError = signal('');
 
   serviceModel = signal<ServiceForm>({
     code: '',
@@ -32,8 +34,11 @@ export class ServiceFormComponent implements OnInit {
     description: '',
     dureeMinutes: null,
     tarif: null,
-    actif: true
+    actif: true,
+    imageUrl: ''
   });
+
+  imagePreview = computed(() => this.catalogue.imageSrc(this.serviceModel().imageUrl));
 
   serviceForm = form(this.serviceModel, (schemaPath) => {
     required(schemaPath.code, { message: 'Le code est obligatoire' });
@@ -57,9 +62,44 @@ export class ServiceFormComponent implements OnInit {
         description: service.description ?? '',
         dureeMinutes: service.dureeMinutes,
         tarif: service.tarif,
-        actif: service.actif
+        actif: service.actif,
+        imageUrl: service.imageUrl ?? ''
       });
     });
+  }
+
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) {
+      return;
+    }
+    this.uploadError.set('');
+    if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(file.type)) {
+      this.uploadError.set('Format non supporte : JPEG, PNG, WebP ou AVIF.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.uploadError.set('Image trop lourde (5 Mo maximum).');
+      return;
+    }
+
+    this.uploading.set(true);
+    this.catalogue.uploadImage(file).subscribe({
+      next: (res) => {
+        this.serviceModel.update((m) => ({ ...m, imageUrl: res.url }));
+        this.uploading.set(false);
+      },
+      error: (err) => {
+        this.uploading.set(false);
+        this.uploadError.set(err?.status === 401 ? "Envoi refuse : vous n'etes pas connecte." : "Echec de l'envoi de l'image.");
+      }
+    });
+  }
+
+  removeImage(): void {
+    this.serviceModel.update((m) => ({ ...m, imageUrl: '' }));
   }
 
   onSubmit(event: Event): void {

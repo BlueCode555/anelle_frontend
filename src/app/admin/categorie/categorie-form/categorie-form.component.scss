@@ -1,1 +1,13 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.image-preview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  img {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e6d9c3;
+  }
+}

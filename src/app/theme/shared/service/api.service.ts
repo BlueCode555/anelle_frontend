@@ -35,6 +35,16 @@ export class ApiService {
     return this.http.put<ApiResponse<T>>(`${this.baseUrl}/${resource}/${id}`, form).pipe(map((res) => res.data));
   }
 
+  upload<T>(resource: string, file: File): Observable<T> {
+    const body = new FormData();
+    body.append('file', file);
+    return this.http.post<ApiResponse<T>>(`${this.baseUrl}/${resource}`, body).pipe(map((res) => res.data));
+  }
+
+  absoluteUrl(path: string): string {
+    return /^https?:\/\//.test(path) ? path : `${this.baseUrl}${path}`;
+  }
+
   delete(resource: string, id: number): Observable<boolean> {
     return this.http.delete<ApiResponse<boolean>>(`${this.baseUrl}/${resource}/${id}`).pipe(map((res) => res.data));
   }

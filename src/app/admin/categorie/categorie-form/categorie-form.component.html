@@ -48,6 +48,19 @@
       <label class="form-label" for="description">Description</label>
       <textarea id="description" class="form-control" rows="3" [formField]="categorieForm.description"></textarea>
     </div>
+
+    <div class="mb-1">
+      <label class="form-label" for="image">Image (affichee dans le carrousel du site)</label>
+      <div *ngIf="imagePreview() as preview" class="image-preview mb-2">
+        <img [src]="preview" alt="Apercu" />
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeImage()">
+          <i class="ti ti-trash"></i> Retirer
+        </button>
+      </div>
+      <input id="image" type="file" class="form-control" accept="image/jpeg,image/png,image/webp,image/avif" (change)="onImageSelected($event)" [disabled]="uploading()" />
+      <div class="form-text" *ngIf="uploading()">Envoi en cours...</div>
+      <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
+    </div>
   </form>
 </div>
 <div class="modal-footer">

@@ -1,1 +1,11 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+// Le fond du body est brun chocolat : le pied de page doit etre clair pour rester lisible.
+.pc-footer {
+  p,
+  a {
+    color: #ecdcc0;
+  }
+
+  a:hover {
+    color: #e8c874;
+  }
+}

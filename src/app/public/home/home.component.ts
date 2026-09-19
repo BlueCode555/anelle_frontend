@@ -5,6 +5,12 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from '../../theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceResponse } from '../../theme/shared/service/catalogue.model';
 
+interface GalleryImage {
+  src: string;
+  alt: string;
+  caption: string;
+}
+
 @Component({
   selector: 'app-home',
   imports: [CommonModule, NgbCarouselModule],
@@ -64,10 +70,26 @@ export class HomeComponent implements OnInit {
     return this.categoryIcons[categorieCode] ?? 'ti-sparkles';
   }
 
-  // TODO: remplacer/completer avec les vraies photos d'Arnelle Institut au fur et a mesure.
-  galleryImages: { src: string; alt: string; caption: string }[] = [
+  // Images par defaut, utilisees tant qu'aucune categorie/service n'a d'image (ou si l'API est injoignable).
+  // TODO: remplacer par les vraies photos d'Arnelle Institut.
+  private readonly defaultGallery: GalleryImage[] = [
     { src: 'assets/images/home/soin-visage.jpg', alt: 'Soin du visage chez Arnelle Institut', caption: 'Soins du visage' },
     { src: 'assets/images/home/manucure.jpg', alt: 'Manucure chez Arnelle Institut', caption: 'Manucure' },
     { src: 'assets/images/home/hero-portrait.jpg', alt: 'Ambiance Arnelle Institut', caption: "L'experience Arnelle" }
   ];
+
+  // Le carrousel affiche les images envoyees depuis le back-office (categories puis services actifs).
+  galleryImages = computed<GalleryImage[]>(() => {
+    if (this.loading()) {
+      return [];
+    }
+    const fromCategories = this.categories()
+      .filter((c) => !!c.imageUrl)
+      .map((c) => ({ src: this.catalogue.imageSrc(c.imageUrl) as string, alt: c.libelle, caption: c.libelle }));
+    const fromServices = this.services()
+      .filter((s) => s.actif && !!s.imageUrl)
+      .map((s) => ({ src: this.catalogue.imageSrc(s.imageUrl) as string, alt: s.nomService, caption: s.nomService }));
+    const dynamic = [...fromCategories, ...fromServices];
+    return dynamic.length ? dynamic : this.defaultGallery;
+  });
 }

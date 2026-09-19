@@ -1,1 +1,15 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.row-thumb {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e6d9c3;
+}
+
+.row-thumb-empty {
+  background: #f5efe1;
+  color: #b8a888;
+}

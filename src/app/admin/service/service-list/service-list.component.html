@@ -18,6 +18,7 @@
       <table class="table table-hover align-middle">
         <thead>
           <tr>
+            <th style="width: 72px">Image</th>
             <th>Code</th>
             <th>Nom</th>
             <th>Categorie</th>
@@ -29,6 +30,10 @@
         </thead>
         <tbody>
           <tr *ngFor="let service of services()">
+            <td>
+              <img *ngIf="imageSrc(service.imageUrl) as src; else noImg" [src]="src" alt="" class="row-thumb" />
+              <ng-template #noImg><span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span></ng-template>
+            </td>
             <td><span class="badge text-bg-secondary">{{ service.code }}</span></td>
             <td>{{ service.nomService }}</td>
             <td class="text-muted">{{ service.categorieLibelle }}</td>

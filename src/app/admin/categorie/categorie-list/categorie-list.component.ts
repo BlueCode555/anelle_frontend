@@ -39,6 +39,10 @@ export class CategorieListComponent implements OnInit {
     });
   }
 
+  imageSrc(url?: string | null): string | null {
+    return this.catalogue.imageSrc(url);
+  }
+
   openCreate(): void {
     const ref = this.modalService.open(CategorieFormComponent, { centered: true });
     ref.result.then(

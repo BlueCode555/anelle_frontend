@@ -5,6 +5,7 @@ export interface CategorieResponse {
   code: string;
   libelle: string;
   description?: string;
+  imageUrl?: string | null;
 }
 
 export interface ServiceResponse {
@@ -17,6 +18,7 @@ export interface ServiceResponse {
   dureeMinutes: number;
   tarif: number;
   actif: boolean;
+  imageUrl?: string | null;
 }
 
 // Mirrors bj.anelle.anelle_backend.dto.request.{CategorieForm,ServiceForm}.
@@ -25,6 +27,7 @@ export interface CategorieForm {
   code: string;
   libelle: string;
   description: string;
+  imageUrl: string;
 }
 
 export interface ServiceForm {
@@ -35,4 +38,5 @@ export interface ServiceForm {
   dureeMinutes: number | null;
   tarif: number | null;
   actif: boolean;
+  imageUrl: string;
 }

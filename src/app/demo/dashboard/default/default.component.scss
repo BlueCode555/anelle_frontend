@@ -1,1 +1,68 @@
-// This file is intentionally left empty to allow customers to add custom CSS if needed.
+.dash-hero {
+  padding: 1.5rem 1.75rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
+  color: #fbf6ec;
+
+  h3 {
+    color: #fbf6ec;
+  }
+
+  .dash-date {
+    color: #ecdcc0;
+    text-transform: capitalize;
+  }
+
+  .btn-outline-secondary {
+    color: #e8c874;
+    border-color: #e8c874;
+
+    &:hover {
+      background: #e8c874;
+      color: #3d2410;
+    }
+  }
+}
+
+.stat-card {
+  border-left: 4px solid #c9a227;
+
+  .stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f5efe1;
+    color: #6b4423;
+    font-size: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4a2e17;
+    line-height: 1.2;
+  }
+
+  .stat-sub {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #8a7660;
+  }
+
+  .stat-label {
+    color: #8a7660;
+    font-size: 0.85rem;
+  }
+}
+
+.dash-progress {
+  height: 8px;
+  background: #f0e7d6;
+
+  .progress-bar {
+    background: linear-gradient(90deg, #c9a227, #e8c874);
+  }
+}

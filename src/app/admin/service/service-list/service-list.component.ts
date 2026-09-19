@@ -43,6 +43,10 @@ export class ServiceListComponent implements OnInit {
     return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
+  imageSrc(url?: string | null): string | null {
+    return this.catalogue.imageSrc(url);
+  }
+
   openCreate(): void {
     const ref = this.modalService.open(ServiceFormComponent, { centered: true });
     ref.result.then(
