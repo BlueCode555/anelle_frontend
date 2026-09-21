@@ -1,66 +1,71 @@
 <div class="anelle-home">
-  <header class="site-header">
-    <nav class="navbar navbar-expand-md py-3 px-3 px-md-5">
-      <a class="navbar-brand fw-bold text-uppercase" href="#top">Arnelle Institut</a>
-      <div class="d-none d-md-flex gap-4 nav-links">
-        <a href="#top">Accueil</a>
-        <a href="#services">Services</a>
-        <a href="#apropos">A propos</a>
-        <a href="#contact">Contact</a>
-      </div>
-      <a href="#contact" class="btn btn-sm btn-outline-light d-none d-md-inline-block">Nous contacter</a>
-    </nav>
-  </header>
+  <app-site-header />
 
   <section id="top" class="hero px-3">
     <div class="row align-items-center g-5">
       <div class="col-12 col-lg-6 text-center text-lg-start">
-        <span class="hero-tag mb-3 d-inline-block">Pedicure &middot; Manucure &middot; Soins du corps</span>
-        <h1 class="display-4 fw-bold mb-3">Arnelle Institut</h1>
-        <p class="lead mb-4 hero-subtitle">
-          Offrez a votre peau et vos ongles le soin qu'ils meritent, dans un cadre chaleureux et professionnel.
-        </p>
-        <div class="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3">
-          <a href="#services" class="btn btn-secondary btn-lg px-4">Voir nos services</a>
-          <a href="#contact" class="btn btn-outline-light btn-lg px-4">Nous contacter</a>
+        <span class="hero-tag mb-4 d-inline-block">Pédicure &middot; Manucure &middot; Soins du corps</span>
+        <h1 class="hero-title mb-4">{{ nom() }}</h1>
+        @if (info()?.slogan; as slogan) {
+          <p class="mb-4 hero-subtitle mx-auto mx-lg-0">{{ slogan }}</p>
+        }
+        <div class="hero-actions">
+          <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
+          <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">Voir nos services</a>
         </div>
+        <ul class="hero-points">
+          <li><i class="ti ti-calendar-check"></i>Réservation en ligne</li>
+          <li><i class="ti ti-lock"></i>Paiement sécurisé</li>
+          <li><i class="ti ti-heart"></i>Accueil personnalisé</li>
+        </ul>
       </div>
       <div class="col-12 col-lg-6 text-center">
         <div class="hero-portrait-frame mx-auto">
-          <img src="assets/images/home/hero-portrait.jpg" alt="Cliente d'Arnelle Institut" class="hero-portrait" />
+          <img [src]="heroImage" [alt]="'Une cliente profitant d\'un soin chez ' + nom()" class="hero-portrait" />
         </div>
       </div>
     </div>
   </section>
 
-  <section class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3">
-    <span><i class="ti ti-gift me-2"></i>Offre de bienvenue : profitez d'un tarif reduit sur votre premiere visite</span>
-    <a href="#contact" class="btn btn-sm btn-dark">En profiter</a>
-  </section>
+  @if (info()?.bannierePromo; as promo) {
+    <section class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3">
+      <span><i class="ti ti-gift me-2"></i>{{ promo }}</span>
+      <a routerLink="/accueil" fragment="services" class="btn btn-sm btn-dark">En profiter</a>
+    </section>
+  }
 
   <section id="apropos" class="features py-5 px-3">
+    <span class="ar-eyebrow text-center">Notre engagement</span>
+    <h2 class="ar-section-title mb-5">L'art de prendre soin</h2>
     <div class="row g-4 justify-content-center text-center">
       <div class="col-12 col-md-4">
-        <i class="ti ti-sparkles feature-icon"></i>
-        <h5 class="mt-3">Produits de qualite</h5>
-        <p class="text-muted">Des soins realises avec des produits selectionnes pour leur efficacite et leur douceur.</p>
+        <div class="feature">
+          <span class="feature-icon"><i class="ti ti-sparkles"></i></span>
+          <h5>Produits de qualité</h5>
+          <p>Des soins réalisés avec des produits sélectionnés pour leur efficacité et leur douceur.</p>
+        </div>
       </div>
       <div class="col-12 col-md-4">
-        <i class="ti ti-heart-handshake feature-icon"></i>
-        <h5 class="mt-3">Accueil personnalise</h5>
-        <p class="text-muted">Chaque rendez-vous est pense pour votre confort, dans un cadre calme et chaleureux.</p>
+        <div class="feature">
+          <span class="feature-icon"><i class="ti ti-heart-handshake"></i></span>
+          <h5>Accueil personnalisé</h5>
+          <p>Chaque rendez-vous est pensé pour votre confort, dans un cadre calme et chaleureux.</p>
+        </div>
       </div>
       <div class="col-12 col-md-4">
-        <i class="ti ti-shield-check feature-icon"></i>
-        <h5 class="mt-3">Hygiene rigoureuse</h5>
-        <p class="text-muted">Un protocole d'hygiene strict applique a chaque prestation, pour votre securite.</p>
+        <div class="feature">
+          <span class="feature-icon"><i class="ti ti-shield-check"></i></span>
+          <h5>Hygiène rigoureuse</h5>
+          <p>Un protocole d'hygiène strict appliqué à chaque prestation, pour votre sécurité.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="gallery py-5">
-    <h2 class="text-center mb-2 px-3">Notre univers</h2>
-    <p class="text-center text-muted mb-4 px-3">Un apercu de nos soins et de l'attention portee a chaque prestation.</p>
+    <span class="ar-eyebrow text-center">Galerie</span>
+    <h2 class="ar-section-title px-3">Notre univers</h2>
+    <p class="ar-section-lead px-3">Un aperçu de nos soins et de l'attention portée à chaque prestation.</p>
     <div class="gallery-carousel-wrap mx-auto" *ngIf="galleryImages().length">
       <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
         <ng-template ngbSlide *ngFor="let img of galleryImages()">
@@ -74,10 +79,11 @@
   </section>
 
   <section id="services" class="services py-5 px-3">
-    <h2 class="text-center mb-2">Nos services</h2>
-    <p class="text-center text-muted mb-4">Decouvrez nos prestations, classees par categorie.</p>
+    <span class="ar-eyebrow text-center">Prestations</span>
+    <h2 class="ar-section-title">Nos services</h2>
+    <p class="ar-section-lead">Découvrez nos prestations, classées par catégorie.</p>
 
-    <div class="d-flex flex-wrap justify-content-center gap-2 mb-4" *ngIf="categories().length">
+    <div class="category-pills d-flex flex-wrap justify-content-center gap-2 mb-5" *ngIf="categories().length">
       <button
         type="button"
         class="btn btn-sm"
@@ -102,7 +108,7 @@
     <div *ngIf="loading()" class="text-center text-muted py-5">Chargement des services...</div>
 
     <div *ngIf="error()" class="alert alert-warning text-center mx-auto" style="max-width: 480px">
-      Impossible de charger le catalogue pour le moment. Veuillez reessayer plus tard.
+      Impossible de charger le catalogue pour le moment. Veuillez réessayer plus tard.
     </div>
 
     <div *ngIf="!loading() && !error() && filteredServices().length === 0" class="text-center text-muted py-5">
@@ -112,17 +118,20 @@
     <div class="row g-4" *ngIf="!loading() && filteredServices().length">
       <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of filteredServices()">
         <div class="card h-100 service-card">
+          @if (serviceImage(service); as photo) {
+            <img [src]="photo" [alt]="service.nomService" class="service-photo" loading="lazy" />
+          } @else {
+            <div class="service-photo-empty"><i class="ti {{ categoryIcon(service.categorieCode) }}"></i></div>
+          }
           <div class="card-body d-flex flex-column">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="badge text-bg-secondary">{{ service.categorieLibelle }}</span>
-              <i class="ti {{ categoryIcon(service.categorieCode) }} service-icon"></i>
-            </div>
-            <h5 class="card-title">{{ service.nomService }}</h5>
+            <span class="service-category">{{ service.categorieLibelle }}</span>
+            <h3 class="service-name">{{ service.nomService }}</h3>
             <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <span class="text-muted small">{{ service.dureeMinutes }} min</span>
-              <span class="fw-bold text-primary fs-5">{{ formatTarif(service.tarif) }}</span>
+            <div class="d-flex justify-content-between align-items-end mt-3">
+              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes }} min</span>
+              <span class="service-price">{{ formatTarif(service.tarif) }}</span>
             </div>
+            <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">Réserver ce soin</a>
           </div>
         </div>
       </div>
@@ -130,59 +139,75 @@
   </section>
 
   <section class="cta text-center px-3 py-5">
-    <h2 class="mb-3">Prete a prendre soin de vous ?</h2>
-    <p class="mb-4 cta-subtitle">Reservez votre prochain rendez-vous des aujourd'hui.</p>
-    <a href="#contact" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
+    <span class="ar-eyebrow">Rendez-vous</span>
+    <h2 class="mb-3">Prête à prendre soin de vous ?</h2>
+    <p class="mb-4 cta-subtitle">Réservez votre prochain rendez-vous dès aujourd'hui.</p>
+    <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
   </section>
 
-  <footer id="contact" class="site-footer px-3 px-lg-5 py-5">
+  <footer id="contact" class="site-footer px-4 px-lg-5 py-5">
     <div class="row g-5">
-      <div class="col-12 col-md-6 col-lg-3">
-        <h5 class="footer-heading">Arnelle Institut</h5>
-        <p class="footer-text">
-          Une bulle de bien-etre dediee aux soins du visage, des mains et du corps, dans un cadre chaleureux et
-          professionnel.
-        </p>
-        <a href="#services" class="footer-cta">Reservation</a>
+      <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
+        <h5 class="footer-heading">{{ nom() }}</h5>
+        @if (info()?.description; as description) {
+          <p class="footer-text">{{ description }}</p>
+        }
+        <a routerLink="/reserver" class="footer-cta">Réservation</a>
       </div>
 
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
         <h5 class="footer-heading">Liens utiles</h5>
         <ul class="footer-links">
-          <li><a href="#services">Reservation en ligne</a></li>
-          <li><a href="#services">Nos services</a></li>
-          <li><a href="#">Mentions legales</a></li>
-          <li><a href="#">Politique de confidentialite</a></li>
+          <li><a routerLink="/reserver">Réservation en ligne</a></li>
+          <li><a routerLink="/accueil" fragment="services">Nos services</a></li>
+          <li><a routerLink="/connexion">Mon espace client</a></li>
+          @if (info()?.siteWeb; as site) {
+            <li><a [href]="site" target="_blank" rel="noopener">Site web</a></li>
+          }
         </ul>
       </div>
 
-      <div class="col-12 col-md-6 col-lg-3">
+      <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
         <h5 class="footer-heading">Contact</h5>
-        <p class="mb-1">Adresse a definir</p>
-        <p class="mb-1">contact&#64;arnelleinstitut.com</p>
-        <p class="mb-3">Telephone a definir</p>
-        <div class="d-flex gap-3 footer-social">
-          <a href="#" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
-          <a href="#" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
-        </div>
+        @if (aDesCoordonnees()) {
+          @for (ligne of adresseLignes(); track ligne) {
+            <p class="mb-1">{{ ligne }}</p>
+          }
+          @if (info()?.telephone; as tel) {
+            <p class="mb-1"><a class="footer-contact-link" [href]="'tel:' + tel">{{ tel }}</a></p>
+          }
+          @if (info()?.email; as mail) {
+            <p class="mb-1"><a class="footer-contact-link" [href]="'mailto:' + mail">{{ mail }}</a></p>
+          }
+        } @else {
+          <p class="footer-text">Nos coordonnées seront bientôt disponibles.</p>
+        }
+        @if (info()?.lienInstagram || info()?.lienFacebook) {
+          <div class="d-flex gap-3 footer-social mt-3">
+            @if (info()?.lienInstagram; as ig) {
+              <a [href]="ig" target="_blank" rel="noopener" aria-label="Instagram"><i class="ti ti-brand-instagram"></i></a>
+            }
+            @if (info()?.lienFacebook; as fb) {
+              <a [href]="fb" target="_blank" rel="noopener" aria-label="Facebook"><i class="ti ti-brand-facebook"></i></a>
+            }
+          </div>
+        }
       </div>
 
-      <div class="col-12 col-md-6 col-lg-3">
-        <h5 class="footer-heading">Horaires</h5>
-        <ul class="footer-hours">
-          <li><span>Lundi</span><span>Ferme</span></li>
-          <li><span>Mardi</span><span>9h30 - 19h00</span></li>
-          <li><span>Mercredi</span><span>9h30 - 19h00</span></li>
-          <li><span>Jeudi</span><span>9h30 - 19h00</span></li>
-          <li><span>Vendredi</span><span>9h30 - 19h00</span></li>
-          <li><span>Samedi</span><span>10h00 - 14h00</span></li>
-          <li><span>Dimanche</span><span>Ferme</span></li>
-        </ul>
-      </div>
+      @if (horaires().length) {
+        <div class="col-12 col-md-6 col-lg-3">
+          <h5 class="footer-heading">Horaires</h5>
+          <ul class="footer-hours">
+            @for (ligne of horaires(); track ligne.jour) {
+              <li><span>{{ ligne.jour }}</span><span>{{ ligne.libelle }}</span></li>
+            }
+          </ul>
+        </div>
+      }
     </div>
 
     <hr class="footer-divider" />
 
-    <p class="small text-center footer-copy mb-0">&copy; {{ currentYear }} Arnelle Institut. Tous droits reserves.</p>
+    <p class="small text-center footer-copy mb-0">&copy; {{ currentYear }} {{ nom() }}. Tous droits réservés.</p>
   </footer>
 </div>

@@ -1,0 +1,474 @@
+// Identité visuelle Arnelle Institut : crème, beige nude, brun chocolat, doré.
+// Chargé en dernier : il affine le thème (typographie, boutons, cartes, formulaires, fenêtres) pour le site et le back-office.
+
+:root {
+  --ar-creme: #fbf6ec;
+  --ar-creme-fonce: #f3eadb;
+  --ar-nude: #e6d9c3;
+  --ar-chocolat: #6b4423;
+  --ar-chocolat-fonce: #4a2e17;
+  --ar-chocolat-nuit: #3d2410;
+  --ar-dore: #c9a227;
+  --ar-dore-clair: #e8c874;
+  --ar-texte: #4b3a2c;
+  --ar-texte-doux: #8a7a6a;
+  --ar-titres: 'Cormorant Garamond', 'Times New Roman', serif;
+  --ar-corps: 'Jost', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ar-ombre: 0 10px 30px rgba(74, 46, 23, 0.1);
+  --ar-ombre-forte: 0 18px 44px rgba(74, 46, 23, 0.18);
+}
+
+body {
+  font-family: var(--ar-corps);
+  color: var(--ar-texte);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+.display-1,
+.display-2,
+.display-3,
+.display-4,
+.modal-title,
+.card-header h5 {
+  font-family: var(--ar-titres);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--ar-chocolat-fonce);
+}
+
+h5,
+h6 {
+  font-family: var(--ar-corps);
+  font-weight: 500;
+}
+
+// ── Boutons ─────────────────────────────────────────────
+.btn {
+  font-family: var(--ar-corps);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 50rem;
+  padding-left: 1.35rem;
+  padding-right: 1.35rem;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &.btn-sm {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  &.btn-secondary {
+    color: var(--ar-chocolat-nuit);
+    background-color: var(--ar-dore);
+    border-color: var(--ar-dore);
+    box-shadow: 0 6px 16px rgba(201, 162, 39, 0.28);
+
+    &:hover:not(:disabled) {
+      background-color: var(--ar-dore-clair);
+      border-color: var(--ar-dore-clair);
+      color: var(--ar-chocolat-nuit);
+    }
+  }
+
+  &.btn-primary {
+    box-shadow: 0 6px 16px rgba(74, 46, 23, 0.2);
+  }
+
+  &.btn-btn-outline-secondary,
+  &.btn-outline-secondary {
+    color: var(--ar-chocolat);
+    border-color: var(--ar-dore);
+
+    &:hover:not(:disabled) {
+      color: var(--ar-chocolat-nuit);
+      background-color: var(--ar-dore-clair);
+      border-color: var(--ar-dore-clair);
+    }
+  }
+}
+
+// ── Cartes ──────────────────────────────────────────────
+.card {
+  border: 1px solid var(--ar-nude);
+  border-radius: 1.1rem;
+  box-shadow: var(--ar-ombre);
+
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--ar-nude);
+    padding: 1.1rem 1.5rem;
+
+    h5 {
+      font-family: var(--ar-titres);
+      font-size: 1.45rem;
+    }
+  }
+}
+
+// ── Formulaires ─────────────────────────────────────────
+.form-control,
+.form-select {
+  border-radius: 0.75rem;
+  border-color: var(--ar-nude);
+  background-color: #fffdf9;
+  padding: 0.6rem 0.9rem;
+
+  &:focus {
+    border-color: var(--ar-dore);
+    box-shadow: 0 0 0 0.2rem rgba(201, 162, 39, 0.18);
+  }
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--ar-chocolat-fonce);
+  font-size: 0.85rem;
+}
+
+.form-check-input:checked {
+  background-color: var(--ar-chocolat);
+  border-color: var(--ar-chocolat);
+}
+
+// ── Fenêtres modales ────────────────────────────────────
+.modal-content {
+  border: 0;
+  border-radius: 1.25rem;
+  box-shadow: var(--ar-ombre-forte);
+  background: var(--ar-creme);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--ar-nude);
+}
+
+.modal-title {
+  font-size: 1.6rem;
+}
+
+// ── Tableaux et badges ──────────────────────────────────
+.table {
+  --bs-table-hover-bg: rgba(232, 200, 116, 0.12);
+
+  thead th {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ar-texte-doux);
+    border-bottom-color: var(--ar-nude);
+  }
+
+  td {
+    border-color: #f0e7d6;
+  }
+}
+
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 50rem;
+  padding: 0.4em 0.85em;
+}
+
+.alert {
+  border-radius: 0.9rem;
+}
+
+// ── Utilitaires de marque ───────────────────────────────
+// Petit titre doré au-dessus d'un titre de section.
+.ar-eyebrow {
+  display: block;
+  font-family: var(--ar-corps);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ar-dore);
+  margin-bottom: 0.6rem;
+}
+
+// Titre de section centré avec un filet doré.
+.ar-section-title {
+  font-size: clamp(2rem, 4vw, 2.9rem);
+  text-align: center;
+  margin-bottom: 0.6rem;
+
+  &::after {
+    content: '';
+    display: block;
+    width: 64px;
+    height: 2px;
+    margin: 1rem auto 0;
+    background: linear-gradient(90deg, transparent, var(--ar-dore), transparent);
+  }
+}
+
+.ar-section-lead {
+  text-align: center;
+  color: var(--ar-texte-doux);
+  max-width: 560px;
+  margin: 0 auto 2.5rem;
+}
+
+// ── Back-office ─────────────────────────────────────────
+.pc-container {
+  background: var(--ar-creme-fonce);
+}
+
+.badge.text-bg-success {
+  background-color: #5b7d4f !important;
+  color: #fff !important;
+}
+
+.b-brand {
+  font-family: var(--ar-titres);
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+// Chiffres alignés (la police des titres a des chiffres "anciens" où le 1 ressemble à un I)
+h1,
+h2,
+h3,
+h4,
+.kpi-value,
+.rdv-time,
+.cat-totals strong,
+.service-price,
+.ad-brand-name {
+  font-variant-numeric: lining-nums;
+  font-feature-settings: 'lnum' 1;
+}
+
+// Pastille d'avertissement lisible (« Sans compte »)
+.badge.text-bg-warning {
+  background-color: var(--ar-dore-clair) !important;
+  color: var(--ar-chocolat-nuit) !important;
+}
+
+// ═══ Facilité d'usage et adaptation à tous les écrans ═══
+html {
+  font-size: 16px;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+// Zones à toucher assez grandes (au moins 44 px) pour être faciles à viser au doigt
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  font-size: 1rem;
+}
+
+.btn.btn-sm {
+  min-height: 40px;
+  font-size: 0.95rem;
+}
+
+.btn .ti {
+  font-size: 1.15em;
+}
+
+.form-control,
+.form-select {
+  min-height: 48px;
+  font-size: 1rem; // 16 px : évite le zoom automatique sur téléphone
+}
+
+textarea.form-control {
+  min-height: 96px;
+}
+
+.form-label {
+  font-size: 0.95rem;
+}
+
+// Focus bien visible au clavier
+:focus-visible {
+  outline: 3px solid var(--ar-dore);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// En-tête d'une liste : titre à gauche, bouton principal à droite (passe à la ligne sur petit écran)
+.entete-liste {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+// Boutons d'action d'une ligne
+.table-cartes .actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+// Écran vide : explique quoi faire et propose le bouton
+.etat-vide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1rem;
+  text-align: center;
+
+  > i {
+    font-size: 3rem;
+    color: var(--ar-dore);
+  }
+
+  h6 {
+    margin: 0.25rem 0 0;
+    font-family: var(--ar-titres);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ar-chocolat-fonce);
+  }
+
+  p {
+    max-width: 420px;
+    margin: 0 0 0.75rem;
+    color: var(--ar-texte-doux);
+  }
+}
+
+// Sur téléphone : chaque ligne d'un tableau devient une carte lisible, avec ses boutons en bas
+@media (max-width: 767.98px) {
+  .card .card-body {
+    padding: 1rem;
+  }
+
+  .table-responsive:has(> .table-cartes) {
+    overflow: visible;
+  }
+
+  .table-cartes {
+    display: block;
+    width: 100%;
+
+    tbody {
+      display: block;
+    }
+
+    thead {
+      display: none;
+    }
+
+    tbody tr {
+      display: block;
+      margin-bottom: 0.9rem;
+      padding: 0.6rem 1rem 0.9rem;
+      border: 1px solid var(--ar-nude);
+      border-radius: 1rem;
+      background: #fffdf9;
+      box-shadow: 0 4px 14px rgba(74, 46, 23, 0.06);
+    }
+
+    td {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      border: 0;
+      text-align: right;
+      background: transparent;
+    }
+
+    td .badge {
+      max-width: 100%;
+      white-space: normal;
+    }
+
+    td::before {
+      content: attr(data-label);
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: left;
+      color: var(--ar-texte-doux);
+    }
+
+    td.cellule-actions {
+      display: block;
+      margin-top: 0.4rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid #f0e7d6;
+    }
+
+    td.cellule-actions::before {
+      display: none;
+    }
+
+    td.cellule-actions .actions {
+      justify-content: stretch;
+    }
+
+    td.cellule-actions .actions .btn {
+      flex: 1 1 auto;
+    }
+  }
+}
+
+// Sur téléphone : les fenêtres de saisie prennent tout l'écran (sauf les petites confirmations)
+@media (max-width: 575.98px) {
+  .modal-dialog:not(.modal-sm) {
+    max-width: none;
+    min-height: 100%;
+    margin: 0;
+  }
+
+  .modal-dialog:not(.modal-sm) .modal-content {
+    min-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-footer {
+    position: sticky;
+    bottom: 0;
+    background: var(--ar-creme);
+    flex-wrap: nowrap;
+  }
+
+  .modal-footer .btn {
+    flex: 1;
+  }
+}

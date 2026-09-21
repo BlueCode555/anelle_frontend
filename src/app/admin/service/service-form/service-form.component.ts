@@ -6,6 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/catalogue.model';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
 @Component({
   selector: 'app-service-form',
@@ -16,6 +17,7 @@ import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/cat
 export class ServiceFormComponent implements OnInit {
   private catalogue = inject(CatalogueService);
   activeModal = inject(NgbActiveModal);
+  private confirmation = inject(ConfirmationService);
 
   // Set by the opener (list component) via modalRef.componentInstance.serviceId before the modal renders.
   serviceId: number | null = null;
@@ -28,7 +30,6 @@ export class ServiceFormComponent implements OnInit {
   uploadError = signal('');
 
   serviceModel = signal<ServiceForm>({
-    code: '',
     nomService: '',
     categorieCode: '',
     description: '',
@@ -41,7 +42,6 @@ export class ServiceFormComponent implements OnInit {
   imagePreview = computed(() => this.catalogue.imageSrc(this.serviceModel().imageUrl));
 
   serviceForm = form(this.serviceModel, (schemaPath) => {
-    required(schemaPath.code, { message: 'Le code est obligatoire' });
     required(schemaPath.nomService, { message: 'Le nom du service est obligatoire' });
     required(schemaPath.categorieCode, { message: 'La categorie est obligatoire' });
     required(schemaPath.dureeMinutes, { message: 'La duree est obligatoire' });
@@ -56,7 +56,6 @@ export class ServiceFormComponent implements OnInit {
     }
     this.catalogue.getService(this.serviceId).subscribe((service) => {
       this.serviceModel.set({
-        code: service.code,
         nomService: service.nomService,
         categorieCode: service.categorieCode,
         description: service.description ?? '',
@@ -98,16 +97,31 @@ export class ServiceFormComponent implements OnInit {
     });
   }
 
+  onImageUrlInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim();
+    this.uploadError.set('');
+    this.serviceModel.update((m) => ({ ...m, imageUrl: value }));
+  }
+
   removeImage(): void {
     this.serviceModel.update((m) => ({ ...m, imageUrl: '' }));
   }
 
-  onSubmit(event: Event): void {
+  async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     this.submitted.set(true);
     this.serverError.set('');
 
     if (this.serviceForm().invalid()) {
+      return;
+    }
+
+    const ok = await this.confirmation.demander({
+      titre: this.serviceId ? 'Enregistrer les modifications ?' : 'Enregistrer ce service ?',
+      message: this.serviceModel().nomService,
+      texteConfirmer: 'Enregistrer'
+    });
+    if (!ok) {
       return;
     }
 
@@ -119,7 +133,7 @@ export class ServiceFormComponent implements OnInit {
       next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.saving.set(false);
-        this.serverError.set(err?.error?.message ?? 'Une erreur est survenue.');
+        this.serverError.set(err?.status === 401 || err?.status === 403 ? 'Action refusee : la connexion du personnel est requise.' : (err?.error?.message ?? 'Une erreur est survenue.'));
       }
     });
   }

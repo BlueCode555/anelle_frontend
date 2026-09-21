@@ -1,0 +1,50 @@
+<div class="reserver-page">
+  <app-site-header />
+
+  <main class="container reserver-main">
+    @if (confirmation(); as rdv) {
+      <section class="panel text-center">
+        <i class="ti ti-circle-check confirm-icon"></i>
+        <h1 class="h3 mb-2">Votre demande est envoyée</h1>
+        <p class="text-muted mb-4">
+          Nous confirmerons votre rendez-vous dès que possible. Une fois accepté, il vous restera à régler le montant pour le garantir.
+        </p>
+        <dl class="recap mx-auto">
+          <dt>Soin</dt>
+          <dd>{{ rdv.serviceNom }}</dd>
+          <dt>Date</dt>
+          <dd class="text-capitalize">{{ jour(rdv.debut) }}</dd>
+          <dt>Heure</dt>
+          <dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd>
+          <dt>Prix</dt>
+          <dd>{{ formatTarif(rdv.prix) }}</dd>
+        </dl>
+        <a routerLink="/mon-espace" class="btn btn-primary mt-4">Suivre mes rendez-vous</a>
+      </section>
+    } @else {
+      <section class="panel">
+        <h1 class="h3 mb-1">Prendre rendez-vous</h1>
+        <p class="text-muted mb-4">Choisissez votre soin, le jour et l'heure qui vous conviennent.</p>
+
+        <app-slot-picker [initialService]="serviceInitial" (choix)="onChoix($event)" />
+
+        @if (choix()) {
+          <div class="mt-4">
+            <label class="form-label" for="note">Un message pour l'esthéticienne (facultatif)</label>
+            <textarea id="note" class="form-control" rows="3" maxlength="500" (input)="onNote($event)"></textarea>
+          </div>
+        }
+
+        @if (erreur()) {
+          <div class="alert alert-danger mt-4 mb-0">{{ erreur() }}</div>
+        }
+
+        <div class="d-flex justify-content-end mt-4">
+          <button type="button" class="btn btn-secondary btn-lg px-4" [disabled]="!choix() || envoi()" (click)="envoyer()">
+            {{ envoi() ? 'Envoi en cours...' : 'Envoyer ma demande' }}
+          </button>
+        </div>
+      </section>
+    }
+  </main>
+</div>

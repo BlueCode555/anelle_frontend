@@ -1,0 +1,39 @@
+<div class="modal-header">
+  <h5 class="modal-title">Nouveau rendez-vous</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div *ngIf="erreur()" class="alert alert-danger">{{ erreur() }}</div>
+
+  <app-slot-picker (choix)="choix.set($event)" />
+  <div *ngIf="soumis() && !choix()" class="text-danger small mt-2">Choisissez un soin, un jour et un créneau.</div>
+
+  <hr />
+
+  <h6 class="mb-3">Client</h6>
+  <div class="row g-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="nr-nom">Nom</label>
+      <input id="nr-nom" class="form-control" [class.is-invalid]="soumis() && !contactNom().trim()" (input)="champ(contactNom, $event)" />
+      <div class="invalid-feedback">Le nom du client est obligatoire.</div>
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="nr-tel">Téléphone</label>
+      <input id="nr-tel" class="form-control" placeholder="+1 514 555-0199" (input)="champ(contactTelephone, $event)" />
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="nr-email">Adresse e-mail</label>
+      <input id="nr-email" type="email" class="form-control" (input)="champ(contactEmail, $event)" />
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="nr-note">Note</label>
+      <textarea id="nr-note" class="form-control" rows="2" maxlength="500" (input)="champ(note, $event)"></textarea>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="button" class="btn btn-primary" [disabled]="envoi()" (click)="enregistrer()">
+    {{ envoi() ? 'Enregistrement...' : 'Enregistrer le rendez-vous' }}
+  </button>
+</div>

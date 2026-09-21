@@ -1,0 +1,53 @@
+<header class="site-header">
+  <nav class="header-bar" aria-label="Navigation principale">
+    <a class="brand" routerLink="/accueil" fragment="top" (click)="closeMenu()">{{ nom() }}</a>
+
+    <ul class="nav-links">
+      <li><a routerLink="/accueil" fragment="top">Accueil</a></li>
+      <li><a routerLink="/accueil" fragment="services">Services</a></li>
+      <li><a routerLink="/accueil" fragment="apropos">À propos</a></li>
+      <li><a routerLink="/accueil" fragment="contact">Contact</a></li>
+    </ul>
+
+    <div class="header-actions">
+      @if (auth.user(); as user) {
+        @if (user.type === 'CLIENT') {
+          <a routerLink="/mon-espace" class="header-user">
+            @if (user.photoUrl) {
+              <img [src]="user.photoUrl" alt="" class="header-avatar" referrerpolicy="no-referrer" />
+            } @else {
+              <span class="header-avatar header-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
+            }
+            <span class="header-user-label">Mon espace</span>
+          </a>
+        } @else {
+          <a routerLink="/default" class="btn-header btn-header-outline">Espace de gestion</a>
+        }
+        <button type="button" class="header-logout" (click)="logout()">Déconnexion</button>
+      } @else {
+        <a routerLink="/connexion" class="btn-header btn-header-solid">Se connecter</a>
+      }
+
+      <button type="button" class="menu-toggle" [attr.aria-expanded]="menuOpen()" aria-label="Ouvrir le menu" (click)="toggleMenu()">
+        <i class="ti" [class.ti-menu-2]="!menuOpen()" [class.ti-x]="menuOpen()"></i>
+      </button>
+    </div>
+  </nav>
+
+  @if (menuOpen()) {
+    <ul class="mobile-menu">
+      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()">Accueil</a></li>
+      <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()">Services</a></li>
+      <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()">À propos</a></li>
+      <li><a routerLink="/accueil" fragment="contact" (click)="closeMenu()">Contact</a></li>
+      @if (auth.user(); as user) {
+        <li>
+          <a [routerLink]="user.type === 'CLIENT' ? '/mon-espace' : '/default'" (click)="closeMenu()">
+            {{ user.type === 'CLIENT' ? 'Mon espace' : 'Espace de gestion' }}
+          </a>
+        </li>
+        <li><button type="button" class="mobile-logout" (click)="logout()">Déconnexion</button></li>
+      }
+    </ul>
+  }
+</header>

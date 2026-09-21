@@ -1,0 +1,78 @@
+.espace-page {
+  min-height: 100vh;
+  background-color: #fbf6ec;
+}
+
+.espace-main {
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+}
+
+.profile-card,
+.history-card {
+  background: #fff;
+  border: 1px solid #e6d9c3;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(74, 46, 23, 0.06);
+}
+
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e8c874;
+}
+
+.profile-avatar-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #c9a227;
+  color: #3d2410;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.history-card h2 {
+  color: #4a2e17;
+}
+
+.rdv-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rdv-item {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid #f0e7d6;
+
+  &:first-child {
+    border-top: 0;
+  }
+}
+
+.rdv-when,
+.rdv-what {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.rdv-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+  .rdv-item {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,67 @@
+<div class="card">
+  <div class="card-header entete-liste">
+    <h5 class="mb-0">Profils et droits</h5>
+    <button type="button" class="btn btn-primary" (click)="nouveau()">
+      <i class="ti ti-plus"></i>Nouveau profil
+    </button>
+  </div>
+  <div class="card-body">
+    <p class="text-muted">
+      Un profil décide de ce que peut faire une personne de l'équipe. Vous pouvez donner plusieurs profils à un collaborateur.
+    </p>
+
+    @if (erreur()) {
+      <div class="alert alert-danger">{{ erreur() }}</div>
+    }
+    @if (chargement()) {
+      <div class="text-center text-muted py-4">Chargement...</div>
+    } @else if (profils().length === 0 && !erreur()) {
+      <div class="etat-vide">
+        <i class="ti ti-shield-lock"></i>
+        <h6>Aucun profil pour le moment</h6>
+        <p>Créez un profil, par exemple « Réceptionniste », puis choisissez ce qu'il a le droit de faire.</p>
+        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>Créer mon premier profil</button>
+      </div>
+    } @else if (profils().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th>Profil</th>
+              <th>Accès</th>
+              <th>Collaborateurs</th>
+              <th>Statut</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (profil of profils(); track profil.id) {
+              <tr>
+                <td data-label="Profil">
+                  <strong>{{ profil.libelle }}</strong>
+                  @if (profil.description) {
+                    <div class="text-muted small">{{ profil.description }}</div>
+                  }
+                </td>
+                <td data-label="Accès">{{ resume(profil) }}</td>
+                <td data-label="Collaborateurs">{{ profil.nombreCollaborateurs }}</td>
+                <td data-label="Statut">
+                  <span class="badge" [ngClass]="profil.actif ? 'text-bg-success' : 'text-bg-secondary'">
+                    {{ profil.actif ? 'Actif' : 'Désactivé' }}
+                  </span>
+                </td>
+                <td class="cellule-actions text-end">
+                  <div class="actions">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="voir(profil)"><i class="ti ti-eye"></i>Voir les accès</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="modifier(profil)"><i class="ti ti-edit"></i>Modifier</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="supprimer(profil)"><i class="ti ti-trash"></i>Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

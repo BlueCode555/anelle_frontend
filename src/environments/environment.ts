@@ -7,7 +7,9 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: false,
-  apiUrl: 'http://localhost:8087/app'
+  apiUrl: 'http://localhost:8087/app',
+  // Connexion du personnel (Keycloak). Le port 8180 evite le conflit avec un autre serveur sur 8080.
+  keycloak: { url: 'http://localhost:8180', realm: 'anelle', clientId: 'anelle-front' }
 };
 
 /*

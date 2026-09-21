@@ -1,0 +1,35 @@
+.hours-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0e7d6;
+
+  &:last-of-type {
+    border-bottom: 0;
+  }
+}
+
+.hours-day {
+  width: 110px;
+  font-weight: 600;
+}
+
+.hours-open {
+  width: 110px;
+  margin-bottom: 0;
+}
+
+.hours-time {
+  width: 130px;
+}
+
+.hours-sep {
+  color: #8a7660;
+}
+
+@media (max-width: 767.98px) {
+  .hours-row {
+    flex-wrap: wrap;
+  }
+}

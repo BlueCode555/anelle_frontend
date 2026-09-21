@@ -1,0 +1,44 @@
+.identifiants {
+  border-radius: 1rem;
+
+  .mdp {
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    font-size: 1.15rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+// Pastille de profil avec sa croix de retrait
+.pastille-profil {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin: 0 0.35rem 0.25rem 0;
+  padding: 0.2rem 0.3rem 0.2rem 0.75rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 50rem;
+  font-size: 0.9rem;
+  background: #fffdf9;
+
+  &:not(:has(.retirer)) {
+    padding-right: 0.75rem;
+  }
+}
+
+.retirer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #b3372b;
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: #fbe9e6;
+  }
+}

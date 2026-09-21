@@ -1,0 +1,88 @@
+<div class="espace-page">
+  <app-site-header />
+
+  <main class="container espace-main">
+    @if (auth.user(); as user) {
+      <section class="profile-card d-flex align-items-center gap-3 mb-4">
+        @if (user.photoUrl) {
+          <img [src]="user.photoUrl" alt="" class="profile-avatar" referrerpolicy="no-referrer" />
+        } @else {
+          <span class="profile-avatar profile-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
+        }
+        <div class="flex-grow-1">
+          <h1 class="h4 mb-1">Bonjour {{ auth.displayName() }}</h1>
+          <p class="text-muted mb-0">{{ user.email }}</p>
+        </div>
+        <a routerLink="/reserver" class="btn btn-secondary">Prendre rendez-vous</a>
+      </section>
+
+      @if (erreur()) {
+        <div class="alert alert-danger">{{ erreur() }}</div>
+      }
+
+      <section class="history-card mb-4">
+        <h2 class="h5"><i class="ti ti-calendar-event me-2"></i>Mes rendez-vous</h2>
+
+        @if (chargement()) {
+          <p class="text-muted mb-0">Chargement...</p>
+        } @else if (rdvs().length === 0) {
+          <p class="text-muted mb-3">Aucun rendez-vous pour le moment. Vos réservations apparaîtront ici.</p>
+          <a routerLink="/accueil" fragment="services" class="btn btn-outline-secondary">Découvrir nos services</a>
+        } @else {
+          <ul class="rdv-list">
+            @for (rdv of rdvs(); track rdv.id) {
+              <li class="rdv-item">
+                <div class="rdv-when">
+                  <strong class="text-capitalize">{{ jour(rdv.debut) }}</strong>
+                  <span>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</span>
+                </div>
+                <div class="rdv-what">
+                  <strong>{{ rdv.serviceNom }}</strong>
+                  <span class="text-muted">{{ formatTarif(rdv.prix) }}</span>
+                  @if (rdv.statut === 'REFUSE' && rdv.motifRefus) {
+                    <span class="text-muted small">Motif : {{ rdv.motifRefus }}</span>
+                  }
+                  @if (rdv.statut === 'ACCEPTE') {
+                    <span class="text-muted small">Acceptée : le paiement du montant complet confirme votre rendez-vous.</span>
+                  }
+                </div>
+                <div class="rdv-status">
+                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ libelles[rdv.statut] }}</span>
+                  @if (peutAnnuler(rdv)) {
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">Annuler</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="history-card">
+        <h2 class="h5"><i class="ti ti-receipt me-2"></i>Mes paiements</h2>
+        @if (paiements().length === 0) {
+          <p class="text-muted mb-0">Aucun paiement pour le moment. Vos reçus apparaîtront ici.</p>
+        } @else {
+          <ul class="rdv-list">
+            @for (rdv of paiements(); track rdv.id) {
+              <li class="rdv-item">
+                <div class="rdv-when">
+                  <strong>{{ rdv.serviceNom }}</strong>
+                  <span class="text-capitalize">{{ jour(rdv.debut) }}</span>
+                </div>
+                <div class="rdv-what">
+                  <span class="text-muted small">Payé le {{ jour(rdv.payeLe!) }}</span>
+                </div>
+                <div class="rdv-status">
+                  <strong>{{ formatTarif(rdv.prix) }}</strong>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    } @else {
+      <p class="text-center text-muted py-5">Chargement de votre espace...</p>
+    }
+  </main>
+</div>

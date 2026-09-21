@@ -1,68 +1,206 @@
 .dash-hero {
-  padding: 1.5rem 1.75rem;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
-  color: #fbf6ec;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: 1.25rem;
+  color: var(--ar-creme);
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(232, 200, 116, 0.28) 0%, rgba(232, 200, 116, 0) 55%),
+    linear-gradient(135deg, #5a381d 0%, #3d2410 100%);
+  box-shadow: var(--ar-ombre);
 
-  h3 {
-    color: #fbf6ec;
-  }
-
-  .dash-date {
-    color: #ecdcc0;
-    text-transform: capitalize;
-  }
-
-  .btn-outline-secondary {
-    color: #e8c874;
-    border-color: #e8c874;
-
-    &:hover {
-      background: #e8c874;
-      color: #3d2410;
-    }
+  .ar-eyebrow {
+    color: var(--ar-dore-clair);
   }
 }
 
-.stat-card {
-  border-left: 4px solid #c9a227;
+.dash-title {
+  margin: 0;
+  font-size: clamp(1.9rem, 3.5vw, 2.6rem);
+  color: #fff8ea;
+}
 
-  .stat-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    background: #f5efe1;
-    color: #6b4423;
-    font-size: 1.5rem;
+.dash-date {
+  margin: 0.25rem 0 0;
+  color: rgba(236, 220, 192, 0.8);
+}
+
+.dash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+
+  .btn-outline-secondary {
+    color: #fff8ea;
+    border-color: rgba(232, 200, 116, 0.6);
+  }
+}
+
+// ── Indicateurs ─────────────────────────────────────────
+.kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 1.1rem;
+  background: #fffdf9;
+  box-shadow: var(--ar-ombre);
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--ar-ombre-forte);
+  }
+}
+
+.kpi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 0.9rem;
+  border-radius: 0.9rem;
+  font-size: 1.4rem;
+  color: var(--ar-dore);
+  background: rgba(232, 200, 116, 0.22);
+}
+
+.kpi-value {
+  font-family: var(--ar-titres);
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ar-chocolat-fonce);
+}
+
+.kpi-label {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--ar-texte-doux);
+}
+
+// Demandes à traiter : mise en avant tant qu'il en reste
+.kpi-alert:not(.is-calm) {
+  border-color: var(--ar-dore);
+  background: linear-gradient(180deg, #fff8e6, #fffdf9);
+
+  .kpi-icon {
+    color: var(--ar-chocolat-nuit);
+    background: var(--ar-dore-clair);
+  }
+}
+
+// ── Rendez-vous à venir ─────────────────────────────────
+.rdv-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rdv-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-top: 1px solid #f0e7d6;
+
+  &:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+}
+
+.rdv-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 84px;
+  padding: 0.4rem 0.3rem;
+  border-radius: 0.8rem;
+  text-align: center;
+  background: var(--ar-creme-fonce);
+}
+
+.rdv-day {
+  font-size: 0.75rem;
+  color: var(--ar-texte-doux);
+}
+
+.rdv-time {
+  font-family: var(--ar-titres);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ar-chocolat-fonce);
+}
+
+.rdv-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+// ── Catalogue ───────────────────────────────────────────
+.cat-totals {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+
+  div {
+    display: flex;
+    flex-direction: column;
   }
 
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #4a2e17;
-    line-height: 1.2;
+  strong {
+    font-family: var(--ar-titres);
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--ar-chocolat-fonce);
   }
 
-  .stat-sub {
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: #8a7660;
-  }
-
-  .stat-label {
-    color: #8a7660;
-    font-size: 0.85rem;
+  span {
+    font-size: 0.82rem;
+    color: var(--ar-texte-doux);
   }
 }
 
 .dash-progress {
   height: 8px;
-  background: #f0e7d6;
+  border-radius: 50rem;
+  background: var(--ar-creme-fonce);
 
   .progress-bar {
-    background: linear-gradient(90deg, #c9a227, #e8c874);
+    border-radius: 50rem;
+    background: linear-gradient(90deg, var(--ar-dore), var(--ar-dore-clair));
+  }
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  color: var(--ar-texte-doux);
+  text-align: center;
+
+  i {
+    font-size: 2.2rem;
+    color: var(--ar-nude);
+  }
+
+  p {
+    margin: 0;
   }
 }

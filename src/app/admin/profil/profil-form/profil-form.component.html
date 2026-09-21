@@ -1,0 +1,69 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ lectureSeule ? 'Accès du profil « ' + profil?.libelle + ' »' : profil ? 'Modifier le profil' : 'Nouveau profil' }}</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  @if (erreur()) {
+    <div class="alert alert-danger">{{ erreur() }}</div>
+  }
+
+  <div class="row g-3 mb-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="pf-libelle">Nom du profil</label>
+      <input id="pf-libelle" class="form-control" [disabled]="lectureSeule" maxlength="100" [class.is-invalid]="soumis() && !libelle().trim()"
+        [value]="libelle()" (input)="texte(libelle, $event)" />
+      <div class="invalid-feedback">Le nom est obligatoire.</div>
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="pf-desc">Description</label>
+      <input id="pf-desc" class="form-control" [disabled]="lectureSeule" maxlength="500" [value]="description()" (input)="texte(description, $event)" />
+    </div>
+    <div class="col-12">
+      <div class="form-check form-switch">
+        <input id="pf-actif" class="form-check-input" [disabled]="lectureSeule" type="checkbox" [checked]="actif()" (change)="actif.set($any($event.target).checked)" />
+        <label class="form-check-label" for="pf-actif">Profil actif (un profil désactivé retire tous les droits à ses collaborateurs)</label>
+      </div>
+    </div>
+  </div>
+
+  <h6>Droits par écran</h6>
+  <div class="table-responsive">
+    <table class="table align-middle text-center">
+      <thead>
+        <tr>
+          <th class="text-start">Écran</th>
+          @for (col of colonnes; track col.action) {
+            <th>{{ col.libelle }}</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (ecran of ecrans(); track ecran.code) {
+          <tr>
+            <td class="text-start">{{ ecran.libelle }}</td>
+            @for (col of colonnes; track col.action) {
+              <td>
+                <input type="checkbox" class="form-check-input" [disabled]="lectureSeule" [attr.aria-label]="col.libelle + ' ' + ecran.libelle"
+                  [checked]="coche(ecran.code, col.action)" (change)="basculer(ecran.code, col.action, $event)" />
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="text-muted small mb-0">
+    La gestion des collaborateurs et des profils reste réservée à l'esthéticienne. Le téléversement d'une image demande le droit
+    de créer ou de modifier sur au moins un écran du catalogue ou des informations.
+  </p>
+</div>
+<div class="modal-footer">
+  @if (lectureSeule) {
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Fermer</button>
+  } @else {
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+    <button type="button" class="btn btn-primary" [disabled]="envoi()" (click)="enregistrer()">
+      {{ envoi() ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  }
+</div>

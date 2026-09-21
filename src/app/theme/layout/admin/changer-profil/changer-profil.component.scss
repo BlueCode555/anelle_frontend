@@ -1,0 +1,101 @@
+.profils {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profil-carte {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--ar-nude);
+  border-radius: 1rem;
+  background: #fffdf9;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+
+  &:hover {
+    border-color: var(--ar-dore);
+    box-shadow: var(--ar-ombre);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  &.is-actuel {
+    border-color: var(--ar-dore);
+    background: #fff8e6;
+  }
+}
+
+.profil-radio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-top: 2px;
+  border: 2px solid var(--ar-nude);
+  border-radius: 50%;
+  font-size: 1rem;
+  color: var(--ar-chocolat-nuit);
+
+  .is-actuel & {
+    border-color: var(--ar-dore);
+    background: var(--ar-dore-clair);
+  }
+}
+
+.profil-texte {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.profil-nom {
+  font-family: var(--ar-titres);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ar-chocolat-fonce);
+}
+
+.profil-desc {
+  font-size: 0.9rem;
+  color: var(--ar-texte-doux);
+}
+
+.profil-ecrans {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+.pastille {
+  padding: 0.15rem 0.65rem;
+  border-radius: 50rem;
+  font-size: 0.78rem;
+  color: var(--ar-chocolat);
+  background: var(--ar-creme-fonce);
+}
+
+.profil-badge {
+  flex-shrink: 0;
+  padding: 0.2rem 0.7rem;
+  border-radius: 50rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ar-chocolat-nuit);
+  background: var(--ar-dore-clair);
+}

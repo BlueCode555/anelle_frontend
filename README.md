@@ -18,8 +18,30 @@ npm start
 Le site est servi sur `http://localhost:4200`.
 
 - `/accueil` — vitrine publique (services + tarifs, dynamique via l'API backend)
-- `/login`, `/register` — authentification (a brancher sur Keycloak)
-- `/default` — dashboard back-office (pas encore protege par une connexion)
+- `/connexion` — connexion des clientes (methode a choisir) ; `/personnel` — connexion du personnel via Keycloak
+- `/mon-espace` — espace du client connecte (profil, historique des rendez-vous et paiements)
+- `/default`, `/categories`, `/services` — back-office (pas encore protege par une connexion cote interface ;
+  le serveur, lui, refuse deja toute ecriture sans role du personnel)
+- `/login`, `/register` — restes du template Berry, inutilises
+
+## Informations de l'institut
+
+Le nom, la phrase d'accroche, la description, l'adresse, le telephone, l'e-mail, les liens (site, Instagram,
+Facebook), la banniere promo et les horaires ne sont plus ecrits dans le code : ils viennent de la base
+(`GET /informations`) et sont modifiables dans le back-office, menu **Institut > Informations** (`/informations`,
+reserve au role `ESTHETICIENNE`). La banniere promo et la rubrique « Horaires » n'apparaissent sur l'accueil que
+si elles sont renseignees.
+
+## Images du site
+
+Les photos de l'accueil (portrait et carrousel par defaut) sont chargees par lien en ligne depuis Pexels
+(licence libre, usage commercial autorise) : rien n'est stocke dans le projet ni en base. Dans le back-office,
+une categorie ou un service peut recevoir une image soit par envoi de fichier, soit en collant un lien
+`https://` vers une image en ligne ; ces images alimentent le carrousel de l'accueil.
+
+## Connexion des clientes
+
+La methode de connexion des clientes reste a choisir : la page `/connexion` l'indique en attendant.
 
 ## Structure
 

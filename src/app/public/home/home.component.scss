@@ -1,118 +1,113 @@
 .anelle-home {
   min-height: 100vh;
-  background-color: #fbf6ec;
+  background-color: var(--ar-creme);
   scroll-behavior: smooth;
-}
-
-// ── Header ──────────────────────────────────────────────
-.site-header {
-  background: #4a2e17;
-
-  .navbar-brand {
-    color: #e8c874;
-    letter-spacing: 0.05em;
-  }
-
-  .nav-links a {
-    color: #ecdcc0;
-    text-decoration: none;
-    font-size: 0.95rem;
-
-    &:hover {
-      color: #e8c874;
-    }
-  }
-
-  .btn-outline-light {
-    border-color: #e8c874;
-    color: #e8c874;
-
-    &:hover {
-      background: #e8c874;
-      border-color: #e8c874;
-      color: #4a2e17;
-    }
-  }
 }
 
 // ── Hero ────────────────────────────────────────────────
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 6rem 1rem 7rem;
-  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
-  color: #fbf6ec;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(232, 200, 116, 0.25) 0%, rgba(232, 200, 116, 0) 70%);
-    pointer-events: none;
-  }
-
-  &::before {
-    width: 420px;
-    height: 420px;
-    top: -180px;
-    left: -120px;
-  }
-
-  &::after {
-    width: 520px;
-    height: 520px;
-    bottom: -260px;
-    right: -160px;
-  }
+  padding: 5.5rem 1rem 6.5rem;
+  background:
+    radial-gradient(ellipse at 85% 10%, rgba(232, 200, 116, 0.22) 0%, rgba(232, 200, 116, 0) 55%),
+    linear-gradient(135deg, #5a381d 0%, #3d2410 100%);
+  color: var(--ar-creme);
 
   .row {
     position: relative;
     z-index: 1;
+    max-width: 1140px;
+    margin: 0 auto;
   }
 
   .row > div {
-    animation: fade-in-up 0.7s ease both;
+    animation: fade-in-up 0.8s ease both;
   }
 
   .row > div:nth-child(2) {
-    animation-delay: 0.12s;
+    animation-delay: 0.15s;
   }
 
   .hero-tag {
     display: inline-block;
-    padding: 0.35rem 1rem;
-    border: 1px solid rgba(232, 200, 116, 0.5);
-    border-radius: 50rem;
-    font-size: 0.85rem;
-    color: #e8c874;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--ar-dore-clair);
+  }
+
+  .hero-title {
+    font-family: var(--ar-titres);
+    font-weight: 600;
+    font-size: clamp(3rem, 7vw, 5.2rem);
+    line-height: 1.02;
+    color: #fff8ea;
   }
 
   .hero-subtitle {
-    max-width: 560px;
-    color: #ecdcc0;
+    max-width: 520px;
+    font-size: 1.15rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: #e9dbc2;
   }
 
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 1.25rem;
+  }
+
+  .hero-points {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem 1.6rem;
+    margin: 2.2rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9rem;
+    color: #e9dbc2;
+
+    i {
+      color: var(--ar-dore-clair);
+      margin-right: 0.35rem;
+    }
+  }
+
+  @media (min-width: 992px) {
+    .hero-actions,
+    .hero-points {
+      justify-content: flex-start;
+    }
+  }
+
+  // Cadre en arche autour de la photo
   .hero-portrait-frame {
-    max-width: 380px;
-    border-radius: 1.5rem;
-    padding: 0.5rem;
-    background: linear-gradient(135deg, rgba(232, 200, 116, 0.5), rgba(232, 200, 116, 0));
+    position: relative;
+    max-width: 400px;
+    padding: 0.6rem;
+    border-radius: 220px 220px 1.5rem 1.5rem;
+    border: 1px solid rgba(232, 200, 116, 0.55);
   }
 
   .hero-portrait {
     width: 100%;
-    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
     display: block;
-    border-radius: 1.1rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+    border-radius: 210px 210px 1.1rem 1.1rem;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.3);
   }
 }
 
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -120,30 +115,74 @@
   }
 }
 
-// ── Promo banner ────────────────────────────────────────
-.promo-banner {
-  background: linear-gradient(90deg, #e8c874 0%, #c9a227 100%);
-  color: #3d2410;
-  font-weight: 600;
-}
-
-// ── Features / A propos ────────────────────────────────
-.features {
-  .feature-icon {
-    font-size: 2.5rem;
-    color: #c9a227;
+@media (prefers-reduced-motion: reduce) {
+  .hero .row > div {
+    animation: none;
   }
 }
 
-// ── Gallery carousel ────────────────────────────────────
+// ── Bandeau promotionnel ────────────────────────────────
+.promo-banner {
+  background: linear-gradient(90deg, #e8c874 0%, #c9a227 100%);
+  color: var(--ar-chocolat-nuit);
+  font-weight: 500;
+}
+
+// ── A propos ────────────────────────────────────────────
+.features {
+  max-width: 1140px;
+  margin: 0 auto;
+
+  .feature {
+    height: 100%;
+    padding: 2rem 1.5rem;
+    background: #fffdf9;
+    border: 1px solid var(--ar-nude);
+    border-radius: 1.25rem;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--ar-ombre);
+    }
+
+    h5 {
+      font-family: var(--ar-titres);
+      font-size: 1.45rem;
+      font-weight: 600;
+      margin-top: 1.1rem;
+    }
+
+    p {
+      color: var(--ar-texte-doux);
+      margin-bottom: 0;
+    }
+  }
+
+  .feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    color: var(--ar-dore);
+    background: rgba(232, 200, 116, 0.22);
+  }
+}
+
+// ── Galerie ─────────────────────────────────────────────
 .gallery-carousel-wrap {
   max-width: 1140px;
   padding: 0 1rem;
 
   ::ng-deep .carousel {
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     overflow: hidden;
-    box-shadow: 0 16px 40px rgba(74, 46, 23, 0.2);
+    box-shadow: var(--ar-ombre-forte);
   }
 
   ::ng-deep .carousel-indicators {
@@ -154,13 +193,13 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: #e8c874;
+    background-color: var(--ar-dore-clair);
     opacity: 0.6;
   }
 
   ::ng-deep .carousel-indicators > .active {
     opacity: 1;
-    background-color: #c9a227;
+    background-color: var(--ar-dore);
   }
 
   ::ng-deep .carousel-control-prev-icon,
@@ -188,10 +227,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 2.5rem 2rem 1.75rem;
-  background: linear-gradient(0deg, rgba(30, 18, 9, 0.75) 0%, rgba(30, 18, 9, 0) 100%);
-  color: #fbf6ec;
-  font-size: 1.4rem;
+  padding: 3rem 2.2rem 2.4rem;
+  background: linear-gradient(0deg, rgba(30, 18, 9, 0.78) 0%, rgba(30, 18, 9, 0) 100%);
+  color: #fff8ea;
+  font-family: var(--ar-titres);
+  font-size: 2rem;
   font-weight: 600;
 }
 
@@ -199,43 +239,111 @@
   .gallery-slide img {
     height: 380px;
   }
+
+  .gallery-caption {
+    font-size: 1.5rem;
+    padding: 2rem 1.4rem 2.2rem;
+  }
 }
 
 // ── Services ────────────────────────────────────────────
+.services {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.category-pills .btn {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+
 .service-card {
-  border: 1px solid #e6d9c3;
+  overflow: hidden;
+  border: 1px solid var(--ar-nude);
+  background: #fffdf9;
   transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 24px rgba(74, 46, 23, 0.12);
+    transform: translateY(-5px);
+    box-shadow: var(--ar-ombre-forte);
   }
 
-  .service-icon {
-    font-size: 1.4rem;
-    color: #c9a227;
+  .service-photo {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .service-photo-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 190px;
+    font-size: 2.6rem;
+    color: var(--ar-dore);
+    background: linear-gradient(135deg, #f3eadb, #ead9bc);
+  }
+
+  .card-body {
+    padding: 1.4rem 1.5rem 1.5rem;
+  }
+
+  .service-category {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ar-dore);
+  }
+
+  .service-name {
+    font-family: var(--ar-titres);
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0.35rem 0 0.5rem;
+    color: var(--ar-chocolat-fonce);
+  }
+
+  .service-price {
+    font-family: var(--ar-titres);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--ar-chocolat);
   }
 }
 
-// ── Call to action ──────────────────────────────────────
+// ── Appel à l'action ────────────────────────────────────
 .cta {
-  background: linear-gradient(135deg, #6b4423 0%, #4a2e17 100%);
-  color: #fbf6ec;
+  background:
+    radial-gradient(ellipse at 15% 20%, rgba(232, 200, 116, 0.2) 0%, rgba(232, 200, 116, 0) 55%),
+    linear-gradient(135deg, #5a381d 0%, #3d2410 100%);
+  color: var(--ar-creme);
+
+  h2 {
+    color: #fff8ea;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+  }
 
   .cta-subtitle {
-    color: #ecdcc0;
+    color: #e9dbc2;
+    font-weight: 300;
+    font-size: 1.1rem;
   }
 }
 
-// ── Footer ──────────────────────────────────────────────
+// ── Pied de page ────────────────────────────────────────
 .site-footer {
-  background: #3d2410;
+  background: #33200f;
   color: #ecdcc0;
 
   .footer-heading {
-    color: #e8c874;
+    font-family: var(--ar-titres);
+    font-size: 1.5rem;
+    color: var(--ar-dore-clair);
     font-weight: 600;
     margin-bottom: 1.1rem;
   }
@@ -249,17 +357,27 @@
   .footer-cta {
     display: inline-block;
     margin-top: 0.5rem;
-    padding: 0.4rem 0.2rem;
+    padding: 0.6rem 1.4rem;
     color: #3d2410;
-    background: #e8c874;
-    font-weight: 700;
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
+    background: var(--ar-dore-clair);
+    border-radius: 50rem;
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     text-decoration: none;
 
     &:hover {
-      background: #c9a227;
+      background: var(--ar-dore);
+    }
+  }
+
+  .footer-contact-link {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ar-dore-clair);
     }
   }
 
@@ -278,7 +396,7 @@
       font-size: 0.92rem;
 
       &:hover {
-        color: #e8c874;
+        color: var(--ar-dore-clair);
       }
     }
   }
@@ -299,9 +417,9 @@
         color 0.15s ease;
 
       &:hover {
-        background: #e8c874;
+        background: var(--ar-dore-clair);
         color: #3d2410;
-        border-color: #e8c874;
+        border-color: var(--ar-dore-clair);
       }
     }
   }

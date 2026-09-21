@@ -24,14 +24,12 @@ export interface ServiceResponse {
 // Mirrors bj.anelle.anelle_backend.dto.request.{CategorieForm,ServiceForm}.
 
 export interface CategorieForm {
-  code: string;
   libelle: string;
   description: string;
   imageUrl: string;
 }
 
 export interface ServiceForm {
-  code: string;
   nomService: string;
   categorieCode: string;
   description: string;

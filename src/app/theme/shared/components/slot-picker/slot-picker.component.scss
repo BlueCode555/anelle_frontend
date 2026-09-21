@@ -1,0 +1,29 @@
+.slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.slot {
+  min-width: 84px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #c9a227;
+  border-radius: 50rem;
+  background: #fff;
+  color: #4a2e17;
+  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: #f5efe1;
+  }
+}
+
+.slot-active,
+.slot-active:hover {
+  background: #6b4423;
+  border-color: #6b4423;
+  color: #fff;
+}

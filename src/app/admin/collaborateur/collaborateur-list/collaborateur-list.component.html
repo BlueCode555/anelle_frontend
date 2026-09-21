@@ -1,0 +1,97 @@
+<div class="card">
+  <div class="card-header entete-liste">
+    <h5 class="mb-0">Collaborateurs</h5>
+    <button type="button" class="btn btn-primary" (click)="nouveau()">
+      <i class="ti ti-plus"></i>Nouveau collaborateur
+    </button>
+  </div>
+  <div class="card-body">
+    @if (identifiants(); as id) {
+      <div class="alert alert-success identifiants">
+        <h6 class="mb-2"><i class="ti ti-key me-2"></i>Compte de {{ id.nom }} prêt</h6>
+        <p class="mb-2">Transmettez-lui ces deux informations (par message ou de vive voix) :</p>
+        <ul class="mb-2">
+          <li>Adresse de connexion : <strong>{{ id.email }}</strong></li>
+          <li>
+            Mot de passe provisoire : <strong class="mdp">{{ id.motDePasse }}</strong>
+            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="copier(id.motDePasse)">
+              <i class="ti" [class.ti-copy]="!copie()" [class.ti-check]="copie()"></i> {{ copie() ? 'Copié' : 'Copier' }}
+            </button>
+          </li>
+        </ul>
+        <p class="small mb-2">
+          Ce mot de passe ne sera <strong>plus affiché</strong> : notez-le maintenant. À sa première connexion, la personne
+          devra en choisir un nouveau que seule elle connaîtra.
+        </p>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="fermerIdentifiants()">J'ai noté, fermer</button>
+      </div>
+    }
+    @if (info()) {
+      <div class="alert alert-success">{{ info() }}</div>
+    }
+    @if (erreur()) {
+      <div class="alert alert-danger">{{ erreur() }}</div>
+    }
+    @if (chargement()) {
+      <div class="text-center text-muted py-4">Chargement...</div>
+    } @else if (collaborateurs().length === 0 && !erreur()) {
+      <div class="etat-vide">
+        <i class="ti ti-users"></i>
+        <h6>Aucun collaborateur pour le moment</h6>
+        <p>Ajoutez les personnes de votre équipe : elles pourront se connecter et travailler selon leurs profils.</p>
+        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>Ajouter mon premier collaborateur</button>
+      </div>
+    } @else if (collaborateurs().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>E-mail</th>
+              <th>Profils</th>
+              <th>Statut</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of collaborateurs(); track c.id) {
+              <tr>
+                <td data-label="Nom" class="fw-semibold">{{ c.prenom }} {{ c.nom }}</td>
+                <td data-label="E-mail" class="text-muted">{{ c.email }}</td>
+                <td data-label="Profils">
+                  @for (p of c.profils; track p.code) {
+                    <span class="pastille-profil">
+                      {{ p.libelle }}
+                      @if (c.profils.length > 1) {
+                        <button type="button" class="retirer" [attr.aria-label]="'Retirer le profil ' + p.libelle" [title]="'Retirer le profil ' + p.libelle" (click)="retirerProfil(c, p.code)">
+                          <i class="ti ti-x"></i>
+                        </button>
+                      }
+                    </span>
+                  }
+                </td>
+                <td data-label="Statut">
+                  <span class="badge" [ngClass]="c.actif ? 'text-bg-success' : 'text-bg-secondary'">{{ c.actif ? 'Actif' : 'Désactivé' }}</span>
+                  @if (!c.compteCree) {
+                    <span class="badge text-bg-warning ms-1" title="Aucun compte de connexion créé automatiquement">Sans compte</span>
+                  }
+                </td>
+                <td class="cellule-actions text-end">
+                  <div class="actions">
+                    @if (!c.compteCree) {
+                      <button type="button" class="btn btn-sm btn-secondary" (click)="creerCompte(c)"><i class="ti ti-user-check"></i>Créer le compte</button>
+                    } @else {
+                      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="reinitialiser(c)"><i class="ti ti-key"></i>Nouveau mot de passe</button>
+                    }
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="gererProfils(c)"><i class="ti ti-shield-lock"></i>Profils</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="modifier(c)"><i class="ti ti-edit"></i>Modifier</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

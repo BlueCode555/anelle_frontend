@@ -5,6 +5,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse } from 'src/app/theme/shared/service/catalogue.model';
 import { CategorieFormComponent } from '../categorie-form/categorie-form.component';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { ToastService } from 'src/app/theme/shared/service/toast.service';
 
 @Component({
   selector: 'app-categorie-list',
@@ -15,6 +17,8 @@ import { CategorieFormComponent } from '../categorie-form/categorie-form.compone
 export class CategorieListComponent implements OnInit {
   private catalogue = inject(CatalogueService);
   private modalService = inject(NgbModal);
+  private confirmation = inject(ConfirmationService);
+  private toast = inject(ToastService);
 
   categories = signal<CategorieResponse[]>([]);
   loading = signal(true);
@@ -47,7 +51,10 @@ export class CategorieListComponent implements OnInit {
     const ref = this.modalService.open(CategorieFormComponent, { centered: true });
     ref.result.then(
       (result) => {
-        if (result === 'saved') this.load();
+        if (result === 'saved') {
+          this.toast.succes('Catégorie enregistrée');
+          this.load();
+        }
       },
       () => {}
     );
@@ -58,16 +65,31 @@ export class CategorieListComponent implements OnInit {
     ref.componentInstance.categorieId = categorie.id;
     ref.result.then(
       (result) => {
-        if (result === 'saved') this.load();
+        if (result === 'saved') {
+          this.toast.succes('Catégorie enregistrée');
+          this.load();
+        }
       },
       () => {}
     );
   }
 
-  remove(categorie: CategorieResponse): void {
-    if (!confirm(`Supprimer la categorie "${categorie.libelle}" ?`)) {
+  async remove(categorie: CategorieResponse): Promise<void> {
+    const ok = await this.confirmation.demander({
+      titre: `Supprimer la catégorie « ${categorie.libelle} » ?`,
+      message: 'Cette action est définitive.',
+      texteConfirmer: 'Supprimer',
+      danger: true
+    });
+    if (!ok) {
       return;
     }
-    this.catalogue.deleteCategorie(categorie.id).subscribe(() => this.load());
+    this.catalogue.deleteCategorie(categorie.id).subscribe({
+      next: () => {
+        this.toast.succes('Catégorie supprimée');
+        this.load();
+      },
+      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
+    });
   }
 }

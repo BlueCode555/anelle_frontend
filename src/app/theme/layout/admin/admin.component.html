@@ -1,34 +1,163 @@
-<app-navigation class="coded-navbar pc-sidebar" [ngClass]="{
-    'navbar-collapsed': navCollapsed,
-    horizontal: currentLayout === 'horizontal',
-    compact: currentLayout === 'compact',
-    'mob-open': navCollapsedMob
-  }" (NavCollapsedMob)="closeMenu()" />
-<app-nav-bar (NavCollapse)="this.navCollapsed = !this.navCollapsed" (NavCollapsedMob)="navMobClick()" />
-<div class="pc-container">
-  <div class="coded-wrapper">
-    <div class="coded-content">
-      <div class="coded-inner-content">
-        <app-breadcrumb />
-        <div class="main-body">
-          <div class="page-wrapper">
-            <router-outlet />
+<div class="ad-shell" [class.is-collapsed]="collapsed()" [class.is-mobile-open]="mobileOpen()">
+  <div class="ad-backdrop" (click)="fermerMobile()" aria-hidden="true"></div>
+
+  <!-- ══ MENU LATÉRAL ══ -->
+  <aside class="ad-sidebar" aria-label="Menu principal">
+    <a class="ad-brand" routerLink="/default">
+      <span class="ad-brand-mark">A</span>
+      <span class="ad-brand-text">
+        <span class="ad-brand-name">Arnelle Institut</span>
+        <span class="ad-brand-sub">Espace de gestion</span>
+      </span>
+    </a>
+
+    <nav class="ad-nav">
+      @for (item of menu(); track item.id) {
+        @if (item.type === 'collapse') {
+          <button
+            type="button"
+            class="ad-link ad-link-group"
+            [class.is-active-parent]="sectionActive(item)"
+            [attr.aria-expanded]="estOuverte(item.id)"
+            [title]="item.title"
+            (click)="basculerSection(item.id)"
+          >
+            <i [class]="item.icon"></i>
+            <span class="ad-label">{{ item.title }}</span>
+            <i class="ti ti-chevron-down ad-chevron" [class.is-open]="estOuverte(item.id)"></i>
+          </button>
+          <div class="ad-children" [class.is-open]="estOuverte(item.id)">
+            <div class="ad-children-inner">
+              @for (enfant of item.children; track enfant.id) {
+                <a class="ad-link ad-link-child" [routerLink]="enfant.url" [class.is-active]="estActif(enfant.url)" [title]="enfant.title">
+                  <i [class]="enfant.icon"></i>
+                  <span class="ad-label">{{ enfant.title }}</span>
+                </a>
+              }
+            </div>
           </div>
+        } @else {
+          <a class="ad-link" [routerLink]="item.url" [class.is-active]="estActif(item.url)" [title]="item.title">
+            <i [class]="item.icon"></i>
+            <span class="ad-label">{{ item.title }}</span>
+            @if (item.id === 'agenda' && demandes() > 0) {
+              <span class="ad-pill">{{ demandes() > 9 ? '9+' : demandes() }}</span>
+            }
+          </a>
+        }
+      }
+    </nav>
+
+    <div class="ad-side-foot">
+      <a class="ad-link" routerLink="/accueil" title="Voir le site">
+        <i class="ti ti-external-link"></i>
+        <span class="ad-label">Voir le site</span>
+      </a>
+      <button type="button" class="ad-link ad-logout" title="Déconnexion" (click)="deconnexion()">
+        <i class="ti ti-logout-2"></i>
+        <span class="ad-label">Déconnexion</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ CONTENU ══ -->
+  <div class="ad-body">
+    <header class="ad-topbar">
+      <div class="ad-top-left">
+        <button type="button" class="ad-icon-btn" (click)="basculerMenu()" aria-label="Réduire ou ouvrir le menu">
+          <i class="ti ti-menu-2"></i>
+        </button>
+        <nav class="ad-crumbs" aria-label="Fil d'Ariane">
+          @for (miette of fil(); track $index; let dernier = $last) {
+            @if (dernier) {
+              <span class="ad-crumb-current" aria-current="page">{{ miette.libelle }}</span>
+            } @else if (miette.url) {
+              <a class="ad-crumb" [routerLink]="miette.url">{{ miette.libelle }}</a>
+              <i class="ti ti-chevron-right ad-crumb-sep"></i>
+            } @else {
+              <span class="ad-crumb">{{ miette.libelle }}</span>
+              <i class="ti ti-chevron-right ad-crumb-sep"></i>
+            }
+          }
+        </nav>
+      </div>
+
+      <div class="ad-top-right">
+        <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="demandes() + ' demande(s) à traiter'" title="Demandes de rendez-vous à traiter">
+          <i class="ti ti-bell"></i>
+          @if (demandes() > 0) {
+            <span class="ad-bell-badge">{{ demandes() > 9 ? '9+' : demandes() }}</span>
+          }
+        </a>
+
+        <span class="ad-divider" aria-hidden="true"></span>
+
+        <div class="ad-profile">
+          <button type="button" class="ad-user" [class.is-open]="profilOuvert()" (click)="basculerProfil($event)" aria-haspopup="true" [attr.aria-expanded]="profilOuvert()">
+            <span class="ad-avatar">{{ initiale() }}</span>
+            <span class="ad-user-info">
+              <span class="ad-user-name">{{ nomAffiche() }}</span>
+              <span class="ad-user-role">{{ role() }}</span>
+            </span>
+            <i class="ti ti-chevron-down ad-user-chevron"></i>
+          </button>
+
+          @if (profilOuvert()) {
+            <div class="ad-menu" role="menu" (click)="$event.stopPropagation()" (keydown.escape)="fermerProfil()" tabindex="-1">
+              <div class="ad-menu-head">
+                <span class="ad-avatar ad-avatar-lg">{{ initiale() }}</span>
+                <div>
+                  <p class="ad-menu-name">{{ nomAffiche() }}</p>
+                  <span class="ad-role-badge"><i class="ti ti-shield-check"></i>{{ role() }}</span>
+                </div>
+              </div>
+              @if (auth.user(); as u) {
+                <div class="ad-menu-row"><i class="ti ti-mail"></i><span>{{ u.email }}</span></div>
+              }
+              @if (auth.user()?.type === 'PERSONNEL' && !auth.user()?.superAdmin) {
+                <button type="button" class="ad-menu-action" [disabled]="!auth.peutChangerProfil()"
+                  [title]="auth.peutChangerProfil() ? '' : 'Un seul profil disponible'" (click)="changerProfil()" role="menuitem">
+                  <i class="ti ti-switch-horizontal"></i>Changer de profil
+                  @if (!auth.peutChangerProfil()) {
+                    <span class="ad-menu-hint">Un seul profil</span>
+                  }
+                </button>
+              }
+              <a class="ad-menu-action" routerLink="/accueil" role="menuitem"><i class="ti ti-external-link"></i>Voir le site</a>
+              <button type="button" class="ad-menu-action is-danger" (click)="deconnexion()" role="menuitem">
+                <i class="ti ti-logout-2"></i>Déconnexion
+              </button>
+            </div>
+          }
         </div>
       </div>
+    </header>
+
+    <div class="ad-band">
+      <span class="ad-band-role">{{ role() }}</span>
+      <span class="ad-band-sep"></span>
+      <span class="ad-band-text">Arnelle Institut</span>
+      <span class="ad-band-date text-capitalize">{{ aujourdhuiTexte }}</span>
     </div>
+
+    <main class="ad-main">
+      <router-outlet />
+    </main>
+
+    <footer class="ad-footer">
+      <span>Arnelle Institut &middot; Espace de gestion</span>
+      <a routerLink="/accueil">Voir le site</a>
+    </footer>
   </div>
-  <div class="pc-menu-overlay" (click)="closeMenu()" (keydown)="handleKeyDown($event)" tabindex="0"></div>
+
+  <!-- Messages de confirmation -->
+  <div class="ad-toasts" aria-live="polite">
+    @for (t of toast.messages(); track t.id) {
+      <div class="ad-toast" [class.is-erreur]="t.type === 'erreur'" role="status">
+        <i class="ti" [class.ti-circle-check]="t.type === 'succes'" [class.ti-alert-circle]="t.type === 'erreur'"></i>
+        <span>{{ t.texte }}</span>
+        <button type="button" aria-label="Fermer ce message" (click)="toast.fermer(t.id)"><i class="ti ti-x"></i></button>
+      </div>
+    }
+  </div>
 </div>
-<footer class="pc-footer">
-  <div class="footer-wrapper container-fluid">
-    <div class="row">
-      <div class="col my-1">
-        <p class="m-0">Arnelle Institut &middot; Espace de gestion</p>
-      </div>
-      <div class="col-auto my-1">
-        <a routerLink="/accueil" class="footer-link">Voir le site</a>
-      </div>
-    </div>
-  </div>
-</footer>

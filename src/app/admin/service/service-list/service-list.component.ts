@@ -5,6 +5,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { ServiceResponse } from 'src/app/theme/shared/service/catalogue.model';
 import { ServiceFormComponent } from '../service-form/service-form.component';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { ToastService } from 'src/app/theme/shared/service/toast.service';
 
 @Component({
   selector: 'app-service-list',
@@ -15,6 +17,8 @@ import { ServiceFormComponent } from '../service-form/service-form.component';
 export class ServiceListComponent implements OnInit {
   private catalogue = inject(CatalogueService);
   private modalService = inject(NgbModal);
+  private confirmation = inject(ConfirmationService);
+  private toast = inject(ToastService);
 
   services = signal<ServiceResponse[]>([]);
   loading = signal(true);
@@ -51,7 +55,10 @@ export class ServiceListComponent implements OnInit {
     const ref = this.modalService.open(ServiceFormComponent, { centered: true });
     ref.result.then(
       (result) => {
-        if (result === 'saved') this.load();
+        if (result === 'saved') {
+          this.toast.succes('Service enregistré');
+          this.load();
+        }
       },
       () => {}
     );
@@ -62,16 +69,31 @@ export class ServiceListComponent implements OnInit {
     ref.componentInstance.serviceId = service.id;
     ref.result.then(
       (result) => {
-        if (result === 'saved') this.load();
+        if (result === 'saved') {
+          this.toast.succes('Service enregistré');
+          this.load();
+        }
       },
       () => {}
     );
   }
 
-  remove(service: ServiceResponse): void {
-    if (!confirm(`Supprimer le service "${service.nomService}" ?`)) {
+  async remove(service: ServiceResponse): Promise<void> {
+    const ok = await this.confirmation.demander({
+      titre: `Supprimer le service « ${service.nomService} » ?`,
+      message: 'Cette action est définitive.',
+      texteConfirmer: 'Supprimer',
+      danger: true
+    });
+    if (!ok) {
       return;
     }
-    this.catalogue.deleteService(service.id).subscribe(() => this.load());
+    this.catalogue.deleteService(service.id).subscribe({
+      next: () => {
+        this.toast.succes('Service supprimé');
+        this.load();
+      },
+      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
+    });
   }
 }

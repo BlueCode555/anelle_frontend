@@ -1,0 +1,242 @@
+$brun: #4a2e17;
+$creme: #ecdcc0;
+$or: #e8c874;
+$or-fonce: #c9a227;
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: $brun;
+  box-shadow: 0 2px 12px rgba(30, 18, 9, 0.25);
+}
+
+.header-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2rem;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+}
+
+.brand {
+  justify-self: start;
+  color: $or;
+  font-family: var(--ar-titres);
+  font-weight: 700;
+  font-size: 1.7rem;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  a {
+    position: relative;
+    padding: 0.35rem 0;
+    color: $creme;
+    font-size: 0.95rem;
+    text-decoration: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: $or;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      color: $or;
+
+      &::after {
+        transform: scaleX(1);
+      }
+    }
+  }
+}
+
+.header-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.btn-header {
+  display: inline-block;
+  padding: 0.55rem 1.4rem;
+  border-radius: 50rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn-header-solid {
+  background: $or-fonce;
+  border: 1px solid $or-fonce;
+  color: #3d2410;
+
+  &:hover {
+    background: $or;
+    border-color: $or;
+  }
+}
+
+.btn-header-outline {
+  border: 1px solid $or;
+  color: $or;
+
+  &:hover {
+    background: $or;
+    color: #3d2410;
+  }
+}
+
+.header-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: $creme;
+  text-decoration: none;
+
+  &:hover {
+    color: $or;
+  }
+}
+
+.header-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid $or;
+}
+
+.header-avatar-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: $or-fonce;
+  color: #3d2410;
+  font-weight: 700;
+}
+
+.header-logout {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgba($creme, 0.75);
+  font-size: 0.85rem;
+  white-space: nowrap;
+
+  &:hover {
+    color: $or;
+  }
+}
+
+.menu-toggle {
+  display: none;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba($or, 0.5);
+  border-radius: 8px;
+  background: none;
+  color: $or;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.mobile-menu {
+  display: none;
+  margin: 0;
+  padding: 0.5rem 1.5rem 1rem;
+  list-style: none;
+  border-top: 1px solid rgba($creme, 0.12);
+
+  a {
+    display: block;
+    padding: 0.75rem 0;
+    color: $creme;
+    text-decoration: none;
+    border-bottom: 1px solid rgba($creme, 0.08);
+
+    &:hover {
+      color: $or;
+    }
+  }
+}
+
+.mobile-logout {
+  width: 100%;
+  padding: 0.75rem 0;
+  border: 0;
+  background: none;
+  color: rgba($creme, 0.75);
+  text-align: left;
+
+  &:hover {
+    color: $or;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .header-bar {
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .menu-toggle {
+    display: inline-block;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .header-user-label,
+  .header-logout {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .header-bar {
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .brand {
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+  }
+
+  .header-actions {
+    gap: 0.6rem;
+  }
+
+  .btn-header {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.8rem;
+  }
+}

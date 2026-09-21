@@ -1,0 +1,19 @@
+<div class="connexion-page">
+  <app-site-header />
+
+  <main class="connexion-main d-flex justify-content-center px-3">
+    <div class="connexion-card text-center">
+      <i class="ti ti-user-heart connexion-icon"></i>
+      <h1 class="h3 mb-2">Bienvenue chez {{ nom() }}</h1>
+      <p class="text-muted mb-4">
+        Bientôt, vous pourrez vous connecter ici pour réserver vos soins et retrouver l'historique de vos rendez-vous.
+      </p>
+
+      <div class="alert alert-info mb-0">
+        La connexion des clientes n'est pas encore ouverte. Pour prendre rendez-vous, contactez-nous.
+      </div>
+
+      <p class="small mt-4 mb-0"><a routerLink="/personnel">Espace réservé à l'équipe</a></p>
+    </div>
+  </main>
+</div>

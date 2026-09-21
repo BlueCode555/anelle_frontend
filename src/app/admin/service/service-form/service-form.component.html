@@ -7,26 +7,7 @@
     <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
     <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label" for="code">Code</label>
-        <input
-          id="code"
-          type="text"
-          class="form-control"
-          placeholder="Ex. PED-CLASSIQUE"
-          [formField]="serviceForm.code"
-          [class.is-invalid]="submitted() && serviceForm.code().invalid()"
-        />
-        @if (submitted() && serviceForm.code().invalid()) {
-          <div class="invalid-feedback">
-            @for (error of serviceForm.code().errors(); track error.kind) {
-              <div>{{ error.message }}</div>
-            }
-          </div>
-        }
-      </div>
-
-      <div class="col-md-6 mb-3">
+      <div class="col-12 mb-3">
         <label class="form-label" for="categorieCode">Categorie</label>
         <select
           id="categorieCode"
@@ -126,6 +107,13 @@
         </button>
       </div>
       <input id="image" type="file" class="form-control" accept="image/jpeg,image/png,image/webp,image/avif" (change)="onImageSelected($event)" [disabled]="uploading()" />
+      <input
+        type="url"
+        class="form-control mt-2"
+        placeholder="... ou collez un lien https:// vers une image en ligne"
+        [value]="serviceModel().imageUrl.startsWith('https://') ? serviceModel().imageUrl : ''"
+        (change)="onImageUrlInput($event)"
+      />
       <div class="form-text" *ngIf="uploading()">Envoi en cours...</div>
       <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
     </div>

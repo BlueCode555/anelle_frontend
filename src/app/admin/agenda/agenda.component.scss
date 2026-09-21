@@ -1,0 +1,48 @@
+.agenda-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.jour-titre {
+  color: #4a2e17;
+  font-size: 1rem;
+  margin: 1rem 0 0.5rem;
+}
+
+.agenda-item {
+  display: grid;
+  grid-template-columns: 7rem 1.6fr 1.2fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid #f0e7d6;
+}
+
+.agenda-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.conge-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #f0e7d6;
+}
+
+@media (max-width: 991.98px) {
+  .agenda-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .agenda-actions {
+    justify-content: flex-start;
+  }
+}

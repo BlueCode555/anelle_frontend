@@ -1,0 +1,119 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <h5 class="mb-0">
+          Agenda
+          @if (aTraiter() > 0) {
+            <span class="badge bg-warning text-dark ms-2">{{ aTraiter() }} à traiter</span>
+          }
+        </h5>
+        <div class="agenda-nav">
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semainePrecedente()" aria-label="Semaine précédente">
+            <i class="ti ti-chevron-left"></i>
+          </button>
+          <span class="fw-semibold">{{ libelleSemaine() }}</span>
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semaineSuivante()" aria-label="Semaine suivante">
+            <i class="ti ti-chevron-right"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cetteSemaine()">Aujourd'hui</button>
+          <button type="button" class="btn btn-sm btn-primary" (click)="nouveau()">
+            <i class="ti ti-plus me-1"></i>Nouveau rendez-vous
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        @if (erreur()) {
+          <div class="alert alert-danger">{{ erreur() }}</div>
+        }
+
+        @if (chargement()) {
+          <p class="text-muted mb-0">Chargement...</p>
+        } @else if (groupes().length === 0) {
+          <p class="text-muted mb-0">Aucun rendez-vous cette semaine.</p>
+        } @else {
+          @for (groupe of groupes(); track groupe.cle) {
+            <h6 class="jour-titre text-capitalize">{{ groupe.libelle }}</h6>
+            @for (rdv of groupe.items; track rdv.id) {
+              <div class="agenda-item">
+                <div>
+                  <strong>{{ heure(rdv.debut) }}</strong>
+                  <span class="text-muted"> – {{ heure(rdv.fin) }}</span>
+                </div>
+                <div>
+                  <strong>{{ rdv.serviceNom }}</strong>
+                  <span class="text-muted"> · {{ formatTarif(rdv.prix) }}</span>
+                  <div class="small text-muted">
+                    {{ rdv.clientNom ?? 'Client' }}
+                    @if (rdv.clientTelephone) { · {{ rdv.clientTelephone }} }
+                    @if (rdv.clientEmail) { · {{ rdv.clientEmail }} }
+                  </div>
+                  @if (rdv.note) {
+                    <div class="small fst-italic">« {{ rdv.note }} »</div>
+                  }
+                </div>
+                <div>
+                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ libelles[rdv.statut] }}</span>
+                </div>
+                <div class="agenda-actions">
+                  @if (rdv.statut === 'DEMANDE') {
+                    <button type="button" class="btn btn-sm btn-success" (click)="accepter(rdv)">Accepter</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="refuser(rdv)">Refuser</button>
+                  }
+                  @if (rdv.statut === 'ACCEPTE') {
+                    <button type="button" class="btn btn-sm btn-outline-success" (click)="marquerPaye(rdv)">Paiement reçu</button>
+                  }
+                  @if (peutTerminer(rdv)) {
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="terminer(rdv)">Terminé</button>
+                  }
+                  @if (peutAnnuler(rdv)) {
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">Annuler</button>
+                  }
+                </div>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header"><h5 class="mb-0">Congés et fermetures</h5></div>
+      <div class="card-body">
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-12 col-md-3">
+            <label class="form-label" for="cg-debut">Début</label>
+            <input id="cg-debut" type="datetime-local" class="form-control" [value]="congeDebut()" (input)="champ(congeDebut, $event)" />
+          </div>
+          <div class="col-12 col-md-3">
+            <label class="form-label" for="cg-fin">Fin</label>
+            <input id="cg-fin" type="datetime-local" class="form-control" [value]="congeFin()" (input)="champ(congeFin, $event)" />
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label" for="cg-motif">Motif</label>
+            <input id="cg-motif" class="form-control" maxlength="200" [value]="congeMotif()" (input)="champ(congeMotif, $event)" />
+          </div>
+          <div class="col-12 col-md-2">
+            <button type="button" class="btn btn-primary w-100" (click)="ajouterConge()">Ajouter</button>
+          </div>
+        </div>
+        @if (congeErreur()) {
+          <div class="alert alert-danger">{{ congeErreur() }}</div>
+        }
+        @for (conge of indisponibilites(); track conge.id) {
+          <div class="conge-item">
+            <div>
+              {{ periode(conge) }}
+              @if (conge.motif) { <span class="text-muted"> · {{ conge.motif }}</span> }
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="supprimerConge(conge)">Supprimer</button>
+          </div>
+        } @empty {
+          <p class="text-muted mb-0">Aucune période bloquée.</p>
+        }
+      </div>
+    </div>
+  </div>
+</div>

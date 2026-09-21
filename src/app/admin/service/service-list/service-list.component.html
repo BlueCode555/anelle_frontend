@@ -1,60 +1,72 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
+  <div class="card-header entete-liste">
     <h5 class="mb-0">Services</h5>
-    <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">
-      <i class="ti ti-plus me-1"></i>Nouveau service
+    <button type="button" class="btn btn-primary" (click)="openCreate()">
+      <i class="ti ti-plus"></i>Nouveau service
     </button>
   </div>
   <div class="card-body">
-    <div *ngIf="loading()" class="text-center text-muted py-4">Chargement...</div>
+    @if (loading()) {
+      <div class="text-center text-muted py-4">Chargement...</div>
+    }
 
-    <div *ngIf="error()" class="alert alert-danger">Impossible de charger les services.</div>
+    @if (error()) {
+      <div class="alert alert-danger">Impossible de charger les services. Vérifiez que le serveur est démarré.</div>
+    }
 
-    <div *ngIf="!loading() && !error() && services().length === 0" class="text-center text-muted py-4">
-      Aucun service pour le moment.
-    </div>
+    @if (!loading() && !error() && services().length === 0) {
+      <div class="etat-vide">
+        <i class="ti ti-list-details"></i>
+        <h6>Aucun service pour le moment</h6>
+        <p>Un service est un soin que vos clientes peuvent réserver, avec son prix et sa durée.</p>
+        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>Ajouter mon premier service</button>
+      </div>
+    }
 
-    <div class="table-responsive" *ngIf="!loading() && services().length">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th style="width: 72px">Image</th>
-            <th>Code</th>
-            <th>Nom</th>
-            <th>Categorie</th>
-            <th>Duree</th>
-            <th>Tarif</th>
-            <th>Statut</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let service of services()">
-            <td>
-              <img *ngIf="imageSrc(service.imageUrl) as src; else noImg" [src]="src" alt="" class="row-thumb" />
-              <ng-template #noImg><span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span></ng-template>
-            </td>
-            <td><span class="badge text-bg-secondary">{{ service.code }}</span></td>
-            <td>{{ service.nomService }}</td>
-            <td class="text-muted">{{ service.categorieLibelle }}</td>
-            <td>{{ service.dureeMinutes }} min</td>
-            <td class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
-            <td>
-              <span class="badge" [class.text-bg-success]="service.actif" [class.text-bg-secondary]="!service.actif">
-                {{ service.actif ? 'Actif' : 'Inactif' }}
-              </span>
-            </td>
-            <td class="text-end">
-              <button type="button" class="btn btn-sm btn-outline-primary me-1" (click)="openEdit(service)">
-                <i class="ti ti-edit"></i>
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(service)">
-                <i class="ti ti-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    @if (!loading() && services().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th style="width: 72px">Image</th>
+              <th>Nom</th>
+              <th>Catégorie</th>
+              <th>Durée</th>
+              <th>Tarif</th>
+              <th>Statut</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (service of services(); track service.id) {
+              <tr>
+                <td data-label="Image">
+                  @if (imageSrc(service.imageUrl); as src) {
+                    <img [src]="src" alt="" class="row-thumb" />
+                  } @else {
+                    <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
+                  }
+                </td>
+                <td data-label="Service" class="fw-semibold">{{ service.nomService }}</td>
+                <td data-label="Catégorie" class="text-muted">{{ service.categorieLibelle }}</td>
+                <td data-label="Durée">{{ service.dureeMinutes }} min</td>
+                <td data-label="Tarif" class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
+                <td data-label="Statut">
+                  <span class="badge" [class.text-bg-success]="service.actif" [class.text-bg-secondary]="!service.actif">
+                    {{ service.actif ? 'Visible sur le site' : 'Masqué' }}
+                  </span>
+                </td>
+                <td class="cellule-actions text-end">
+                  <div class="actions">
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openEdit(service)"><i class="ti ti-edit"></i>Modifier</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(service)"><i class="ti ti-trash"></i>Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </div>

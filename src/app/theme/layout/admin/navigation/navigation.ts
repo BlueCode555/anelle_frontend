@@ -13,48 +13,49 @@ export interface NavigationItem {
   children?: NavigationItem[];
   role?: string[];
   isMainParent?: boolean;
+  // Droit de lecture exigé sur cet écran pour voir l'entrée du menu
+  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES';
+  // Entrée réservée à l'esthéticienne
+  proprietaire?: boolean;
 }
 
+// Menu du back-office : entrées simples ou sections repliables (collapse).
 export const NavigationItems: NavigationItem[] = [
   {
-    id: 'dashboard',
-    title: 'Accueil',
-    type: 'group',
-    icon: 'icon-navigation',
+    id: 'default',
+    title: 'Tableau de bord',
+    type: 'item',
+    url: '/default',
+    icon: 'ti ti-layout-dashboard'
+  },
+  // Administration en haut : ce qui touche à l'équipe et à l'institut. Chaque entrée n'apparaît que pour qui y a droit.
+  {
+    id: 'administration',
+    title: 'Administration',
+    type: 'collapse',
+    icon: 'ti ti-settings',
     children: [
-      {
-        id: 'default',
-        title: 'Tableau de bord',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/default',
-        icon: 'ti ti-dashboard',
-        breadcrumbs: false
-      }
+      { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', proprietaire: true },
+      { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', proprietaire: true },
+      { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' }
     ]
+  },
+  {
+    id: 'agenda',
+    title: 'Agenda',
+    type: 'item',
+    url: '/agenda',
+    icon: 'ti ti-calendar-event',
+    ecran: 'AGENDA'
   },
   {
     id: 'catalogue',
     title: 'Catalogue',
-    type: 'group',
-    icon: 'icon-navigation',
+    type: 'collapse',
+    icon: 'ti ti-sparkles',
     children: [
-      {
-        id: 'categories',
-        title: 'Categories',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/categories',
-        icon: 'ti ti-category'
-      },
-      {
-        id: 'services',
-        title: 'Services',
-        type: 'item',
-        classes: 'nav-item',
-        url: '/services',
-        icon: 'ti ti-sparkles'
-      }
+      { id: 'categories', title: 'Catégories', type: 'item', url: '/categories', icon: 'ti ti-category', ecran: 'CATEGORIES' },
+      { id: 'services', title: 'Services', type: 'item', url: '/services', icon: 'ti ti-list-details', ecran: 'SERVICES' }
     ]
-  },
+  }
 ];

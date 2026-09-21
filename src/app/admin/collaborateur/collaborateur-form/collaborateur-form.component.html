@@ -1,0 +1,70 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ seulementProfils ? 'Profils de ' + collaborateur?.prenom + ' ' + collaborateur?.nom : collaborateur ? 'Modifier le collaborateur' : 'Nouveau collaborateur' }}</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  @if (erreur()) {
+    <div class="alert alert-danger">{{ erreur() }}</div>
+  }
+  <div class="row g-3">
+    @if (!seulementProfils) {
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="co-prenom">Prénom</label>
+      <input id="co-prenom" class="form-control" maxlength="150" [class.is-invalid]="soumis() && !prenom().trim()"
+        [value]="prenom()" (input)="texte(prenom, $event)" />
+      <div class="invalid-feedback">Le prénom est obligatoire.</div>
+    </div>
+    <div class="col-12 col-md-6">
+      <label class="form-label" for="co-nom">Nom</label>
+      <input id="co-nom" class="form-control" maxlength="150" [class.is-invalid]="soumis() && !nom().trim()"
+        [value]="nom()" (input)="texte(nom, $event)" />
+      <div class="invalid-feedback">Le nom est obligatoire.</div>
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="co-email">Adresse e-mail</label>
+      <input id="co-email" type="email" class="form-control" maxlength="255" [disabled]="!!collaborateur"
+        [class.is-invalid]="soumis() && !collaborateur && !emailValide()" [value]="email()" (input)="texte(email, $event)" />
+      <div class="invalid-feedback">Saisissez une adresse e-mail valide.</div>
+      @if (!collaborateur) {
+        <div class="form-text">C'est son adresse de connexion. Un mot de passe provisoire vous sera affiché après la création : vous le lui transmettez.</div>
+      }
+    </div>
+    }
+    <div class="col-12">
+      <span class="form-label d-block">Profils attribués</span>
+      <div class="choix-profils" [class.is-invalid]="soumis() && profilCodes().length === 0">
+        @for (p of profils(); track p.code) {
+          <label class="choix-profil" [class.is-coche]="estCoche(p.code)">
+            <input type="checkbox" class="form-check-input" [checked]="estCoche(p.code)" (change)="basculerProfil(p.code)" />
+            <span class="choix-texte">
+              <strong>{{ p.libelle }}</strong>
+              @if (p.description) {
+                <small class="text-muted">{{ p.description }}</small>
+              }
+            </span>
+          </label>
+        } @empty {
+          <p class="text-muted mb-0">Aucun profil disponible : créez d'abord un profil.</p>
+        }
+      </div>
+      @if (soumis() && profilCodes().length === 0) {
+        <div class="text-danger small mt-1">Cochez au moins un profil.</div>
+      }
+      <div class="form-text">Vous pouvez en cocher plusieurs ; décochez un profil pour le retirer à cette personne.</div>
+    </div>
+    @if (collaborateur && !seulementProfils) {
+      <div class="col-12">
+        <div class="form-check form-switch">
+          <input id="co-actif" class="form-check-input" type="checkbox" [checked]="actif()" (change)="actif.set($any($event.target).checked)" />
+          <label class="form-check-label" for="co-actif">Compte actif (désactivé : il ne peut plus se connecter ni agir)</label>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="button" class="btn btn-primary" [disabled]="envoi()" (click)="enregistrer()">
+    {{ envoi() ? 'Enregistrement...' : 'Enregistrer' }}
+  </button>
+</div>

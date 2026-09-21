@@ -1,50 +1,62 @@
 <div class="card">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">Categories</h5>
-    <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">
-      <i class="ti ti-plus me-1"></i>Nouvelle categorie
+  <div class="card-header entete-liste">
+    <h5 class="mb-0">Catégories</h5>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">
+      <i class="ti ti-plus"></i>Nouvelle catégorie
     </button>
   </div>
   <div class="card-body">
-    <div *ngIf="loading()" class="text-center text-muted py-4">Chargement...</div>
+    @if (loading()) {
+      <div class="text-center text-muted py-4">Chargement...</div>
+    }
 
-    <div *ngIf="error()" class="alert alert-danger">Impossible de charger les categories.</div>
+    @if (error()) {
+      <div class="alert alert-danger">Impossible de charger les catégories. Vérifiez que le serveur est démarré.</div>
+    }
 
-    <div *ngIf="!loading() && !error() && categories().length === 0" class="text-center text-muted py-4">
-      Aucune categorie pour le moment.
-    </div>
+    @if (!loading() && !error() && categories().length === 0) {
+      <div class="etat-vide">
+        <i class="ti ti-category-2"></i>
+        <h6>Aucune catégorie pour le moment</h6>
+        <p>Une catégorie regroupe vos soins, par exemple « Pédicure » ou « Manucure ».</p>
+        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>Ajouter ma première catégorie</button>
+      </div>
+    }
 
-    <div class="table-responsive" *ngIf="!loading() && categories().length">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th style="width: 72px">Image</th>
-            <th>Code</th>
-            <th>Libelle</th>
-            <th>Description</th>
-            <th class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cat of categories()">
-            <td>
-              <img *ngIf="imageSrc(cat.imageUrl) as src; else noImg" [src]="src" alt="" class="row-thumb" />
-              <ng-template #noImg><span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span></ng-template>
-            </td>
-            <td><span class="badge text-bg-secondary">{{ cat.code }}</span></td>
-            <td>{{ cat.libelle }}</td>
-            <td class="text-muted">{{ cat.description }}</td>
-            <td class="text-end">
-              <button type="button" class="btn btn-sm btn-outline-primary me-1" (click)="openEdit(cat)">
-                <i class="ti ti-edit"></i>
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(cat)">
-                <i class="ti ti-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    @if (!loading() && categories().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th style="width: 72px">Image</th>
+              <th>Libellé</th>
+              <th>Description</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of categories(); track cat.id) {
+              <tr>
+                <td data-label="Image">
+                  @if (imageSrc(cat.imageUrl); as src) {
+                    <img [src]="src" alt="" class="row-thumb" />
+                  } @else {
+                    <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
+                  }
+                </td>
+                <td data-label="Catégorie" class="fw-semibold">{{ cat.libelle }}</td>
+                <td data-label="Description" class="text-muted">{{ cat.description }}</td>
+                <td class="cellule-actions text-end">
+                  <div class="actions">
+                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openEdit(cat)"><i class="ti ti-edit"></i>Modifier</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(cat)"><i class="ti ti-trash"></i>Supprimer</button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
   </div>
 </div>

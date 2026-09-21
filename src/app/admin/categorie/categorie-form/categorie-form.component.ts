@@ -6,6 +6,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieForm } from 'src/app/theme/shared/service/catalogue.model';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
 @Component({
   selector: 'app-categorie-form',
@@ -16,6 +17,7 @@ import { CategorieForm } from 'src/app/theme/shared/service/catalogue.model';
 export class CategorieFormComponent implements OnInit {
   private catalogue = inject(CatalogueService);
   activeModal = inject(NgbActiveModal);
+  private confirmation = inject(ConfirmationService);
 
   // Set by the opener (list component) via modalRef.componentInstance.categorieId before the modal renders.
   categorieId: number | null = null;
@@ -27,7 +29,6 @@ export class CategorieFormComponent implements OnInit {
   uploadError = signal('');
 
   categorieModel = signal<CategorieForm>({
-    code: '',
     libelle: '',
     description: '',
     imageUrl: ''
@@ -36,7 +37,6 @@ export class CategorieFormComponent implements OnInit {
   imagePreview = computed(() => this.catalogue.imageSrc(this.categorieModel().imageUrl));
 
   categorieForm = form(this.categorieModel, (schemaPath) => {
-    required(schemaPath.code, { message: 'Le code est obligatoire' });
     required(schemaPath.libelle, { message: 'Le libelle est obligatoire' });
   });
 
@@ -46,7 +46,6 @@ export class CategorieFormComponent implements OnInit {
     }
     this.catalogue.getCategorie(this.categorieId).subscribe((categorie) => {
       this.categorieModel.set({
-        code: categorie.code,
         libelle: categorie.libelle,
         description: categorie.description ?? '',
         imageUrl: categorie.imageUrl ?? ''
@@ -84,16 +83,38 @@ export class CategorieFormComponent implements OnInit {
     });
   }
 
+  onImageUrlInput(event: Event): void {
+    const value = (event.target as HTMLInputElement).value.trim();
+    this.uploadError.set('');
+    this.categorieModel.update((m) => ({ ...m, imageUrl: value }));
+  }
+
   removeImage(): void {
     this.categorieModel.update((m) => ({ ...m, imageUrl: '' }));
   }
 
-  onSubmit(event: Event): void {
+  private messageErreur(err: { status?: number; error?: { message?: string } }): string {
+    if (err?.status === 401 || err?.status === 403) {
+      return "Action refusee : la connexion du personnel est requise.";
+    }
+    return err?.error?.message ?? 'Une erreur est survenue.';
+  }
+
+  async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     this.submitted.set(true);
     this.serverError.set('');
 
     if (this.categorieForm().invalid()) {
+      return;
+    }
+
+    const ok = await this.confirmation.demander({
+      titre: this.categorieId ? 'Enregistrer les modifications ?' : 'Enregistrer cette catégorie ?',
+      message: this.categorieModel().libelle,
+      texteConfirmer: 'Enregistrer'
+    });
+    if (!ok) {
       return;
     }
 
@@ -107,7 +128,7 @@ export class CategorieFormComponent implements OnInit {
       next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.saving.set(false);
-        this.serverError.set(err?.error?.message ?? 'Une erreur est survenue.');
+        this.serverError.set(this.messageErreur(err));
       }
     });
   }

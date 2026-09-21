@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <h5 class="modal-title">Changer de profil</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <p class="text-muted mb-3">Choisissez le profil avec lequel vous voulez travailler. Le menu s'adapte à votre choix.</p>
+
+  <div class="profils">
+    @for (p of profils(); track p.code) {
+      <button type="button" class="profil-carte" [class.is-actuel]="p.code === actuel()" (click)="choisir(p)">
+        <span class="profil-radio" aria-hidden="true">
+          @if (p.code === actuel()) {
+            <i class="ti ti-check"></i>
+          }
+        </span>
+        <span class="profil-texte">
+          <span class="profil-nom">{{ p.libelle }}</span>
+          @if (p.description) {
+            <span class="profil-desc">{{ p.description }}</span>
+          }
+          <span class="profil-ecrans">
+            @for (e of ecrans(p); track e) {
+              <span class="pastille">{{ e }}</span>
+            } @empty {
+              <span class="text-muted small">Aucun écran</span>
+            }
+          </span>
+        </span>
+        @if (p.code === actuel()) {
+          <span class="profil-badge">En cours</span>
+        }
+      </button>
+    }
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Fermer</button>
+</div>

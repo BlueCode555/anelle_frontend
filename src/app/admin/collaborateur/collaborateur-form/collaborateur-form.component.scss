@@ -1,0 +1,45 @@
+.choix-profils {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.is-invalid {
+    outline: 2px solid #dc3545;
+    outline-offset: 3px;
+    border-radius: 0.9rem;
+  }
+}
+
+.choix-profil {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid var(--ar-nude);
+  border-radius: 0.9rem;
+  background: #fffdf9;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: var(--ar-dore);
+  }
+
+  &.is-coche {
+    border-color: var(--ar-dore);
+    background: #fff8e6;
+  }
+
+  .form-check-input {
+    flex-shrink: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    margin: 0;
+  }
+}
+
+.choix-texte {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
