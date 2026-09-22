@@ -26,6 +26,8 @@ export interface RendezVous {
   payeLe: string | null;
   note: string | null;
   motifRefus: string | null;
+  // Lien de paiement Square, présent seulement quand le rendez-vous est "Acceptée" et Square configuré.
+  lienPaiement: string | null;
 }
 
 export interface Creneau {
