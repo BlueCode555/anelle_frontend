@@ -23,6 +23,9 @@ export class ServiceFormComponent implements OnInit {
   serviceId: number | null = null;
 
   categories = signal<CategorieResponse[]>([]);
+  // Vrai pendant la recuperation du service existant : le formulaire reste cache pour ne jamais
+  // laisser voir des champs vides le temps que la reponse du serveur arrive (effet "pas prerempli").
+  chargement = signal(false);
   submitted = signal(false);
   saving = signal(false);
   serverError = signal('');
@@ -54,16 +57,24 @@ export class ServiceFormComponent implements OnInit {
     if (!this.serviceId) {
       return;
     }
-    this.catalogue.getService(this.serviceId).subscribe((service) => {
-      this.serviceModel.set({
-        nomService: service.nomService,
-        categorieCode: service.categorieCode,
-        description: service.description ?? '',
-        dureeMinutes: service.dureeMinutes,
-        tarif: service.tarif,
-        actif: service.actif,
-        imageUrl: service.imageUrl ?? ''
-      });
+    this.chargement.set(true);
+    this.catalogue.getService(this.serviceId).subscribe({
+      next: (service) => {
+        this.serviceModel.set({
+          nomService: service.nomService,
+          categorieCode: service.categorieCode,
+          description: service.description ?? '',
+          dureeMinutes: service.dureeMinutes,
+          tarif: service.tarif,
+          actif: service.actif,
+          imageUrl: service.imageUrl ?? ''
+        });
+        this.chargement.set(false);
+      },
+      error: () => {
+        this.chargement.set(false);
+        this.serverError.set('Impossible de charger ce service.');
+      }
     });
   }
 

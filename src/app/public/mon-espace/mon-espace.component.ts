@@ -6,6 +6,7 @@ import { AuthService } from '../../theme/shared/service/auth.service';
 import { InformationService } from '../../theme/shared/service/information.service';
 import { RendezVous, RendezVousService, STATUT_CLASSES, STATUT_LIBELLES } from '../../theme/shared/service/rendez-vous.service';
 import { formatHeure, formatJour } from '../../theme/shared/_helpers/zoned-time';
+import { RETOUR_CLIENT_KEY } from '../../theme/shared/_helpers/token-storage';
 import { SiteHeaderComponent } from '../site-header/site-header.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
@@ -28,6 +29,7 @@ export class MonEspaceComponent implements OnInit {
   rdvs = signal<RendezVous[]>([]);
   chargement = signal(true);
   erreur = signal('');
+  sessionExpiree = signal(false);
 
   zone = computed(() => this.informations.info()?.fuseauHoraire ?? 'America/Toronto');
   paiements = computed(() => this.rdvs().filter((r) => !!r.payeLe && r.statut !== 'ANNULE'));
@@ -76,10 +78,20 @@ export class MonEspaceComponent implements OnInit {
       return;
     }
     this.erreur.set('');
+    this.sessionExpiree.set(false);
     this.rendezVous.annuler(rdv.id).subscribe({
       next: () => this.charger(),
-      error: (err) => this.erreur.set(err?.error?.message ?? "Impossible d'annuler ce rendez-vous.")
+      error: (err) => {
+        const expiree = err?.status === 401 || err?.status === 403;
+        this.sessionExpiree.set(expiree);
+        this.erreur.set(expiree ? 'Votre session a expiré.' : (err?.error?.message ?? "Impossible d'annuler ce rendez-vous."));
+      }
     });
+  }
+
+  reconnecter(): void {
+    sessionStorage.setItem(RETOUR_CLIENT_KEY, '/mon-espace');
+    this.auth.loginClient();
   }
 
   jour(iso: string): string {

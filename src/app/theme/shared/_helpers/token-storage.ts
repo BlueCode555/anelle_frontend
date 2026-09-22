@@ -1,9 +1,18 @@
 export const TOKEN_KEY = 'access_token';
 export const REFRESH_KEY = 'refresh_token';
+// Jeton d'identite (id_token) : sert uniquement a fermer la session Keycloak en silence a la deconnexion
+// (parametre id_token_hint), sans quoi Keycloak affiche son propre ecran de confirmation de deconnexion.
+export const ID_TOKEN_KEY = 'id_token';
 // Profil avec lequel le personnel travaille (envoye au serveur dans l'en-tete X-Profil)
 export const PROFIL_KEY = 'anelle_profil_actif';
-// Page voulue avant la connexion : on y revient une fois connecte.
-export const RETOUR_KEY = 'anelle_retour';
+// Page voulue avant la connexion : on y revient une fois connecte. Deux cles distinctes : sans ca, une page
+// client demandee avant de se connecter (ex. /reserver) pouvait etre reutilisee par erreur comme destination
+// apres une connexion du PERSONNEL faite juste apres par un autre chemin (ex. lien "Espace administration").
+export const RETOUR_CLIENT_KEY = 'anelle_retour_client';
+export const RETOUR_STAFF_KEY = 'anelle_retour_staff';
+// Quel bouton de connexion a ete utilise (client ou personnel) : permet à auth-callback de savoir, meme en cas
+// d'echec de connexion (donc sans jeton pour le dire), vers quelle page d'erreur renvoyer la personne.
+export const LOGIN_FLOW_KEY = 'anelle_login_flow';
 
 // Lit la date d'expiration (claim "exp") d'un JWT sans verifier sa signature : le serveur reste juge.
 export function isTokenExpired(token: string, margeSecondes = 0): boolean {

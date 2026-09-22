@@ -40,6 +40,10 @@ export class SlotPickerComponent implements OnInit {
   minDate = computed(() => aujourdhui(this.zone()));
   serviceCourant = computed(() => this.services().find((s) => s.code === this.serviceCode()) ?? null);
 
+  imageSoin(): string | null {
+    return this.catalogue.imageSrc(this.serviceCourant()?.imageUrl ?? null);
+  }
+
   constructor() {
     // Propose le jour meme des que le fuseau de l'institut est connu.
     effect(() => {

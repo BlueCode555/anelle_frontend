@@ -8,7 +8,11 @@
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 5.5rem 1rem 6.5rem;
+  padding: 2.75rem 1rem 4.5rem;
+
+  @media (min-width: 992px) {
+    padding: 3.5rem 1rem 5rem;
+  }
   background:
     radial-gradient(ellipse at 85% 10%, rgba(232, 200, 116, 0.22) 0%, rgba(232, 200, 116, 0) 55%),
     linear-gradient(135deg, #5a381d 0%, #3d2410 100%);
@@ -216,7 +220,7 @@
 
   img {
     width: 100%;
-    height: 620px;
+    height: 460px;
     object-fit: cover;
     display: block;
   }
@@ -227,22 +231,152 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 3rem 2.2rem 2.4rem;
+  padding: 2rem 2rem 1.6rem;
   background: linear-gradient(0deg, rgba(30, 18, 9, 0.78) 0%, rgba(30, 18, 9, 0) 100%);
   color: #fff8ea;
   font-family: var(--ar-titres);
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 600;
 }
 
 @media (max-width: 767.98px) {
   .gallery-slide img {
-    height: 380px;
+    height: 320px;
   }
 
   .gallery-caption {
-    font-size: 1.5rem;
-    padding: 2rem 1.4rem 2.2rem;
+    font-size: 1.3rem;
+    padding: 1.5rem 1.2rem 1.4rem;
+  }
+}
+
+// ── Carrousel des catégories ─────────────────────────────
+.categories-carousel-wrap {
+  max-width: 900px;
+  padding: 0 1rem;
+
+  @media (min-width: 576px) {
+    padding: 0 3.75rem;
+  }
+
+  ::ng-deep .carousel {
+    overflow: visible;
+  }
+
+  ::ng-deep .carousel-indicators {
+    position: static;
+    margin: 1.25rem 0 0;
+  }
+
+  ::ng-deep .carousel-indicators > * {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--ar-nude);
+    opacity: 1;
+  }
+
+  ::ng-deep .carousel-indicators > .active {
+    background-color: var(--ar-dore);
+  }
+
+  ::ng-deep .carousel-control-prev,
+  ::ng-deep .carousel-control-next {
+    top: 50%;
+    bottom: auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    transform: translateY(-50%);
+    background: #fffdf9;
+    border-radius: 50%;
+    box-shadow: var(--ar-ombre);
+    opacity: 1;
+  }
+
+  ::ng-deep .carousel-control-prev {
+    left: -3.15rem;
+  }
+
+  ::ng-deep .carousel-control-next {
+    right: -3.15rem;
+  }
+
+  ::ng-deep .carousel-control-prev-icon,
+  ::ng-deep .carousel-control-next-icon {
+    background-color: var(--ar-chocolat);
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  @media (max-width: 575.98px) {
+    ::ng-deep .carousel-control-prev,
+    ::ng-deep .carousel-control-next {
+      display: none;
+    }
+  }
+}
+
+.categorie-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0.25rem;
+}
+
+.categorie-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+
+  img,
+  .categorie-icon {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--ar-nude);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .categorie-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--ar-dore);
+    background: linear-gradient(135deg, #f3eadb, #ead9bc);
+  }
+
+  .categorie-nom {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--ar-chocolat-fonce);
+    text-align: center;
+  }
+
+  &:hover img,
+  &:hover .categorie-icon,
+  &:focus-visible img,
+  &:focus-visible .categorie-icon {
+    transform: translateY(-3px);
+    border-color: var(--ar-dore);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .categorie-grid {
+    gap: 0.6rem;
+  }
+
+  .categorie-nom {
+    font-size: 0.8rem;
   }
 }
 

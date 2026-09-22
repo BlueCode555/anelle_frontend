@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -12,6 +12,7 @@ import { ConfirmationService } from '../../shared/service/confirmation.service';
 import { ToastService } from '../../shared/service/toast.service';
 import { InformationService } from '../../shared/service/information.service';
 import { RendezVousService } from '../../shared/service/rendez-vous.service';
+import { ThemeService } from '../../shared/service/theme.service';
 import { ajouterJours, aujourdhui } from '../../shared/_helpers/zoned-time';
 
 interface Miette {
@@ -28,7 +29,7 @@ const COLLAPSE_KEY = 'arnelle.nav.collapsed';
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private informations = inject(InformationService);
   private rendezVous = inject(RendezVousService);
@@ -36,6 +37,7 @@ export class AdminComponent implements OnInit {
   private confirmation = inject(ConfirmationService);
   private modals = inject(NgbModal);
   toast = inject(ToastService);
+  theme = inject(ThemeService);
 
   collapsed = signal(this.lireRepli());
   mobileOpen = signal(false);
@@ -89,11 +91,21 @@ export class AdminComponent implements OnInit {
       this.informations.info();
       this.chargerDemandes();
     });
+    // Le mode sombre est pose sur <body> (pas seulement .ad-shell) car les fenetres modales sont ajoutees
+    // par ng-bootstrap en dehors de la coque : c'est le seul moyen de les faire passer sombres aussi.
+    // Retire au OnDestroy pour ne jamais deborder sur le site public.
+    effect(() => {
+      document.body.setAttribute('data-theme', this.theme.sombre() ? 'dark' : 'light');
+    });
   }
 
   ngOnInit(): void {
     this.informations.ensureLoaded();
     this.ouvrirSectionActive();
+  }
+
+  ngOnDestroy(): void {
+    document.body.removeAttribute('data-theme');
   }
 
   basculerMenu(): void {

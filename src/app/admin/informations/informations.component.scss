@@ -33,3 +33,82 @@
     flex-wrap: wrap;
   }
 }
+
+// ── Taux de remplissage de la fiche ─────────────────────
+.taux-remplissage-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: var(--ar-chocolat-fonce);
+}
+
+.taux-remplissage-barre {
+  height: 8px;
+  border-radius: 50rem;
+  background: var(--ar-nude);
+  overflow: hidden;
+}
+
+.taux-remplissage-valeur {
+  height: 100%;
+  border-radius: 50rem;
+  background: linear-gradient(90deg, var(--ar-dore), var(--ar-dore-clair));
+  transition: width 0.3s ease;
+}
+
+// ── Accordéon « Mon institut » : sections dépliables, sur le même style que les cartes ─────
+.ar-accordeon {
+  overflow: hidden;
+
+  ::ng-deep .accordion-item {
+    border: 0;
+    border-bottom: 1px solid var(--ar-nude);
+    background: transparent;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  ::ng-deep .accordion-button {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.1rem 1.5rem;
+    font-family: var(--ar-titres);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ar-chocolat-fonce);
+    background: transparent;
+    box-shadow: none;
+
+    i {
+      font-size: 1.15rem;
+      color: var(--ar-dore);
+    }
+
+    &:not(.collapsed) {
+      color: var(--ar-chocolat-fonce);
+      background: var(--ar-creme-fonce);
+      box-shadow: none;
+    }
+
+    &:focus {
+      box-shadow: none;
+      outline: 2px solid var(--ar-dore);
+      outline-offset: -2px;
+    }
+
+    &::after {
+      margin-left: auto;
+    }
+  }
+
+  ::ng-deep .accordion-body {
+    padding: 0.25rem 1.5rem 1.5rem;
+  }
+}

@@ -100,4 +100,8 @@ export class EquipeService {
   modifierCollaborateur(id: number, form: CollaborateurUpdateForm): Observable<Collaborateur> {
     return this.http.put<ApiResponse<Collaborateur>>(`${this.base}/collaborateurs/${id}`, form).pipe(map((r) => r.data));
   }
+
+  supprimerCollaborateur(id: number): Observable<boolean> {
+    return this.http.delete<ApiResponse<boolean>>(`${this.base}/collaborateurs/${id}`).pipe(map((r) => r.data));
+  }
 }

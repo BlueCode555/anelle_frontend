@@ -472,3 +472,311 @@ textarea.form-control {
     flex: 1;
   }
 }
+
+// ── Actions d'une ligne de liste : icônes seules (œil, crayon, corbeille) ───
+// Beaucoup plus compact que des boutons texte : une ligne de tableau tient sur une seule hauteur,
+// meme sur telephone, meme avec beaucoup d'entrees dans la liste.
+.actions-icones {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.btn-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--ar-nude);
+  border-radius: 0.65rem;
+  background: #fffdf9;
+  color: var(--ar-chocolat);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    background: var(--ar-creme-fonce);
+    border-color: var(--ar-dore);
+    color: var(--ar-chocolat-fonce);
+  }
+
+  &.est-danger {
+    color: #b3372b;
+
+    &:hover {
+      background: #fbe9e6;
+      border-color: #e2a89f;
+      color: #8a271d;
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .table-cartes td.cellule-actions .actions-icones {
+    justify-content: flex-end;
+  }
+
+  .table-cartes td.cellule-actions .actions-icones .btn-icone {
+    flex: 0 0 auto;
+  }
+}
+
+// ── Étapes numérotées (ex. prise de rendez-vous : 1. Soin, 2. Date et heure, 3. Message) ───
+.etape {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--ar-nude);
+  transition: opacity 0.2s ease;
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  &.est-desactivee {
+    opacity: 0.55;
+  }
+}
+
+.etape-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-family: var(--ar-titres);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ar-chocolat-nuit);
+  background: linear-gradient(135deg, var(--ar-dore-clair), var(--ar-dore));
+}
+
+.etape-contenu {
+  flex: 1;
+  min-width: 0;
+}
+
+.etape-titre {
+  margin: 0.1rem 0 0.75rem;
+  font-family: var(--ar-titres);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ar-chocolat-fonce);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MODE SOMBRE (espace de gestion uniquement)
+// ═══════════════════════════════════════════════════════════════════════════
+// Pose sur <body> par AdminComponent tant que le back-office est ouvert (jamais sur le site public ni sur
+// la connexion). Ecrit ici, dans une feuille globale non cloisonnee par composant : Angular isole le CSS de
+// chaque composant, donc un override ecrit dans un seul composant (ex. admin.component.scss) ne peut pas
+// atteindre les elements des AUTRES composants (listes, formulaires, fenetres modales) — seule une feuille
+// globale le peut. Autre raison d'etre ici : plusieurs couleurs de Bootstrap (fond des cartes, des champs,
+// des listes...) sont figees en dur a la compilation par ce projet (voir scss/settings/bootstrap-variables.scss :
+// $card-bg, $input-bg, $body-bg...), donc le mecanisme sombre natif d'usage de Bootstrap (qui repose sur des
+// variables CSS changeables a l'affichage) ne s'applique pas ici : il faut la re-ecrire a la main, element par
+// element, ci-dessous.
+body[data-theme='dark'] {
+  --ar-creme: #241b12;
+  --ar-creme-fonce: #1c1710;
+  --ar-nude: #4a3c2a;
+  --ar-chocolat: #e8c874;
+  --ar-chocolat-fonce: #f3e2b3;
+  --ar-chocolat-nuit: #3d2410;
+  --ar-texte: #ecdcc0;
+  --ar-texte-doux: #b3a488;
+  --ar-ombre: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --ar-ombre-forte: 0 18px 44px rgba(0, 0, 0, 0.5);
+
+  background: var(--ar-creme-fonce);
+  color: var(--ar-texte);
+
+  // ── Cartes, listes, tableaux ──
+  .card,
+  .list-group,
+  .list-group-item {
+    background-color: #241b12;
+    color: var(--ar-texte);
+  }
+
+  .table {
+    color: var(--ar-texte);
+    --bs-table-hover-bg: rgba(232, 200, 116, 0.08);
+  }
+
+  .table td {
+    border-color: var(--ar-nude);
+  }
+
+  .table-cartes tbody tr {
+    background: #241b12;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  }
+
+  .table-cartes td.cellule-actions {
+    border-top-color: var(--ar-nude);
+  }
+
+  // ── Formulaires ──
+  .form-control,
+  .form-select {
+    background-color: #1c1710;
+    color: var(--ar-texte);
+  }
+
+  .form-control::placeholder {
+    color: rgba(179, 164, 136, 0.6);
+  }
+
+  .form-control:disabled,
+  .form-select:disabled {
+    background-color: #201810;
+    color: var(--ar-texte-doux);
+  }
+
+  .form-text,
+  .text-muted {
+    color: var(--ar-texte-doux) !important;
+  }
+
+  .input-group-text {
+    background-color: #1c1710;
+    color: var(--ar-texte);
+    border-color: var(--ar-nude);
+  }
+
+  // ── Icônes d'action (œil / crayon / corbeille) ──
+  .btn-icone {
+    background: #1c1710;
+  }
+
+  // ── Fenêtres modales (ng-bootstrap les ajoute hors de .ad-shell : ce pourquoi le mode sombre est sur <body>) ──
+  // La couleur de texte est fixee ici (pas seulement heritee de <body>) : Bootstrap fige "color" sur
+  // .modal-content a la compilation, ce qui coupe sinon l'heritage pour tout le contenu de la fenetre.
+  .modal-content {
+    background: var(--ar-creme);
+    color: var(--ar-texte);
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: var(--ar-nude);
+  }
+
+  .modal-footer {
+    background: var(--ar-creme);
+  }
+
+  // ── Accordéon (« Mon institut ») ──
+  .accordion-item {
+    color: var(--ar-texte);
+  }
+
+  // ── Menus déroulants ──
+  .dropdown-menu {
+    background-color: #241b12;
+    border-color: var(--ar-nude);
+    color: var(--ar-texte);
+  }
+
+  // ── Messages ──
+  .alert-success {
+    background-color: rgba(91, 125, 79, 0.22);
+    color: #b7d6ac;
+  }
+
+  .alert-danger {
+    background-color: rgba(179, 55, 43, 0.22);
+    color: #f0b3ab;
+  }
+
+  .alert-warning {
+    background-color: rgba(201, 162, 39, 0.22);
+    color: var(--ar-dore-clair);
+  }
+
+  .alert-info {
+    background-color: rgba(90, 130, 150, 0.22);
+    color: #a9cfe0;
+  }
+
+  // ── Boutons ──
+  .btn-outline-secondary {
+    color: var(--ar-texte);
+    border-color: var(--ar-nude);
+
+    &:hover {
+      background: var(--ar-nude);
+      color: var(--ar-chocolat-nuit);
+    }
+  }
+
+  // ── Coque du back-office (AdminComponent) ──
+  // Le menu lateral (.ad-sidebar) et la bande (.ad-band) restent volontairement inchanges : deja en brun fixe.
+  .ad-shell {
+    background: var(--ar-creme-fonce);
+  }
+
+  .ad-topbar {
+    background: #241b12;
+    border-bottom-color: var(--ar-nude);
+  }
+
+  .ad-icon-btn:hover {
+    background: #322616;
+  }
+
+  .ad-user {
+    background: #241b12;
+    border-color: var(--ar-nude);
+  }
+
+  .ad-menu {
+    background: #241b12;
+    border-color: var(--ar-nude);
+  }
+
+  .ad-menu-head {
+    background: #1c1710;
+  }
+
+  .ad-menu-action:hover {
+    background: #322616;
+  }
+
+  .ad-bell-badge {
+    border-color: #241b12;
+  }
+
+  .ad-footer {
+    background: #241b12;
+    border-top-color: var(--ar-nude);
+  }
+
+  // ── Formulaire collaborateur : choix des profils, vignettes vides ──
+  .choix-profil {
+    background: #1c1710;
+
+    &.is-coche {
+      background: #2e2410;
+    }
+  }
+
+  .row-thumb-empty {
+    background: #1c1710;
+    color: #6b5d47;
+  }
+}

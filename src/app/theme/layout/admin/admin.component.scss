@@ -719,3 +719,9 @@
     animation: none;
   }
 }
+
+// Le mode sombre de cette coque (topbar, menu profil, pied de page...) est defini globalement dans
+// brand.scss, jamais ici : les styles d'un composant Angular sont cloisonnes (chaque regle CSS recoit un
+// attribut d'encapsulation propre au composant), or ce meme attribut est aussi ajoute a `body` dans le
+// selecteur, empechant toute regle "body[data-theme='dark'] ..." ecrite ici de jamais s'appliquer. Voir
+// la section « Mode sombre » de brand.scss.

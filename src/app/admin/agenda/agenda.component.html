@@ -23,6 +23,12 @@
         </div>
       </div>
       <div class="card-body">
+        <p class="text-muted small agenda-intro">
+          La liste des rendez-vous de la semaine affichée ci-dessus. Une demande reçue en ligne doit d'abord être
+          <strong>acceptée ou refusée</strong> ; une fois acceptée et le <strong>paiement reçu</strong>, elle devient
+          <strong>confirmée</strong> ; une fois passée, marquez-la <strong>terminée</strong>. « Nouveau rendez-vous »
+          sert à inscrire vous-même un rendez-vous pris par téléphone ou sur place.
+        </p>
         @if (erreur()) {
           <div class="alert alert-danger">{{ erreur() }}</div>
         }
@@ -82,6 +88,10 @@
     <div class="card">
       <div class="card-header"><h5 class="mb-0">Congés et fermetures</h5></div>
       <div class="card-body">
+        <p class="text-muted small agenda-intro">
+          Bloquez une période (vacances, fermeture exceptionnelle...) pour qu'elle disparaisse des créneaux proposés
+          aux clientes sur le site de réservation.
+        </p>
         <div class="row g-2 align-items-end mb-3">
           <div class="col-12 col-md-3">
             <label class="form-label" for="cg-debut">Début</label>

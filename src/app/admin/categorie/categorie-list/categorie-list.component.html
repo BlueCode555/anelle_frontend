@@ -47,9 +47,9 @@
                 <td data-label="Catégorie" class="fw-semibold">{{ cat.libelle }}</td>
                 <td data-label="Description" class="text-muted">{{ cat.description }}</td>
                 <td class="cellule-actions text-end">
-                  <div class="actions">
-                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="openEdit(cat)"><i class="ti ti-edit"></i>Modifier</button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(cat)"><i class="ti ti-trash"></i>Supprimer</button>
+                  <div class="actions actions-icones">
+                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="openEdit(cat)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="remove(cat)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

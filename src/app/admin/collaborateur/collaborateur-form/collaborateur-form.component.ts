@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Collaborateur, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
-// L'esthéticienne crée le compte et choisit le profil dans le même geste ; il peut avoir plusieurs profils et choisit celui avec lequel il travaille.
+// L'esthéticienne crée le compte et choisit le(s) profil(s) dans le même geste. « Voir » (lectureSeule) affiche
+// tout en consultation seule, mais laisse quand même agir sur le compte (nouveau mot de passe, etc.), qui n'a
+// rien à voir avec la validation du formulaire.
 @Component({
   selector: 'app-collaborateur-form',
   imports: [CommonModule],
@@ -13,12 +16,13 @@ import { Collaborateur, EquipeService, Profil } from 'src/app/theme/shared/servi
 })
 export class CollaborateurFormComponent implements OnInit {
   private equipe = inject(EquipeService);
+  private confirmation = inject(ConfirmationService);
   activeModal = inject(NgbActiveModal);
 
-  // Renseigne par la liste avant l'affichage (modification) ; vide = creation.
+  // Renseigne par la liste avant l'affichage (modification/consultation) ; vide = creation.
   collaborateur: Collaborateur | null = null;
-  // Vrai : on ne montre que les profils (action « Profils » de la liste)
-  seulementProfils = false;
+  // Vrai : consultation seule (bouton "oeil" de la liste), les champs sont desactives.
+  lectureSeule = false;
 
   profils = signal<Profil[]>([]);
   prenom = signal('');
@@ -28,6 +32,7 @@ export class CollaborateurFormComponent implements OnInit {
   actif = signal(true);
   soumis = signal(false);
   envoi = signal(false);
+  envoiCompte = signal(false);
   erreur = signal('');
 
   ngOnInit(): void {
@@ -54,6 +59,7 @@ export class CollaborateurFormComponent implements OnInit {
   }
 
   basculerProfil(code: string): void {
+    if (this.lectureSeule) return;
     this.profilCodes.update((liste) => (liste.includes(code) ? liste.filter((c) => c !== code) : [...liste, code]));
   }
 
@@ -61,10 +67,18 @@ export class CollaborateurFormComponent implements OnInit {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email().trim());
   }
 
-  enregistrer(): void {
+  async enregistrer(): Promise<void> {
     this.soumis.set(true);
     const complet = this.prenom().trim() && this.nom().trim() && this.profilCodes().length > 0 && (this.collaborateur || this.emailValide());
     if (!complet || this.envoi()) return;
+
+    const ok = await this.confirmation.demander({
+      titre: this.collaborateur ? 'Enregistrer les modifications ?' : 'Créer ce collaborateur ?',
+      message: `${this.prenom().trim()} ${this.nom().trim()}`,
+      texteConfirmer: 'Enregistrer'
+    });
+    if (!ok) return;
+
     this.envoi.set(true);
     this.erreur.set('');
 
@@ -86,6 +100,48 @@ export class CollaborateurFormComponent implements OnInit {
       error: (err) => {
         this.envoi.set(false);
         this.erreur.set(err?.error?.message ?? "Impossible d'enregistrer le collaborateur.");
+      }
+    });
+  }
+
+  // ── Compte de connexion : independant du formulaire, disponible meme en consultation ──────────
+
+  async creerCompte(): Promise<void> {
+    if (!this.collaborateur || this.envoiCompte()) return;
+    const ok = await this.confirmation.demander({
+      titre: `Créer le compte de connexion de ${this.collaborateur.prenom} ${this.collaborateur.nom} ?`,
+      message: 'Un mot de passe provisoire sera généré pour se connecter.',
+      texteConfirmer: 'Créer le compte',
+      icone: 'ti-key'
+    });
+    if (!ok) return;
+    this.envoiCompte.set(true);
+    this.erreur.set('');
+    this.equipe.creerCompte(this.collaborateur.id).subscribe({
+      next: (resultat) => this.activeModal.close(resultat),
+      error: (err) => {
+        this.envoiCompte.set(false);
+        this.erreur.set(err?.error?.message ?? "Impossible de créer le compte de connexion.");
+      }
+    });
+  }
+
+  async nouveauMotDePasse(): Promise<void> {
+    if (!this.collaborateur || this.envoiCompte()) return;
+    const ok = await this.confirmation.demander({
+      titre: `Nouveau mot de passe pour ${this.collaborateur.prenom} ${this.collaborateur.nom} ?`,
+      message: "Un mot de passe provisoire sera généré. L'ancien ne fonctionnera plus.",
+      texteConfirmer: 'Générer',
+      icone: 'ti-key'
+    });
+    if (!ok) return;
+    this.envoiCompte.set(true);
+    this.erreur.set('');
+    this.equipe.reinitialiserMotDePasse(this.collaborateur.id).subscribe({
+      next: (resultat) => this.activeModal.close(resultat),
+      error: (err) => {
+        this.envoiCompte.set(false);
+        this.erreur.set(err?.error?.message ?? 'Impossible de réinitialiser le mot de passe.');
       }
     });
   }

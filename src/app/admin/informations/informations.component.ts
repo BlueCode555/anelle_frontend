@@ -1,18 +1,24 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { Horaire, Information, InformationService, JOURS_SEMAINE } from 'src/app/theme/shared/service/information.service';
+import { Horaire, Information, InformationForm, InformationService, JOURS_SEMAINE } from 'src/app/theme/shared/service/information.service';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
 @Component({
   selector: 'app-informations',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbAccordionModule],
   templateUrl: './informations.component.html',
   styleUrl: './informations.component.scss'
 })
 export class InformationsComponent implements OnInit {
   private fb = inject(FormBuilder);
   private informations = inject(InformationService);
+  private confirmation = inject(ConfirmationService);
+
+  // Deplie toutes les sections si l'enregistrement echoue, pour qu'un champ en erreur ne reste jamais caché.
+  @ViewChild('accordeon') private accordeon?: NgbAccordionDirective;
 
   readonly jours = JOURS_SEMAINE;
 
@@ -32,6 +38,8 @@ export class InformationsComponent implements OnInit {
   saving = signal(false);
   saved = signal(false);
   serverError = signal('');
+  // Vrai si un mot de passe de notification est deja enregistre cote serveur (jamais renvoye lui-meme).
+  courrielDejaConfigure = signal(false);
 
   form: FormGroup = this.fb.group({
     nom: ['', [Validators.required, Validators.maxLength(150)]],
@@ -49,6 +57,9 @@ export class InformationsComponent implements OnInit {
     lienFacebook: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     bannierePromo: ['', Validators.maxLength(255)],
     fuseauHoraire: ['America/Toronto'],
+    courrielNotifExpediteur: ['', [Validators.email, Validators.maxLength(255)]],
+    // Jamais prerempli (le serveur ne renvoie jamais le mot de passe) : laisser vide = garder celui deja enregistre.
+    courrielNotifMotDePasse: ['', Validators.maxLength(255)],
     horaires: this.fb.array(
       this.jours.map((_, i) =>
         this.fb.group({
@@ -87,7 +98,34 @@ export class InformationsComponent implements OnInit {
     return !!c && c.touched && c.hasError(error);
   }
 
-  submit(): void {
+  // Pourcentage de champs renseignes (hors "Fuseau horaire", deja rempli par defaut) : donne une idee
+  // visuelle de ce qu'il reste a completer sur la fiche de l'institut, tout en restant simple (aucun champ
+  // n'est obligatoire a part le nom : ce compteur guide sans jamais bloquer l'enregistrement).
+  private readonly champsSuivis = [
+    'nom',
+    'slogan',
+    'description',
+    'adresse',
+    'ville',
+    'province',
+    'codePostal',
+    'telephone',
+    'email',
+    'siteWeb',
+    'lienInstagram',
+    'lienFacebook',
+    'bannierePromo'
+  ];
+
+  tauxRemplissage(): number {
+    const v = this.form.getRawValue();
+    const remplis = this.champsSuivis.filter((c) => !!(v as Record<string, string>)[c]?.toString().trim()).length;
+    const horaireOuvert = this.horaires.controls.some((row) => row.get('ouvert')?.value) ? 1 : 0;
+    const total = this.champsSuivis.length + 1;
+    return Math.round(((remplis + horaireOuvert) / total) * 100);
+  }
+
+  async submit(): Promise<void> {
     this.saved.set(false);
     this.serverError.set('');
     this.form.markAllAsTouched();
@@ -97,6 +135,7 @@ export class InformationsComponent implements OnInit {
       return v.ouvert && (!v.heureDebut || !v.heureFin || v.heureDebut >= v.heureFin);
     });
     if (this.form.invalid || invalidTimes) {
+      this.accordeon?.expandAll();
       this.serverError.set(
         invalidTimes
           ? "Vérifiez les horaires : un jour ouvert doit avoir une heure d'ouverture précédant l'heure de fermeture."
@@ -104,6 +143,14 @@ export class InformationsComponent implements OnInit {
       );
       return;
     }
+
+    const ok = await this.confirmation.demander({
+      titre: 'Enregistrer les informations ?',
+      message: 'Le site public sera mis à jour immédiatement avec ces changements.',
+      texteConfirmer: 'Enregistrer',
+      icone: 'ti-device-floppy'
+    });
+    if (!ok) return;
 
     this.saving.set(true);
     this.informations.update(this.payload()).subscribe({
@@ -144,8 +191,11 @@ export class InformationsComponent implements OnInit {
       lienInstagram: text(info.lienInstagram),
       lienFacebook: text(info.lienFacebook),
       bannierePromo: text(info.bannierePromo),
-      fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto'
+      fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto',
+      courrielNotifExpediteur: text(info.courrielNotifExpediteur),
+      courrielNotifMotDePasse: ''
     });
+    this.courrielDejaConfigure.set(info.courrielNotifConfigure);
     info.horaires.forEach((h) => {
       const row = this.horaires.at(h.jourSemaine - 1) as FormGroup;
       row.patchValue({ ouvert: h.ouvert, heureDebut: h.heureDebut ?? '', heureFin: h.heureFin ?? '' });
@@ -154,7 +204,7 @@ export class InformationsComponent implements OnInit {
     this.form.markAsPristine();
   }
 
-  private payload(): Information {
+  private payload(): InformationForm {
     const v = this.form.getRawValue();
     const horaires: Horaire[] = this.horaires.controls.map((row) => {
       const r = row.getRawValue();
@@ -165,6 +215,6 @@ export class InformationsComponent implements OnInit {
         heureFin: r.ouvert ? r.heureFin : null
       };
     });
-    return { ...v, horaires } as Information;
+    return { ...v, horaires } as InformationForm;
   }
 }

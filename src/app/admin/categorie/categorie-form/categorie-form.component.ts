@@ -22,6 +22,9 @@ export class CategorieFormComponent implements OnInit {
   // Set by the opener (list component) via modalRef.componentInstance.categorieId before the modal renders.
   categorieId: number | null = null;
 
+  // Vrai pendant la recuperation de la categorie existante : le formulaire reste cache pour ne jamais
+  // laisser voir des champs vides le temps que la reponse du serveur arrive (effet "pas prerempli").
+  chargement = signal(false);
   submitted = signal(false);
   saving = signal(false);
   serverError = signal('');
@@ -44,12 +47,20 @@ export class CategorieFormComponent implements OnInit {
     if (!this.categorieId) {
       return;
     }
-    this.catalogue.getCategorie(this.categorieId).subscribe((categorie) => {
-      this.categorieModel.set({
-        libelle: categorie.libelle,
-        description: categorie.description ?? '',
-        imageUrl: categorie.imageUrl ?? ''
-      });
+    this.chargement.set(true);
+    this.catalogue.getCategorie(this.categorieId).subscribe({
+      next: (categorie) => {
+        this.categorieModel.set({
+          libelle: categorie.libelle,
+          description: categorie.description ?? '',
+          imageUrl: categorie.imageUrl ?? ''
+        });
+        this.chargement.set(false);
+      },
+      error: () => {
+        this.chargement.set(false);
+        this.serverError.set('Impossible de charger cette catégorie.');
+      }
     });
   }
 

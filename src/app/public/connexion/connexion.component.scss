@@ -1,23 +1,176 @@
+// Partagé par ConnexionComponent (clientes) et PersonnelComponent (equipe) : meme habillage "photo + carte"
+// que l'ecran de connexion Keycloak, pour que toute l'experience de connexion du site soit coherente.
 .connexion-page {
   min-height: 100vh;
-  background-color: #fbf6ec;
+  background-color: var(--ar-creme);
 }
 
 .connexion-main {
-  padding: 4rem 0;
+  min-height: calc(100vh - 76px);
+  display: flex;
+  align-items: center;
+  padding: 2.5rem 1rem;
 }
 
-.connexion-card {
+.connexion-split {
+  display: grid;
   width: 100%;
-  max-width: 460px;
-  padding: 2.5rem 2rem;
+  max-width: 980px;
+  margin: 0 auto;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(74, 46, 23, 0.16);
+  animation: connexion-entree 0.6s ease both;
+}
+
+@keyframes connexion-entree {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Panneau photo (bureau uniquement) ────────────────────
+.connexion-visual {
+  display: none;
+  position: relative;
+  overflow: hidden;
+  background: var(--ar-chocolat-nuit);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4%;
+    background-image: url('https://images.pexels.com/photos/6945567/pexels-photo-6945567.jpeg?auto=compress&cs=tinysrgb&w=1200');
+    background-size: cover;
+    background-position: center;
+    animation: connexion-kenburns 22s ease-in-out infinite alternate;
+  }
+}
+
+// La page personnel utilise une autre photo, plus "atelier/professionnel", pour se distinguer visuellement
+// de la page cliente.
+.connexion-split.est-personnel .connexion-visual::before {
+  background-image: url('https://images.pexels.com/photos/8312896/pexels-photo-8312896.jpeg?auto=compress&cs=tinysrgb&w=1200');
+  background-position: center 30%;
+}
+
+@keyframes connexion-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+.connexion-visual-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(30, 16, 6, 0.85) 0%, rgba(30, 16, 6, 0.1) 55%, rgba(30, 16, 6, 0.35) 100%);
+}
+
+.connexion-visual-quote {
+  position: absolute;
+  left: 2rem;
+  right: 2rem;
+  bottom: 2.25rem;
+  z-index: 1;
+  margin: 0;
+
+  p {
+    margin: 0 0 0.4rem;
+    font-family: var(--ar-titres);
+    font-style: italic;
+    font-size: 1.55rem;
+    line-height: 1.25;
+    color: #fff8ea;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  cite {
+    font-style: normal;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ar-dore-clair);
+  }
+}
+
+@media (min-width: 992px) {
+  .connexion-split {
+    grid-template-columns: 1.1fr 1fr;
+    min-height: 560px;
+  }
+
+  .connexion-visual {
+    display: block;
+  }
+}
+
+// ── Carte de connexion ───────────────────────────────────
+.connexion-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  padding: 2.75rem 2.25rem;
   background: #fff;
-  border: 1px solid #e6d9c3;
-  border-radius: 1.25rem;
-  box-shadow: 0 16px 40px rgba(74, 46, 23, 0.1);
 }
 
 .connexion-icon {
   font-size: 2.6rem;
   color: #c9a227;
+}
+
+// Bouton "Continuer avec Google" : blanc, discret, conforme aux usages habituels (pas la couleur de marque
+// du site) pour rester reconnaissable comme un vrai bouton de connexion Google.
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 1.5rem;
+  border: 1px solid #dadce0;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #3c4043;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+
+  i {
+    font-size: 1.2rem;
+    color: #4285f4;
+  }
+
+  &:hover:not(:disabled) {
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(60, 64, 67, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: wait;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connexion-split {
+    animation: none;
+  }
+
+  .connexion-visual::before {
+    animation: none;
+  }
 }

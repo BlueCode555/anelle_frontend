@@ -3,31 +3,45 @@
 
   <main class="container espace-main">
     @if (auth.user(); as user) {
-      <section class="profile-card d-flex align-items-center gap-3 mb-4">
+      <section class="profile-card">
         @if (user.photoUrl) {
           <img [src]="user.photoUrl" alt="" class="profile-avatar" referrerpolicy="no-referrer" />
         } @else {
           <span class="profile-avatar profile-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
         }
-        <div class="flex-grow-1">
-          <h1 class="h4 mb-1">Bonjour {{ auth.displayName() }}</h1>
+        <div class="profile-info">
+          <span class="ar-eyebrow d-block mb-1">Mon espace</span>
+          <h1 class="profile-nom">Bonjour {{ auth.displayName() }}</h1>
           <p class="text-muted mb-0">{{ user.email }}</p>
         </div>
-        <a routerLink="/reserver" class="btn btn-secondary">Prendre rendez-vous</a>
+        <a routerLink="/reserver" class="btn btn-secondary btn-lg">
+          <i class="ti ti-calendar-plus me-1"></i>Prendre rendez-vous
+        </a>
       </section>
 
       @if (erreur()) {
-        <div class="alert alert-danger">{{ erreur() }}</div>
+        <div class="alert alert-danger d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <span>{{ erreur() }}</span>
+          @if (sessionExpiree()) {
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="reconnecter()">
+              <i class="ti ti-refresh me-1"></i>Se reconnecter
+            </button>
+          }
+        </div>
       }
 
-      <section class="history-card mb-4">
-        <h2 class="h5"><i class="ti ti-calendar-event me-2"></i>Mes rendez-vous</h2>
+      <section class="history-card">
+        <h2 class="h5"><span class="history-icone"><i class="ti ti-calendar-event"></i></span>Mes rendez-vous</h2>
 
         @if (chargement()) {
           <p class="text-muted mb-0">Chargement...</p>
         } @else if (rdvs().length === 0) {
-          <p class="text-muted mb-3">Aucun rendez-vous pour le moment. Vos réservations apparaîtront ici.</p>
-          <a routerLink="/accueil" fragment="services" class="btn btn-outline-secondary">Découvrir nos services</a>
+          <div class="etat-vide">
+            <i class="ti ti-calendar-heart"></i>
+            <h6>Aucun rendez-vous pour le moment</h6>
+            <p>Vos réservations apparaîtront ici dès que vous en aurez pris un.</p>
+            <a routerLink="/accueil" fragment="services" class="btn btn-outline-secondary">Découvrir nos services</a>
+          </div>
         } @else {
           <ul class="rdv-list">
             @for (rdv of rdvs(); track rdv.id) {
@@ -59,9 +73,13 @@
       </section>
 
       <section class="history-card">
-        <h2 class="h5"><i class="ti ti-receipt me-2"></i>Mes paiements</h2>
+        <h2 class="h5"><span class="history-icone"><i class="ti ti-receipt"></i></span>Mes paiements</h2>
         @if (paiements().length === 0) {
-          <p class="text-muted mb-0">Aucun paiement pour le moment. Vos reçus apparaîtront ici.</p>
+          <div class="etat-vide">
+            <i class="ti ti-receipt-2"></i>
+            <h6>Aucun paiement pour le moment</h6>
+            <p>Vos reçus apparaîtront ici après le règlement d'un rendez-vous.</p>
+          </div>
         } @else {
           <ul class="rdv-list">
             @for (rdv of paiements(); track rdv.id) {

@@ -47,7 +47,11 @@ $theme-colors: (
   'primary': $primary,
   'secondary': $secondary
 );
-$theme-colors-rgb: map-loop($theme-colors, to-rgb, '$value');
+// $theme-colors-rgb (les variables CSS --bs-*-rgb, utilisees entre autres par .text-bg-info/.text-bg-danger)
+// ne peut se calculer qu'une fois $theme-colors au complet (plus bas, une fois success/info/warning/danger
+// ajoutes) : le calculer ici, sur cette version encore partielle (primary/secondary seulement), privait
+// --bs-info-rgb et --bs-danger-rgb de toute valeur, rendant ces badges invisibles (texte blanc sur fond
+// transparent). Voir le recalcul en bas de fichier, juste apres la fusion complete de $theme-colors.
 
 $min-contrast-ratio: 1.55;
 // Customize the light and dark text colors for use in our color contrast function.
@@ -399,3 +403,4 @@ $theme-colors: map-merge(
   ),
   $theme-colors
 ); // Color contrast
+$theme-colors-rgb: map-loop($theme-colors, to-rgb, '$value');

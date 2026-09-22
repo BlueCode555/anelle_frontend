@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Collaborateur, EquipeService } from 'src/app/theme/shared/service/equipe.service';
@@ -9,7 +10,7 @@ import { ToastService } from 'src/app/theme/shared/service/toast.service';
 
 @Component({
   selector: 'app-collaborateur-list',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './collaborateur-list.component.html',
   styleUrl: './collaborateur-list.component.scss'
 })
@@ -23,9 +24,19 @@ export class CollaborateurListComponent implements OnInit {
   chargement = signal(true);
   erreur = signal('');
   info = signal('');
+  recherche = signal('');
   // Identifiants a transmettre a la personne (affiches une seule fois)
   identifiants = signal<{ nom: string; email: string; motDePasse: string } | null>(null);
   copie = signal(false);
+
+  // Recherche par nom, prenom ou e-mail : evite le defilement sans fin quand l'equipe est nombreuse.
+  visibles = computed(() => {
+    const q = this.recherche().trim().toLowerCase();
+    if (!q) return this.collaborateurs();
+    return this.collaborateurs().filter(
+      (c) => `${c.prenom} ${c.nom}`.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
+    );
+  });
 
   ngOnInit(): void {
     this.charger();
@@ -49,69 +60,29 @@ export class CollaborateurListComponent implements OnInit {
     this.ouvrir(null);
   }
 
-  modifier(collaborateur: Collaborateur): void {
-    this.ouvrir(collaborateur);
-  }
-
-  // Ajouter ou retirer des profils (cases a cocher)
-  gererProfils(collaborateur: Collaborateur): void {
+  voir(collaborateur: Collaborateur): void {
     this.ouvrir(collaborateur, true);
   }
 
-  // Retire un profil d'un clic (apres confirmation) ; la personne doit toujours en garder au moins un.
-  async retirerProfil(c: Collaborateur, code: string): Promise<void> {
-    const profil = c.profils.find((p) => p.code === code);
-    if (!profil || c.profils.length < 2) return;
+  modifier(collaborateur: Collaborateur): void {
+    this.ouvrir(collaborateur, false);
+  }
+
+  async supprimer(c: Collaborateur): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Retirer le profil « ${profil.libelle} » ?`,
-      message: `${c.prenom} ${c.nom} n'aura plus les droits de ce profil.`,
-      texteConfirmer: 'Retirer',
+      titre: `Supprimer ${c.prenom} ${c.nom} ?`,
+      message: c.compteCree ? 'Son compte de connexion sera aussi désactivé.' : 'Cette action est définitive.',
+      texteConfirmer: 'Supprimer',
       danger: true
     });
     if (!ok) return;
     this.erreur.set('');
-    this.equipe
-      .modifierCollaborateur(c.id, {
-        nom: c.nom,
-        prenom: c.prenom,
-        actif: c.actif,
-        profilCodes: c.profils.filter((p) => p.code !== code).map((p) => p.code)
-      })
-      .subscribe({
-        next: () => {
-          this.toast.succes('Profil retiré');
-          this.charger();
-        },
-        error: (err) => this.toast.erreur(err?.error?.message ?? 'Impossible de retirer ce profil.')
-      });
-  }
-
-  async reinitialiser(c: Collaborateur): Promise<void> {
-    const ok = await this.confirmation.demander({
-      titre: `Nouveau mot de passe pour ${c.prenom} ${c.nom} ?`,
-      message: "Un mot de passe provisoire sera généré. L'ancien ne fonctionnera plus.",
-      texteConfirmer: 'Générer',
-      icone: 'ti-key'
-    });
-    if (!ok) return;
-    this.info.set('');
-    this.erreur.set('');
-    this.equipe.reinitialiserMotDePasse(c.id).subscribe({
-      next: (r) => this.afficherIdentifiants(r),
-      error: (err) => this.erreur.set(err?.error?.message ?? 'Impossible de réinitialiser le mot de passe.')
-    });
-  }
-
-  // Collaborateur enregistre sans compte de connexion : on le cree maintenant.
-  creerCompte(c: Collaborateur): void {
-    this.info.set('');
-    this.erreur.set('');
-    this.equipe.creerCompte(c.id).subscribe({
-      next: (r) => {
-        this.afficherIdentifiants(r);
+    this.equipe.supprimerCollaborateur(c.id).subscribe({
+      next: () => {
+        this.toast.succes('Collaborateur supprimé');
         this.charger();
       },
-      error: (err) => this.erreur.set(err?.error?.message ?? 'Impossible de créer le compte de connexion.')
+      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
     });
   }
 
@@ -132,23 +103,23 @@ export class CollaborateurListComponent implements OnInit {
     this.identifiants.set(c.motDePasseProvisoire ? { nom: `${c.prenom} ${c.nom}`, email: c.email, motDePasse: c.motDePasseProvisoire } : null);
   }
 
-  private ouvrir(collaborateur: Collaborateur | null, seulementProfils = false): void {
+  private ouvrir(collaborateur: Collaborateur | null, lectureSeule = false): void {
     this.info.set('');
     this.identifiants.set(null);
     const ref = this.modals.open(CollaborateurFormComponent, { centered: true });
     ref.componentInstance.collaborateur = collaborateur;
-    ref.componentInstance.seulementProfils = seulementProfils;
+    ref.componentInstance.lectureSeule = lectureSeule;
     ref.result.then(
       (r) => {
         if (r && typeof r === 'object') {
-          const cree = r as Collaborateur;
-          if (cree.motDePasseProvisoire) {
-            this.afficherIdentifiants(cree);
-          } else {
-            this.info.set(this.messageCreation(cree));
+          const resultat = r as Collaborateur;
+          if (resultat.motDePasseProvisoire) {
+            this.afficherIdentifiants(resultat);
+          } else if (!collaborateur) {
+            this.info.set(this.messageCreation(resultat));
           }
         }
-        if (r === 'saved') this.toast.succes(seulementProfils ? 'Profils mis à jour' : 'Collaborateur modifié');
+        if (r === 'saved') this.toast.succes('Collaborateur modifié');
         if (r) this.charger();
       },
       () => {}

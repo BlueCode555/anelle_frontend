@@ -83,6 +83,12 @@
       </div>
 
       <div class="ad-top-right">
+        <button type="button" class="ad-icon-btn" (click)="theme.basculer()"
+          [attr.aria-label]="theme.sombre() ? 'Passer en thème clair' : 'Passer en thème sombre'"
+          [title]="theme.sombre() ? 'Thème clair' : 'Thème sombre'">
+          <i class="ti" [class.ti-sun]="theme.sombre()" [class.ti-moon]="!theme.sombre()"></i>
+        </button>
+
         <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="demandes() + ' demande(s) à traiter'" title="Demandes de rendez-vous à traiter">
           <i class="ti ti-bell"></i>
           @if (demandes() > 0) {

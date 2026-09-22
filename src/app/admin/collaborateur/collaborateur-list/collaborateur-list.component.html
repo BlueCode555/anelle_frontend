@@ -42,8 +42,25 @@
         <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>Ajouter mon premier collaborateur</button>
       </div>
     } @else if (collaborateurs().length) {
+      @if (collaborateurs().length > 5) {
+        <div class="recherche-liste">
+          <i class="ti ti-search"></i>
+          <input
+            type="search"
+            class="form-control"
+            placeholder="Rechercher un nom ou un e-mail..."
+            [ngModel]="recherche()"
+            (ngModelChange)="recherche.set($event)"
+          />
+        </div>
+      }
+
+      @if (visibles().length === 0) {
+        <p class="text-muted mb-0">Aucun collaborateur ne correspond à « {{ recherche() }} ».</p>
+      }
+
       <div class="table-responsive">
-        <table class="table table-hover align-middle table-cartes">
+        <table class="table table-hover align-middle table-cartes" [class.table-compacte]="true">
           <thead>
             <tr>
               <th>Nom</th>
@@ -54,20 +71,13 @@
             </tr>
           </thead>
           <tbody>
-            @for (c of collaborateurs(); track c.id) {
+            @for (c of visibles(); track c.id) {
               <tr>
                 <td data-label="Nom" class="fw-semibold">{{ c.prenom }} {{ c.nom }}</td>
                 <td data-label="E-mail" class="text-muted">{{ c.email }}</td>
                 <td data-label="Profils">
                   @for (p of c.profils; track p.code) {
-                    <span class="pastille-profil">
-                      {{ p.libelle }}
-                      @if (c.profils.length > 1) {
-                        <button type="button" class="retirer" [attr.aria-label]="'Retirer le profil ' + p.libelle" [title]="'Retirer le profil ' + p.libelle" (click)="retirerProfil(c, p.code)">
-                          <i class="ti ti-x"></i>
-                        </button>
-                      }
-                    </span>
+                    <span class="badge text-bg-light border me-1">{{ p.libelle }}</span>
                   }
                 </td>
                 <td data-label="Statut">
@@ -77,14 +87,10 @@
                   }
                 </td>
                 <td class="cellule-actions text-end">
-                  <div class="actions">
-                    @if (!c.compteCree) {
-                      <button type="button" class="btn btn-sm btn-secondary" (click)="creerCompte(c)"><i class="ti ti-user-check"></i>Créer le compte</button>
-                    } @else {
-                      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="reinitialiser(c)"><i class="ti ti-key"></i>Nouveau mot de passe</button>
-                    }
-                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="gererProfils(c)"><i class="ti ti-shield-lock"></i>Profils</button>
-                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="modifier(c)"><i class="ti ti-edit"></i>Modifier</button>
+                  <div class="actions actions-icones">
+                    <button type="button" class="btn-icone" aria-label="Voir" title="Voir" (click)="voir(c)"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="modifier(c)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="supprimer(c)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

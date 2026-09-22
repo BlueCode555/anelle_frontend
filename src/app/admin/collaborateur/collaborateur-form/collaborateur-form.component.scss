@@ -43,3 +43,25 @@
   flex-direction: column;
   min-width: 0;
 }
+
+.choix-profils.est-lecture-seule .choix-profil {
+  cursor: default;
+
+  &:hover {
+    border-color: var(--ar-nude);
+  }
+
+  &.is-coche:hover {
+    border-color: var(--ar-dore);
+  }
+}
+
+.bloc-compte {
+  padding: 0.9rem 1rem;
+  border: 1px dashed var(--ar-nude);
+  border-radius: 0.9rem;
+  background: var(--ar-creme-fonce);
+}
+
+// Le mode sombre de .choix-profil est defini dans brand.scss (feuille globale) : un override ecrit ici
+// ne peut pas fonctionner, voir la note dans admin.component.scss.

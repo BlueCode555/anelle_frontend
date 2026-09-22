@@ -1,6 +1,6 @@
 .espace-page {
   min-height: 100vh;
-  background-color: #fbf6ec;
+  background-color: var(--ar-creme);
 }
 
 .espace-main {
@@ -11,32 +11,90 @@
 .profile-card,
 .history-card {
   background: #fff;
-  border: 1px solid #e6d9c3;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 6px 18px rgba(74, 46, 23, 0.06);
+  border: 1px solid var(--ar-nude);
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: var(--ar-ombre);
+  margin-bottom: 1.5rem;
+  animation: entree 0.5s ease both;
+}
+
+.profile-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, #fffdf9 0%, var(--ar-creme-fonce) 100%);
+}
+
+.profile-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.profile-nom {
+  margin: 0 0 0.15rem;
+  font-family: var(--ar-titres);
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: var(--ar-chocolat-fonce);
 }
 
 .profile-avatar {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #e8c874;
+  border: 3px solid var(--ar-dore-clair);
+  box-shadow: 0 6px 16px rgba(201, 162, 39, 0.3);
+  flex-shrink: 0;
 }
 
 .profile-avatar-initial {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #c9a227;
-  color: #3d2410;
-  font-size: 1.6rem;
+  background: linear-gradient(135deg, var(--ar-dore-clair), var(--ar-dore));
+  color: var(--ar-chocolat-nuit);
+  font-family: var(--ar-titres);
+  font-size: 1.9rem;
   font-weight: 700;
 }
 
-.history-card h2 {
-  color: #4a2e17;
+@keyframes entree {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.history-card {
+  animation-delay: 0.08s;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1.1rem;
+    font-family: var(--ar-titres);
+    color: var(--ar-chocolat-fonce);
+  }
+}
+
+.history-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--ar-dore);
+  background: linear-gradient(135deg, #f3eadb, #ead9bc);
 }
 
 .rdv-list {
@@ -52,6 +110,7 @@
   gap: 1rem;
   padding: 0.9rem 0;
   border-top: 1px solid #f0e7d6;
+  transition: background 0.15s ease;
 
   &:first-child {
     border-top: 0;
@@ -74,5 +133,17 @@
 @media (max-width: 767.98px) {
   .rdv-item {
     grid-template-columns: 1fr;
+  }
+
+  .profile-card {
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-card,
+  .history-card {
+    animation: none;
   }
 }

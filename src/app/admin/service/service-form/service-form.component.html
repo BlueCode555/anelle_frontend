@@ -3,7 +3,8 @@
   <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <form id="serviceForm" (ngSubmit)="onSubmit($event)">
+  <div *ngIf="chargement()" class="text-center text-muted py-4">Chargement du service...</div>
+  <form id="serviceForm" *ngIf="!chargement()" (ngSubmit)="onSubmit($event)">
     <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
     <div class="row">
@@ -121,7 +122,7 @@
 </div>
 <div class="modal-footer">
   <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
-  <button type="submit" form="serviceForm" class="btn btn-primary" [disabled]="saving()">
+  <button type="submit" form="serviceForm" class="btn btn-primary" [disabled]="saving() || chargement()">
     {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
   </button>
 </div>

@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ActionCode, EcranCode, Permission } from 'src/app/theme/shared/service/auth.service';
 import { EcranInfo, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
+import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 
 interface Colonne {
   action: ActionCode;
@@ -18,6 +19,7 @@ interface Colonne {
 })
 export class ProfilFormComponent implements OnInit {
   private equipe = inject(EquipeService);
+  private confirmation = inject(ConfirmationService);
   activeModal = inject(NgbActiveModal);
 
   // Renseigne par la liste avant l'affichage (modification) ; vide = creation.
@@ -81,9 +83,17 @@ export class ProfilFormComponent implements OnInit {
     this.droits.set({ ...this.droits(), [ecran]: courant });
   }
 
-  enregistrer(): void {
+  async enregistrer(): Promise<void> {
     this.soumis.set(true);
     if (!this.libelle().trim() || this.envoi()) return;
+
+    const ok = await this.confirmation.demander({
+      titre: this.profil ? 'Enregistrer les modifications ?' : 'Créer ce profil ?',
+      message: this.libelle().trim(),
+      texteConfirmer: 'Enregistrer'
+    });
+    if (!ok) return;
+
     this.envoi.set(true);
     this.erreur.set('');
     const form = {

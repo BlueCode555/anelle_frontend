@@ -5,7 +5,7 @@ import { firstValueFrom, map } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { chaineAleatoire, defiPkce } from '../_helpers/pkce';
-import { PROFIL_KEY, REFRESH_KEY, RETOUR_KEY, TOKEN_KEY, isTokenExpired, millisAvantExpiration } from '../_helpers/token-storage';
+import { ID_TOKEN_KEY, LOGIN_FLOW_KEY, PROFIL_KEY, REFRESH_KEY, TOKEN_KEY, isTokenExpired, millisAvantExpiration } from '../_helpers/token-storage';
 import { ApiResponse } from './api.model';
 
 const PKCE_KEY = 'anelle_pkce';
@@ -13,6 +13,7 @@ const PKCE_KEY = 'anelle_pkce';
 interface ReponseJeton {
   access_token: string;
   refresh_token?: string;
+  id_token?: string;
 }
 
 export interface CurrentUser {
@@ -148,22 +149,31 @@ export class AuthService {
   }
 
   logout(): void {
-    const etaitPersonnel = this.user()?.type === 'PERSONNEL';
+    const idToken = localStorage.getItem(ID_TOKEN_KEY);
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_KEY);
+    localStorage.removeItem(ID_TOKEN_KEY);
     localStorage.removeItem(PROFIL_KEY);
     if (this.minuteur) clearTimeout(this.minuteur);
     this.user.set(null);
-    if (etaitPersonnel && environment.keycloak.url) {
-      // Ferme aussi la session chez Keycloak, puis revient sur le site.
-      const retour = encodeURIComponent(`${window.location.origin}/accueil`);
-      window.location.href = `${this.urlKeycloak()}/logout?client_id=${environment.keycloak.clientId}&post_logout_redirect_uri=${retour}`;
+    if (environment.keycloak.url) {
+      // Ferme aussi la session chez Keycloak (personnel ET clientes), puis revient sur le site. Indispensable
+      // pour une cliente : sinon Keycloak la reconnecte en silence (SSO) au meme compte Google au prochain
+      // "Continuer avec Google", sans jamais lui laisser la main pour en choisir un autre.
+      // id_token_hint prouve a Keycloak qui se deconnecte : sans lui, Keycloak affiche son propre ecran
+      // de confirmation ("Vous etes deconnecte") meme si la session locale est deja terminee.
+      const params = new URLSearchParams({
+        client_id: environment.keycloak.clientId,
+        post_logout_redirect_uri: `${window.location.origin}/accueil`
+      });
+      if (idToken) params.set('id_token_hint', idToken);
+      window.location.href = `${this.urlKeycloak()}/logout?${params.toString()}`;
       return;
     }
     this.router.navigate(['/accueil']);
   }
 
-  // ── Connexion du personnel (Keycloak, flux code d'autorisation + PKCE) ─────
+  // ── Connexion (Keycloak, flux code d'autorisation + PKCE) — personnel et clientes ─────
 
   get keycloakConfigure(): boolean {
     return !!environment.keycloak.url;
@@ -177,11 +187,22 @@ export class AuthService {
     return `${window.location.origin}/auth/callback`;
   }
 
-  // Envoie la personne sur la page de connexion de Keycloak (adresse e-mail + mot de passe).
+  // Envoie la personne sur la page de connexion de Keycloak (adresse e-mail + mot de passe du personnel).
   async loginPersonnel(): Promise<void> {
+    await this.demarrerLogin('personnel', {});
+  }
+
+  // Envoie directement vers "Se connecter avec Google" (kc_idp_hint saute l'ecran de connexion de Keycloak
+  // lui-meme) : les clientes n'ont jamais de mot de passe Keycloak a retenir.
+  async loginClient(): Promise<void> {
+    await this.demarrerLogin('client', { kc_idp_hint: 'google' });
+  }
+
+  private async demarrerLogin(flux: 'client' | 'personnel', extra: Record<string, string>): Promise<void> {
     const verifier = chaineAleatoire(64);
     const state = chaineAleatoire(24);
     sessionStorage.setItem(PKCE_KEY, JSON.stringify({ verifier, state }));
+    sessionStorage.setItem(LOGIN_FLOW_KEY, flux);
     const params = new URLSearchParams({
       client_id: environment.keycloak.clientId,
       redirect_uri: this.urlRetour(),
@@ -189,13 +210,19 @@ export class AuthService {
       scope: 'openid profile email',
       code_challenge: await defiPkce(verifier),
       code_challenge_method: 'S256',
-      state
+      state,
+      // prompt=login force une vraie reconnexion a chaque fois, meme si Keycloak a deja une session ouverte
+      // (SSO) pour quelqu'un d'autre sur cet appareil (ex. tester la connexion cliente puis personnel de
+      // suite) : sans ca, Keycloak reconnecte en silence la session existante, quel que soit le bouton clique.
+      prompt: 'login',
+      ...extra
     });
     window.location.href = `${this.urlKeycloak()}/auth?${params.toString()}`;
   }
 
-  // Appele au retour de Keycloak : echange le code contre les jetons, puis lit le profil. Renvoie vrai si la connexion a abouti.
-  async terminerLoginPersonnel(code: string, state: string): Promise<boolean> {
+  // Appele au retour de Keycloak (personnel ou cliente) : echange le code contre les jetons, puis lit le profil.
+  // Renvoie vrai si la connexion a abouti, quel que soit le type de compte obtenu.
+  async terminerLogin(code: string, state: string): Promise<boolean> {
     const brut = sessionStorage.getItem(PKCE_KEY);
     sessionStorage.removeItem(PKCE_KEY);
     if (!brut) return false;
@@ -214,7 +241,7 @@ export class AuthService {
     } catch {
       return false;
     }
-    return new Promise<boolean>((resolve) => this.fetchProfile(() => resolve(this.user()?.type === 'PERSONNEL'), () => resolve(false)));
+    return new Promise<boolean>((resolve) => this.fetchProfile(() => resolve(true), () => resolve(false)));
   }
 
   // Renouvelle le jeton d'acces avec le jeton de rafraichissement ; renvoie le nouveau jeton ou null (session terminee).
@@ -234,6 +261,7 @@ export class AuthService {
       .catch(() => {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_KEY);
+        localStorage.removeItem(ID_TOKEN_KEY);
         this.user.set(null);
         return null;
       })
@@ -252,6 +280,7 @@ export class AuthService {
   private enregistrerJetons(jetons: ReponseJeton): void {
     localStorage.setItem(TOKEN_KEY, jetons.access_token);
     if (jetons.refresh_token) localStorage.setItem(REFRESH_KEY, jetons.refresh_token);
+    if (jetons.id_token) localStorage.setItem(ID_TOKEN_KEY, jetons.id_token);
     this.planifierRenouvellement(jetons.access_token);
   }
 
@@ -282,6 +311,7 @@ export class AuthService {
           if (err?.status === 401 || err?.status === 403) {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(REFRESH_KEY);
+            localStorage.removeItem(ID_TOKEN_KEY);
           }
           this.user.set(null);
           this.loading.set(false);

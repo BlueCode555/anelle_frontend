@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -30,12 +30,13 @@ const pexels = (id: number, width: number): string =>
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private catalogue = inject(CatalogueService);
   private informations = inject(InformationService);
   private title = inject(Title);
 
-  readonly heroImage = pexels(4672653, 1000);
+  // Photo d'accueil : la galerie ci-dessous alterne aussi des clientes claires et foncées.
+  readonly heroImage = pexels(5938648, 1000);
 
   info = this.informations.info;
   nom = this.informations.nom;
@@ -45,6 +46,21 @@ export class HomeComponent implements OnInit {
   loading = signal(true);
   error = signal(false);
   activeCategory = signal<string | null>(null);
+
+  // Carrousel des catégories : 3 cartes par page sur mobile, 6 sur bureau (2 rangées de 3).
+  private ecranEtroit = window.matchMedia('(max-width: 767.98px)');
+  private ecouteurEcran = (e: MediaQueryListEvent) => this.itemsParPage.set(e.matches ? 3 : 6);
+  itemsParPage = signal(this.ecranEtroit.matches ? 3 : 6);
+
+  categorieSlides = computed(() => {
+    const parPage = this.itemsParPage();
+    const cats = this.categories();
+    const pages: CategorieResponse[][] = [];
+    for (let i = 0; i < cats.length; i += parPage) {
+      pages.push(cats.slice(i, i + parPage));
+    }
+    return pages;
+  });
 
   filteredServices = computed(() => {
     const code = this.activeCategory();
@@ -77,6 +93,11 @@ export class HomeComponent implements OnInit {
 
   constructor() {
     effect(() => this.title.setTitle(this.nom()));
+    this.ecranEtroit.addEventListener('change', this.ecouteurEcran);
+  }
+
+  ngOnDestroy(): void {
+    this.ecranEtroit.removeEventListener('change', this.ecouteurEcran);
   }
 
   ngOnInit(): void {
@@ -105,6 +126,16 @@ export class HomeComponent implements OnInit {
     this.activeCategory.set(code);
   }
 
+  // Choix depuis le carrousel de catégories : filtre puis amène la personne directement sur les services.
+  choisirCategorie(code: string): void {
+    this.activeCategory.set(code);
+    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  categorieImage(cat: CategorieResponse): string | null {
+    return this.catalogue.imageSrc(cat.imageUrl ?? null);
+  }
+
   formatTarif(tarif: number): string {
     return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
   }
@@ -129,13 +160,14 @@ export class HomeComponent implements OnInit {
     return this.categoryIcons[categorieCode] ?? 'ti-sparkles';
   }
 
-  // Images par defaut du carrousel, utilisees tant qu'aucune categorie/service n'a d'image (ou si l'API est injoignable).
+  // Images par defaut du carrousel (clientes claires et foncees representees), utilisees tant qu'aucune
+  // categorie/service n'a d'image (ou si l'API est injoignable).
   private readonly defaultGallery: GalleryImage[] = [
-    { src: pexels(35884502, 1600), alt: 'Cabine de soins avec serviette roulée et bougie', caption: 'Notre espace de soins' },
+    { src: pexels(6945567, 1600), alt: 'Deux clientes complices en peignoir blanc', caption: 'Notre espace de soins' },
     { src: pexels(3738349, 1600), alt: 'Soin du visage par une esthéticienne', caption: 'Soins du visage' },
-    { src: pexels(15491629, 1600), alt: 'Mains avec une manucure élégante', caption: 'Manucure' },
-    { src: pexels(19695948, 1600), alt: 'Bain de pieds aux sels', caption: 'Pédicure' },
-    { src: pexels(18120174, 1600), alt: 'Massage relaxant en cabine', caption: 'Soins du corps' }
+    { src: pexels(7755296, 1600), alt: 'Manucure entourée de plantes', caption: 'Manucure' },
+    { src: pexels(8312896, 1600), alt: 'Pédicure dans une cabine lumineuse', caption: 'Pédicure' },
+    { src: pexels(6186764, 1600), alt: 'Massage relaxant des épaules', caption: 'Soins du corps' }
   ];
 
   // Le carrousel affiche les images des categories puis des services actifs (fichier envoye ou lien en ligne).

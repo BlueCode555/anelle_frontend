@@ -47,6 +47,8 @@
           </a>
         </li>
         <li><button type="button" class="mobile-logout" (click)="logout()">Déconnexion</button></li>
+      } @else {
+        <li><a routerLink="/connexion" (click)="closeMenu()">Se connecter</a></li>
       }
     </ul>
   }

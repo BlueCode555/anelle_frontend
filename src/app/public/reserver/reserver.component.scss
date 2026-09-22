@@ -1,6 +1,6 @@
 .reserver-page {
   min-height: 100vh;
-  background-color: #fbf6ec;
+  background-color: var(--ar-creme);
 }
 
 .reserver-main {
@@ -9,34 +9,115 @@
   padding-bottom: 4rem;
 }
 
+.reserver-tete {
+  margin-bottom: 1.75rem;
+  animation: entree 0.5s ease both;
+}
+
+.reserver-titre {
+  font-family: var(--ar-titres);
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 600;
+  color: var(--ar-chocolat-fonce);
+  margin: 0.3rem 0 0.5rem;
+}
+
 .panel {
   padding: 2rem;
   background: #fff;
-  border: 1px solid #e6d9c3;
+  border: 1px solid var(--ar-nude);
   border-radius: 1.25rem;
-  box-shadow: 0 16px 40px rgba(74, 46, 23, 0.08);
+  box-shadow: var(--ar-ombre);
+  animation: entree 0.5s 0.1s ease both;
+}
+
+@keyframes entree {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Écran de confirmation ────────────────────────────────
+.panel-confirmation {
+  padding: 2.75rem 2rem;
+}
+
+.confirm-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #eaf3e8, #d9ecd5);
+  animation: pop 0.4s ease both;
 }
 
 .confirm-icon {
-  font-size: 3rem;
-  color: #c9a227;
+  font-size: 2.75rem;
+  color: #4a7c4f;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .recap {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.5rem 1.5rem;
-  max-width: 420px;
+  gap: 0.6rem;
+  max-width: 360px;
+  margin: 1.5rem auto 0;
   text-align: left;
+}
+
+.recap-ligne {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: 0.5rem 0.6rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f0e7d6;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  i {
+    color: var(--ar-dore);
+    align-self: center;
+  }
 
   dt {
-    color: #8a7660;
+    margin: 0;
+    color: var(--ar-texte-doux);
     font-weight: 500;
   }
 
   dd {
     margin: 0;
     font-weight: 600;
-    color: #4a2e17;
+    color: var(--ar-chocolat-fonce);
+    text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reserver-tete,
+  .panel,
+  .confirm-icon-wrap {
+    animation: none;
   }
 }

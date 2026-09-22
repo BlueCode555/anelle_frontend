@@ -1,29 +1,103 @@
+// Les étapes numérotées (.etape, .etape-numero...) sont dans brand.scss (feuille globale) : la page reserver.
+// component les réutilise aussi pour l'étape 3 (note), et une classe d'un composant ne peut pas en atteindre
+// une autre (encapsulation des styles Angular) — voir la même remarque dans admin.component.scss.
+
+.etape-date {
+  max-width: 260px;
+}
+
+// ── Aperçu du soin choisi ────────────────────────────────
+.soin-apercu {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.85rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 0.9rem;
+  background: var(--ar-creme-fonce);
+  animation: apparait 0.25s ease both;
+
+  img {
+    width: 52px;
+    height: 52px;
+    border-radius: 0.65rem;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  strong {
+    color: var(--ar-chocolat-fonce);
+  }
+}
+
+.soin-apercu-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 0.65rem;
+  font-size: 1.3rem;
+  color: var(--ar-dore);
+  background: linear-gradient(135deg, #f3eadb, #ead9bc);
+}
+
+@keyframes apparait {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ── Créneaux ─────────────────────────────────────────────
 .slots {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
+  margin-top: 0.85rem;
 }
 
 .slot {
   min-width: 84px;
-  padding: 0.5rem 0.9rem;
-  border: 1px solid #c9a227;
+  padding: 0.55rem 0.9rem;
+  border: 1.5px solid var(--ar-dore);
   border-radius: 50rem;
   background: #fff;
-  color: #4a2e17;
+  color: var(--ar-chocolat-fonce);
   font-weight: 600;
   transition:
     background 0.15s ease,
-    color 0.15s ease;
+    color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 
   &:hover {
-    background: #f5efe1;
+    background: var(--ar-creme-fonce);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(201, 162, 39, 0.25);
   }
 }
 
 .slot-active,
 .slot-active:hover {
-  background: #6b4423;
-  border-color: #6b4423;
+  background: var(--ar-chocolat);
+  border-color: var(--ar-chocolat);
   color: #fff;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soin-apercu {
+    animation: none;
+  }
+
+  .slot {
+    transition: none;
+  }
 }

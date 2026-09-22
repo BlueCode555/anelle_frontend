@@ -1,40 +1,59 @@
-<div class="row g-3 mb-3">
-  <div class="col-12 col-md-7">
-    <label class="form-label" for="sp-service">Soin souhaité</label>
+<div class="etape">
+  <span class="etape-numero">1</span>
+  <div class="etape-contenu">
+    <h2 class="etape-titre">Votre soin</h2>
     <select id="sp-service" class="form-select" [value]="serviceCode()" (change)="onService($event)">
       <option value="" disabled>Choisir un soin</option>
       <option *ngFor="let s of services()" [value]="s.code" [selected]="s.code === serviceCode()">
         {{ s.nomService }} · {{ s.dureeMinutes }} min · {{ formatTarif(s.tarif) }}
       </option>
     </select>
-  </div>
-  <div class="col-12 col-md-5">
-    <label class="form-label" for="sp-date">Jour</label>
-    <input id="sp-date" type="date" class="form-control" [value]="date()" [min]="minDate()" (change)="onDate($event)" />
+
+    @if (serviceCourant(); as soin) {
+      <div class="soin-apercu">
+        @if (imageSoin(); as photo) {
+          <img [src]="photo" [alt]="soin.nomService" />
+        } @else {
+          <span class="soin-apercu-icone"><i class="ti ti-sparkles"></i></span>
+        }
+        <div>
+          <strong>{{ soin.nomService }}</strong>
+          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes }} min · {{ formatTarif(soin.tarif) }}</span>
+        </div>
+      </div>
+    }
   </div>
 </div>
 
-<div *ngIf="error()" class="alert alert-warning">{{ error() }}</div>
+<div class="etape" [class.est-desactivee]="!serviceCode()">
+  <span class="etape-numero">2</span>
+  <div class="etape-contenu">
+    <h2 class="etape-titre">Date et heure</h2>
+    <input id="sp-date" type="date" class="form-control etape-date" [value]="date()" [min]="minDate()" (change)="onDate($event)" [disabled]="!serviceCode()" />
 
-<ng-container *ngIf="serviceCode(); else pickService">
-  <div *ngIf="loading()" class="text-muted">Recherche des créneaux...</div>
+    <div *ngIf="error()" class="alert alert-warning mt-3">{{ error() }}</div>
 
-  <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted">
-    Aucun créneau disponible ce jour-là. Essayez un autre jour.
+    <ng-container *ngIf="serviceCode(); else pickService">
+      <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>Recherche des créneaux...</div>
+
+      <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted mt-3">
+        Aucun créneau disponible ce jour-là. Essayez un autre jour.
+      </div>
+
+      <div class="slots" *ngIf="!loading() && creneaux().length">
+        <button
+          type="button"
+          class="slot"
+          *ngFor="let c of creneaux()"
+          [class.slot-active]="choisi() === c.debut"
+          (click)="choisir(c)"
+        >
+          {{ heure(c.debut) }}
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #pickService>
+      <p class="text-muted mt-3 mb-0">Choisissez d'abord un soin pour voir les créneaux disponibles.</p>
+    </ng-template>
   </div>
-
-  <div class="slots" *ngIf="!loading() && creneaux().length">
-    <button
-      type="button"
-      class="slot"
-      *ngFor="let c of creneaux()"
-      [class.slot-active]="choisi() === c.debut"
-      (click)="choisir(c)"
-    >
-      {{ heure(c.debut) }}
-    </button>
-  </div>
-</ng-container>
-<ng-template #pickService>
-  <p class="text-muted mb-0">Choisissez un soin pour voir les créneaux disponibles.</p>
-</ng-template>
+</div>

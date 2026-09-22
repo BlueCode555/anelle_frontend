@@ -78,6 +78,35 @@
     </div>
   </section>
 
+  <section id="categories" class="categories-carousel py-5" *ngIf="categorieSlides().length">
+    <span class="ar-eyebrow text-center">Explorez</span>
+    <h2 class="ar-section-title px-3">Nos catégories</h2>
+    <p class="ar-section-lead px-3">Touchez une catégorie pour voir ses soins.</p>
+
+    <div class="categories-carousel-wrap mx-auto">
+      <ngb-carousel
+        [interval]="categorieSlides().length > 1 ? 4500 : 0"
+        [showNavigationIndicators]="categorieSlides().length > 1"
+        [pauseOnHover]="true"
+        [pauseOnFocus]="true"
+        [wrap]="true"
+      >
+        <ng-template ngbSlide *ngFor="let page of categorieSlides()">
+          <div class="categorie-grid">
+            <button type="button" class="categorie-card" *ngFor="let cat of page" (click)="choisirCategorie(cat.code)">
+              @if (categorieImage(cat); as src) {
+                <img [src]="src" [alt]="cat.libelle" loading="lazy" />
+              } @else {
+                <span class="categorie-icon"><i class="ti {{ categoryIcon(cat.code) }}"></i></span>
+              }
+              <span class="categorie-nom">{{ cat.libelle }}</span>
+            </button>
+          </div>
+        </ng-template>
+      </ngb-carousel>
+    </div>
+  </section>
+
   <section id="services" class="services py-5 px-3">
     <span class="ar-eyebrow text-center">Prestations</span>
     <h2 class="ar-section-title">Nos services</h2>
@@ -164,6 +193,7 @@
           @if (info()?.siteWeb; as site) {
             <li><a [href]="site" target="_blank" rel="noopener">Site web</a></li>
           }
+          <li><a routerLink="/personnel" class="footer-admin-link">Espace administration</a></li>
         </ul>
       </div>
 

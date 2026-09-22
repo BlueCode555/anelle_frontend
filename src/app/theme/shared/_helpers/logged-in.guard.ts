@@ -2,9 +2,7 @@ import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 
 import { AuthService, EcranCode } from '../service/auth.service';
-import { RETOUR_KEY, TOKEN_KEY, isTokenExpired } from './token-storage';
-
-
+import { RETOUR_CLIENT_KEY, RETOUR_STAFF_KEY, TOKEN_KEY, isTokenExpired } from './token-storage';
 
 // Laisse passer uniquement une personne avec un token non expire ; sinon renvoie vers la page de connexion
 // en gardant la page voulue : apres la connexion la personne y revient (ex. la reservation d'un soin).
@@ -14,7 +12,7 @@ export const loggedInGuard: CanActivateFn = (_route, state) => {
   if (token && !isTokenExpired(token)) {
     return true;
   }
-  sessionStorage.setItem(RETOUR_KEY, state.url);
+  sessionStorage.setItem(RETOUR_CLIENT_KEY, state.url);
   return inject(Router).createUrlTree(['/connexion']);
 };
 
@@ -28,7 +26,7 @@ export const staffGuard: CanActivateFn = async (_route, state) => {
   if (auth.user()?.type === 'PERSONNEL') {
     return true;
   }
-  sessionStorage.setItem(RETOUR_KEY, state.url);
+  sessionStorage.setItem(RETOUR_STAFF_KEY, state.url);
   return router.createUrlTree(['/personnel']);
 };
 

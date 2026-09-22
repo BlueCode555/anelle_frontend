@@ -29,8 +29,15 @@ export interface Information {
   lienFacebook: string | null;
   bannierePromo: string | null;
   fuseauHoraire: string | null;
+  // Compte Gmail des notifications de nouvelle demande de rendez-vous (le mot de passe n'est jamais renvoyé
+  // par le serveur : `courrielNotifConfigure` dit seulement s'il y en a un d'enregistré).
+  courrielNotifExpediteur: string | null;
+  courrielNotifConfigure: boolean;
   horaires: Horaire[];
 }
+
+// Champs du formulaire "Mon institut" : comme Information, mais avec un mot de passe en écriture (jamais lu).
+export type InformationForm = Omit<Information, 'courrielNotifConfigure'> & { courrielNotifMotDePasse: string };
 
 export const JOURS_SEMAINE = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 
@@ -66,7 +73,7 @@ export class InformationService {
     );
   }
 
-  update(form: Information): Observable<Information> {
+  update(form: InformationForm): Observable<Information> {
     return this.http.put<ApiResponse<Information>>(this.url, form).pipe(
       map((res) => res.data),
       tap((info) => this.info.set(info))

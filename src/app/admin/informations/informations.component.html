@@ -5,119 +5,202 @@
   <div *ngIf="saved()" class="alert alert-success">Les informations ont été enregistrées. Le site public est à jour.</div>
   <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
-  <div class="card mb-3">
-    <div class="card-header"><h5 class="mb-0">Identité de l'institut</h5></div>
-    <div class="card-body">
-      <div class="mb-3">
-        <label class="form-label" for="nom">Nom de l'institut</label>
-        <input id="nom" class="form-control" formControlName="nom" [class.is-invalid]="hasError('nom', 'required')" />
-        <div class="invalid-feedback">Le nom est obligatoire.</div>
+  <div class="taux-remplissage mb-3">
+    <div class="taux-remplissage-tete">
+      <span>Fiche complétée à {{ tauxRemplissage() }} %</span>
+      <span class="text-muted small">Seul le nom est obligatoire</span>
+    </div>
+    <div class="taux-remplissage-barre">
+      <div class="taux-remplissage-valeur" [style.width.%]="tauxRemplissage()"></div>
+    </div>
+  </div>
+
+  <div ngbAccordion #accordeon="ngbAccordion" [closeOthers]="false" class="card ar-accordeon">
+    <div ngbAccordionItem="identite" [collapsed]="false">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-sparkles"></i>Identité de l'institut</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <div class="mb-3">
+              <label class="form-label" for="nom">Nom de l'institut</label>
+              <input id="nom" class="form-control" formControlName="nom" [class.is-invalid]="hasError('nom', 'required')" />
+              <div class="invalid-feedback">Le nom est obligatoire.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="slogan">Phrase d'accroche (page d'accueil)</label>
+              <input id="slogan" class="form-control" formControlName="slogan" />
+            </div>
+            <div class="mb-0">
+              <label class="form-label" for="description">Description courte (bas de page)</label>
+              <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+            </div>
+          </ng-template>
+        </div>
       </div>
-      <div class="mb-3">
-        <label class="form-label" for="slogan">Phrase d'accroche (page d'accueil)</label>
-        <input id="slogan" class="form-control" formControlName="slogan" />
+    </div>
+
+    <div ngbAccordionItem="coordonnees" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-map-pin"></i>Coordonnées</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <div class="row">
+              <div class="col-md-12 mb-3">
+                <label class="form-label" for="adresse">Adresse (siège)</label>
+                <input id="adresse" class="form-control" formControlName="adresse" placeholder="Ex. 123 rue Sainte-Catherine" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="ville">Ville</label>
+                <input id="ville" class="form-control" formControlName="ville" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="province">Province</label>
+                <input id="province" class="form-control" formControlName="province" placeholder="Ex. Québec" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="codePostal">Code postal</label>
+                <input id="codePostal" class="form-control" formControlName="codePostal" placeholder="Ex. H2X 1Y4" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="pays">Pays</label>
+                <input id="pays" class="form-control" formControlName="pays" />
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="telephone">Téléphone</label>
+                <input id="telephone" class="form-control" formControlName="telephone" placeholder="Ex. +1 514 555-0199" [class.is-invalid]="hasError('telephone', 'pattern')" />
+                <div class="invalid-feedback">Numéro de téléphone invalide.</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="fuseauHoraire">Fuseau horaire</label>
+                <select id="fuseauHoraire" class="form-select" formControlName="fuseauHoraire">
+                  <option *ngFor="let f of fuseaux" [value]="f.id">{{ f.libelle }}</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-0">
+                <label class="form-label" for="email">Adresse e-mail</label>
+                <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="hasError('email', 'email')" />
+                <div class="invalid-feedback">Adresse e-mail invalide.</div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
       </div>
-      <div class="mb-0">
-        <label class="form-label" for="description">Description courte (bas de page)</label>
-        <textarea id="description" class="form-control" rows="3" formControlName="description"></textarea>
+    </div>
+
+    <div ngbAccordionItem="liens" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-link"></i>Liens en ligne</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="siteWeb">Site web</label>
+                <input id="siteWeb" class="form-control" formControlName="siteWeb" placeholder="https://" [class.is-invalid]="hasError('siteWeb', 'pattern')" />
+                <div class="invalid-feedback">Le lien doit commencer par https://</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label" for="lienInstagram">Instagram</label>
+                <input id="lienInstagram" class="form-control" formControlName="lienInstagram" placeholder="https://instagram.com/..." [class.is-invalid]="hasError('lienInstagram', 'pattern')" />
+                <div class="invalid-feedback">Le lien doit commencer par https://</div>
+              </div>
+              <div class="col-md-4 mb-0">
+                <label class="form-label" for="lienFacebook">Facebook</label>
+                <input id="lienFacebook" class="form-control" formControlName="lienFacebook" placeholder="https://facebook.com/..." [class.is-invalid]="hasError('lienFacebook', 'pattern')" />
+                <div class="invalid-feedback">Le lien doit commencer par https://</div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div ngbAccordionItem="notifications" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-mail"></i>Notifications par courriel</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <p class="form-text mt-0 mb-3">
+              Quand une cliente prend rendez-vous en ligne, un courriel vous prévient ici — pratique si vous n'êtes
+              pas connectée à l'espace de gestion à ce moment-là. Renseignez votre adresse Gmail et son
+              <strong>mot de passe d'application</strong> (pas le mot de passe habituel de votre compte Google :
+              il se crée dans les réglages de sécurité de votre compte Google, section « Mots de passe des
+              applications »).
+            </p>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label" for="courrielNotifExpediteur">Adresse Gmail</label>
+                <input id="courrielNotifExpediteur" type="email" class="form-control" formControlName="courrielNotifExpediteur"
+                  placeholder="votreadresse@gmail.com" [class.is-invalid]="hasError('courrielNotifExpediteur', 'email')" />
+                <div class="invalid-feedback">Adresse e-mail invalide.</div>
+              </div>
+              <div class="col-md-6 mb-0">
+                <label class="form-label" for="courrielNotifMotDePasse">Mot de passe d'application</label>
+                <input id="courrielNotifMotDePasse" type="password" class="form-control" formControlName="courrielNotifMotDePasse"
+                  placeholder="{{ courrielDejaConfigure() ? '••••••••••••••••' : '16 caractères' }}" autocomplete="new-password" />
+                <div class="form-text">
+                  @if (courrielDejaConfigure()) {
+                    Déjà enregistré — laissez vide pour le garder, ou retapez-en un pour le remplacer.
+                  } @else {
+                    Pas encore configuré : sans ça, pas de courriel envoyé.
+                  }
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div ngbAccordionItem="promo" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-gift"></i>Bannière promotionnelle</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <label class="form-label" for="bannierePromo">Texte affiché en haut de la page d'accueil</label>
+            <input id="bannierePromo" class="form-control" formControlName="bannierePromo" placeholder="Ex. -15 % sur votre première visite jusqu'au 31 octobre" />
+            <div class="form-text">Laissez vide pour ne pas afficher de bannière.</div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div ngbAccordionItem="horaires" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-clock"></i>Horaires d'ouverture</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <div formArrayName="horaires">
+              <div *ngFor="let row of horaires.controls; let i = index" [formGroupName]="i" class="hours-row">
+                <div class="hours-day">{{ jours[i] }}</div>
+                <div class="form-check form-switch hours-open">
+                  <input class="form-check-input" type="checkbox" role="switch" [id]="'ouvert' + i" formControlName="ouvert" />
+                  <label class="form-check-label" [for]="'ouvert' + i">{{ row.get('ouvert')?.value ? 'Ouvert' : 'Fermé' }}</label>
+                </div>
+                <input type="time" class="form-control hours-time" formControlName="heureDebut" [attr.aria-label]="'Ouverture ' + jours[i]" />
+                <span class="hours-sep">à</span>
+                <input type="time" class="form-control hours-time" formControlName="heureFin" [attr.aria-label]="'Fermeture ' + jours[i]" />
+              </div>
+              <div class="form-text mt-2">Si tous les jours sont fermés, la rubrique « Horaires » n'apparaît pas sur le site.</div>
+            </div>
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="card mb-3">
-    <div class="card-header"><h5 class="mb-0">Coordonnées</h5></div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-12 mb-3">
-          <label class="form-label" for="adresse">Adresse (siège)</label>
-          <input id="adresse" class="form-control" formControlName="adresse" placeholder="Ex. 123 rue Sainte-Catherine" />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="ville">Ville</label>
-          <input id="ville" class="form-control" formControlName="ville" />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="province">Province</label>
-          <input id="province" class="form-control" formControlName="province" placeholder="Ex. Québec" />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="codePostal">Code postal</label>
-          <input id="codePostal" class="form-control" formControlName="codePostal" placeholder="Ex. H2X 1Y4" />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="pays">Pays</label>
-          <input id="pays" class="form-control" formControlName="pays" />
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="telephone">Téléphone</label>
-          <input id="telephone" class="form-control" formControlName="telephone" placeholder="Ex. +1 514 555-0199" [class.is-invalid]="hasError('telephone', 'pattern')" />
-          <div class="invalid-feedback">Numéro de téléphone invalide.</div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="fuseauHoraire">Fuseau horaire</label>
-          <select id="fuseauHoraire" class="form-select" formControlName="fuseauHoraire">
-            <option *ngFor="let f of fuseaux" [value]="f.id">{{ f.libelle }}</option>
-          </select>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="email">Adresse e-mail</label>
-          <input id="email" type="email" class="form-control" formControlName="email" [class.is-invalid]="hasError('email', 'email')" />
-          <div class="invalid-feedback">Adresse e-mail invalide.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header"><h5 class="mb-0">Liens en ligne</h5></div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="siteWeb">Site web</label>
-          <input id="siteWeb" class="form-control" formControlName="siteWeb" placeholder="https://" [class.is-invalid]="hasError('siteWeb', 'pattern')" />
-          <div class="invalid-feedback">Le lien doit commencer par https://</div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="lienInstagram">Instagram</label>
-          <input id="lienInstagram" class="form-control" formControlName="lienInstagram" placeholder="https://instagram.com/..." [class.is-invalid]="hasError('lienInstagram', 'pattern')" />
-          <div class="invalid-feedback">Le lien doit commencer par https://</div>
-        </div>
-        <div class="col-md-4 mb-3">
-          <label class="form-label" for="lienFacebook">Facebook</label>
-          <input id="lienFacebook" class="form-control" formControlName="lienFacebook" placeholder="https://facebook.com/..." [class.is-invalid]="hasError('lienFacebook', 'pattern')" />
-          <div class="invalid-feedback">Le lien doit commencer par https://</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header"><h5 class="mb-0">Bannière promotionnelle</h5></div>
-    <div class="card-body">
-      <label class="form-label" for="bannierePromo">Texte affiché en haut de la page d'accueil</label>
-      <input id="bannierePromo" class="form-control" formControlName="bannierePromo" placeholder="Ex. -15 % sur votre première visite jusqu'au 31 octobre" />
-      <div class="form-text">Laissez vide pour ne pas afficher de bannière.</div>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header"><h5 class="mb-0">Horaires d'ouverture</h5></div>
-    <div class="card-body" formArrayName="horaires">
-      <div *ngFor="let row of horaires.controls; let i = index" [formGroupName]="i" class="hours-row">
-        <div class="hours-day">{{ jours[i] }}</div>
-        <div class="form-check form-switch hours-open">
-          <input class="form-check-input" type="checkbox" role="switch" [id]="'ouvert' + i" formControlName="ouvert" />
-          <label class="form-check-label" [for]="'ouvert' + i">{{ row.get('ouvert')?.value ? 'Ouvert' : 'Fermé' }}</label>
-        </div>
-        <input type="time" class="form-control hours-time" formControlName="heureDebut" [attr.aria-label]="'Ouverture ' + jours[i]" />
-        <span class="hours-sep">à</span>
-        <input type="time" class="form-control hours-time" formControlName="heureFin" [attr.aria-label]="'Fermeture ' + jours[i]" />
-      </div>
-      <div class="form-text mt-2">Si tous les jours sont fermés, la rubrique « Horaires » n'apparaît pas sur le site.</div>
-    </div>
-  </div>
-
-  <div class="d-flex justify-content-end mb-4">
+  <div class="d-flex justify-content-end mt-4 mb-4">
     <button type="submit" class="btn btn-primary px-4" [disabled]="saving()">
       {{ saving() ? 'Enregistrement...' : 'Enregistrer les informations' }}
     </button>
