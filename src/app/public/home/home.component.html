@@ -2,28 +2,31 @@
   <app-site-header />
 
   <section id="top" class="hero px-3">
-    <div class="row align-items-center g-5">
-      <div class="col-12 col-lg-6 text-center text-lg-start">
-        <span class="hero-tag mb-4 d-inline-block">Pédicure &middot; Manucure &middot; Soins du corps</span>
-        <h1 class="hero-title mb-4">{{ nom() }}</h1>
-        @if (info()?.slogan; as slogan) {
-          <p class="mb-4 hero-subtitle mx-auto mx-lg-0">{{ slogan }}</p>
-        }
-        <div class="hero-actions">
-          <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
-          <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">Voir nos services</a>
-        </div>
-        <ul class="hero-points">
-          <li><i class="ti ti-calendar-check"></i>Réservation en ligne</li>
-          <li><i class="ti ti-lock"></i>Paiement sécurisé</li>
-          <li><i class="ti ti-heart"></i>Accueil personnalisé</li>
-        </ul>
+    @if (videoActif && !videoErreur()) {
+      <video #heroVideo class="hero-video" [poster]="heroImage" [muted]="true" autoplay loop playsinline
+        (error)="onVideoErreur()" aria-hidden="true">
+        <source [src]="heroVideoSrc" type="video/mp4" />
+      </video>
+    } @else {
+      <div class="hero-video hero-video-repli" [style.background-image]="'url(' + heroImage + ')'" aria-hidden="true"></div>
+    }
+    <div class="hero-overlay" aria-hidden="true"></div>
+
+    <div class="hero-content text-center">
+      <span class="hero-tag mb-4 d-inline-block">Pédicure &middot; Manucure &middot; Soins du corps</span>
+      <h1 class="hero-title mb-4">{{ nom() }}</h1>
+      @if (info()?.slogan; as slogan) {
+        <p class="mb-4 hero-subtitle mx-auto">{{ slogan }}</p>
+      }
+      <div class="hero-actions">
+        <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
+        <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">Voir nos services</a>
       </div>
-      <div class="col-12 col-lg-6 text-center">
-        <div class="hero-portrait-frame mx-auto">
-          <img [src]="heroImage" [alt]="'Une cliente profitant d\'un soin chez ' + nom()" class="hero-portrait" />
-        </div>
-      </div>
+      <ul class="hero-points">
+        <li><i class="ti ti-calendar-check"></i>Réservation en ligne</li>
+        <li><i class="ti ti-lock"></i>Paiement sécurisé</li>
+        <li><i class="ti ti-heart"></i>Accueil personnalisé</li>
+      </ul>
     </div>
   </section>
 

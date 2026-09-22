@@ -37,6 +37,7 @@ export const NavigationItems: NavigationItem[] = [
     children: [
       { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', proprietaire: true },
       { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', proprietaire: true },
+      { id: 'clients', title: 'Clientèle', type: 'item', url: '/clients', icon: 'ti ti-users', proprietaire: true },
       { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' }
     ]
   },

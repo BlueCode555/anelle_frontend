@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
@@ -30,13 +30,24 @@ const pexels = (id: number, width: number): string =>
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Filet de sécurité : certains navigateurs/SPA "manquent" l'autoplay déclaratif d'une vidéo insérée
+  // dynamiquement (ex. via @if) ; un appel explicite à .play() une fois la vue prête rattrape ce cas. Sans
+  // effet si la vidéo n'est pas affichée (mobile / mouvement réduit) ou si l'autoplay a déjà démarré seul.
+  @ViewChild('heroVideo') private heroVideoRef?: ElementRef<HTMLVideoElement>;
   private catalogue = inject(CatalogueService);
   private informations = inject(InformationService);
   private title = inject(Title);
 
-  // Photo d'accueil : la galerie ci-dessous alterne aussi des clientes claires et foncées.
-  readonly heroImage = pexels(5938648, 1000);
+  // Photo d'accueil (repli tant que la vidéo n'a pas chargé, et affichée seule sur mobile / mouvement réduit /
+  // si la vidéo échoue a charger).
+  readonly heroImage = pexels(5938648, 1600);
+  // Vidéo de fond du hero : massage en institut, en rapport avec l'activité. Hébergée par Pexels (licence
+  // libre), comme les autres visuels du site. Volontairement courte et légère (~5 Mo, 8 s en boucle) pour
+  // demarrer vite et ne jamais accrocher/bufferer en pleine lecture.
+  readonly heroVideoSrc = 'https://videos.pexels.com/video-files/6750874/6750874-hd_1920_1080_25fps.mp4';
+  // Vrai si la vidéo a échoué à charger (réseau, format...) : on revient alors silencieusement à la photo fixe.
+  videoErreur = signal(false);
 
   info = this.informations.info;
   nom = this.informations.nom;
@@ -51,6 +62,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   private ecranEtroit = window.matchMedia('(max-width: 767.98px)');
   private ecouteurEcran = (e: MediaQueryListEvent) => this.itemsParPage.set(e.matches ? 3 : 6);
   itemsParPage = signal(this.ecranEtroit.matches ? 3 : 6);
+
+  // Vidéo du hero seulement sur grand écran (poids de la vidéo, data mobile) et si la personne n'a pas
+  // demandé moins de mouvement à l'écran ; sinon la photo statique suffit comme fond.
+  videoActif = !window.matchMedia('(max-width: 767.98px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   categorieSlides = computed(() => {
     const parPage = this.itemsParPage();
@@ -98,6 +113,18 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.ecranEtroit.removeEventListener('change', this.ecouteurEcran);
+  }
+
+  ngAfterViewInit(): void {
+    this.heroVideoRef?.nativeElement.play().catch(() => {
+      // Autoplay refusé par le navigateur (rare pour une vidéo muette) : le poster reste affiché, sans erreur visible.
+    });
+  }
+
+  // Echec de chargement de la vidéo (réseau, format non supporté...) : jamais de cadre cassé ou figé a l'écran,
+  // on repasse simplement sur la photo fixe.
+  onVideoErreur(): void {
+    this.videoErreur.set(true);
   }
 
   ngOnInit(): void {

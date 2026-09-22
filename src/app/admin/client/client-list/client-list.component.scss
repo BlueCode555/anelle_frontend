@@ -1,0 +1,34 @@
+.recherche-liste {
+  position: relative;
+  max-width: 340px;
+  margin-bottom: 1rem;
+
+  i {
+    position: absolute;
+    top: 50%;
+    left: 0.9rem;
+    transform: translateY(-50%);
+    color: var(--ar-texte-doux);
+  }
+
+  input {
+    padding-left: 2.5rem;
+  }
+}
+
+.client-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.client-avatar-initial {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--ar-dore-clair), var(--ar-dore));
+  color: var(--ar-chocolat-nuit);
+  font-weight: 700;
+}

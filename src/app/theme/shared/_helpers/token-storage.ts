@@ -33,3 +33,13 @@ export function millisAvantExpiration(token: string): number {
     return 0;
   }
 }
+
+// Date d'expiration lisible (diagnostic) : "invalide" si le token ne peut pas etre lu.
+export function dateExpiration(token: string): string {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof payload.exp === 'number' ? new Date(payload.exp * 1000).toISOString() : 'invalide (pas de exp)';
+  } catch {
+    return 'invalide (jeton illisible)';
+  }
+}

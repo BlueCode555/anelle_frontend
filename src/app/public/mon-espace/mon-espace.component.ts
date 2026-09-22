@@ -82,7 +82,9 @@ export class MonEspaceComponent implements OnInit {
     this.rendezVous.annuler(rdv.id).subscribe({
       next: () => this.charger(),
       error: (err) => {
-        const expiree = err?.status === 401 || err?.status === 403;
+        // 401 = jeton absent/invalide (vraie expiration) ; un 403 est un refus métier du serveur (message a
+        // afficher tel quel), pas forcement une session expirée.
+        const expiree = err?.status === 401;
         this.sessionExpiree.set(expiree);
         this.erreur.set(expiree ? 'Votre session a expiré.' : (err?.error?.message ?? "Impossible d'annuler ce rendez-vous."));
       }

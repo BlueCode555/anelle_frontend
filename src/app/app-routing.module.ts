@@ -39,6 +39,12 @@ const appRoutes: Routes = [
         loadComponent: () => import('./admin/profil/profil-list/profil-list.component').then((c) => c.ProfilListComponent)
       },
       {
+        path: 'clients',
+        canActivate: [droitGuard],
+        data: { proprietaire: true },
+        loadComponent: () => import('./admin/client/client-list/client-list.component').then((c) => c.ClientListComponent)
+      },
+      {
         path: 'informations',
         canActivate: [droitGuard],
         data: { ecran: 'INFORMATIONS' },

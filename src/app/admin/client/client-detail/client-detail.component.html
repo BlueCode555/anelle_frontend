@@ -1,0 +1,49 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ nomAffiche() }}</h5>
+  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div class="client-profil">
+    @if (client.photoUrl) {
+      <img [src]="client.photoUrl" alt="" class="client-avatar-lg" referrerpolicy="no-referrer" />
+    } @else {
+      <span class="client-avatar-lg client-avatar-initial">{{ nomAffiche().charAt(0).toUpperCase() }}</span>
+    }
+    <div>
+      <div class="client-ligne"><i class="ti ti-mail"></i>{{ client.email }}</div>
+      @if (client.telephone) {
+        <div class="client-ligne"><i class="ti ti-phone"></i>{{ client.telephone }}</div>
+      }
+      <div class="client-ligne text-muted"><i class="ti ti-clock"></i>Dernière connexion : {{ derniereConnexion() }}</div>
+    </div>
+  </div>
+
+  <h6 class="mt-4 mb-3"><i class="ti ti-calendar-event me-2"></i>Historique des rendez-vous</h6>
+
+  @if (erreur()) {
+    <div class="alert alert-danger">{{ erreur() }}</div>
+  } @else if (chargement()) {
+    <p class="text-muted mb-0">Chargement...</p>
+  } @else if (rdvs().length === 0) {
+    <p class="text-muted mb-0">Aucun rendez-vous pour le moment.</p>
+  } @else {
+    <ul class="rdv-list">
+      @for (rdv of rdvs(); track rdv.id) {
+        <li class="rdv-item">
+          <div class="rdv-when">
+            <strong class="text-capitalize">{{ jour(rdv.debut) }}</strong>
+            <span class="text-muted small">{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</span>
+          </div>
+          <div class="rdv-what">
+            <strong>{{ rdv.serviceNom }}</strong>
+            <span class="text-muted small">{{ formatTarif(rdv.prix) }}</span>
+          </div>
+          <span class="badge" [ngClass]="classes[rdv.statut]">{{ libelles[rdv.statut] }}</span>
+        </li>
+      }
+    </ul>
+  }
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Fermer</button>
+</div>

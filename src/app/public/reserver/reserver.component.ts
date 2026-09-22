@@ -59,7 +59,9 @@ export class ReserverComponent {
       error: (err) => {
         this.envoi.set(false);
         this.choix.set(null);
-        const expiree = err?.status === 401 || err?.status === 403;
+        // 401 = jeton absent/invalide (vraie expiration) ; un 403 est un refus métier du serveur (message a
+        // afficher tel quel), pas forcement une session expirée — sinon on induit la cliente en erreur.
+        const expiree = err?.status === 401;
         this.sessionExpiree.set(expiree);
         this.erreur.set(
           expiree
