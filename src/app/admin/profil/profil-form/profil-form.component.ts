@@ -5,6 +5,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ActionCode, EcranCode, Permission } from 'src/app/theme/shared/service/auth.service';
 import { EcranInfo, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 interface Colonne {
   action: ActionCode;
@@ -14,10 +16,11 @@ interface Colonne {
 // Création / modification d'un profil : nom + grille de droits (un écran par ligne, lire/créer/modifier/supprimer en colonnes).
 @Component({
   selector: 'app-profil-form',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './profil-form.component.html'
 })
 export class ProfilFormComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private equipe = inject(EquipeService);
   private confirmation = inject(ConfirmationService);
   activeModal = inject(NgbActiveModal);
@@ -60,7 +63,7 @@ export class ProfilFormComponent implements OnInit {
         }
         this.droits.set(droits);
       },
-      error: () => this.erreur.set('Impossible de charger la liste des écrans.')
+      error: () => this.erreur.set(this.i18n.t('ts.profil.ecrans'))
     });
   }
 
@@ -88,9 +91,9 @@ export class ProfilFormComponent implements OnInit {
     if (!this.libelle().trim() || this.envoi()) return;
 
     const ok = await this.confirmation.demander({
-      titre: this.profil ? 'Enregistrer les modifications ?' : 'Créer ce profil ?',
+      titre: this.profil ? this.i18n.t('ts.form.modifs') : this.i18n.t('ts.profil.creer'),
       message: this.libelle().trim(),
-      texteConfirmer: 'Enregistrer'
+      texteConfirmer: this.i18n.t('ts.enregistrer')
     });
     if (!ok) return;
 
@@ -107,7 +110,7 @@ export class ProfilFormComponent implements OnInit {
       next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.envoi.set(false);
-        this.erreur.set(err?.error?.message ?? "Impossible d'enregistrer le profil.");
+        this.erreur.set(err?.error?.message ?? this.i18n.t('ts.profil.enregistrer'));
       }
     });
   }

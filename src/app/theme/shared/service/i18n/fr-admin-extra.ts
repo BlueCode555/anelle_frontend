@@ -1,0 +1,27 @@
+// Textes du back-office avec balisage ou parametres.
+export const FR_ADMIN_EXTRA: Record<string, string> = {
+  'agenda.intro': 'La liste des rendez-vous de la semaine affichée ci-dessus. Une demande reçue en ligne doit d\'abord être <strong>acceptée ou refusée</strong> ; une fois acceptée et le <strong>paiement reçu</strong>, elle devient <strong>confirmée</strong> ; une fois passée, marquez-la <strong>terminée</strong>. « Nouveau rendez-vous » sert à inscrire vous-même un rendez-vous pris par téléphone ou sur place.',
+  'agenda.conges.intro': 'Bloquez une période (vacances, fermeture exceptionnelle...) pour qu\'elle disparaisse des créneaux proposés aux clientes sur le site de réservation.',
+  'agenda.aTraiter': '{n} à traiter',
+  'clients.aucunMatch': 'Aucun résultat pour « {q} ».',
+  'clients.derniereConnexion': 'Dernière connexion : {date}',
+  'collab.noteMdp': 'Ce mot de passe ne sera <strong>plus affiché</strong> : notez-le maintenant. À sa première connexion, la personne devra en choisir un nouveau que seule elle connaîtra. Il est aussi envoyé par courriel à la personne et expire au bout de 24 h s\'il n\'est pas utilisé.',
+  'collab.comptePret': 'Compte de {nom} prêt',
+  'collab.adresseConnexion': 'Adresse de connexion :',
+  'collab.mdpProvisoire': 'Mot de passe provisoire :',
+  'collab.sansCompteTitre': 'Aucun compte de connexion créé automatiquement',
+  'collab.modifier': 'Modifier le collaborateur',
+  'collab.aideEmail': 'C\'est son adresse de connexion. Un mot de passe provisoire vous sera affiché après la création et envoyé par courriel à la personne : elle a 24 h pour se connecter.',
+  'collab.creation': 'Création...',
+  'collab.creerCompte': 'Créer le compte',
+  'collab.generation': 'Génération...',
+  'collab.nouveauMdp': 'Nouveau mot de passe',
+  'profil.note': 'La gestion des collaborateurs et des profils reste réservée à l\'esthéticienne. Le téléversement d\'une image demande le droit de créer ou de modifier sur au moins un écran du catalogue ou des informations.',
+  'profil.accesDe': 'Accès du profil',
+  'profil.modifier': 'Modifier le profil',
+  'info.mailIntro': 'Quand une cliente prend rendez-vous en ligne, un courriel vous prévient ici — pratique si vous n\'êtes pas connectée à l\'espace de gestion à ce moment-là. Renseignez votre adresse Gmail et son <strong>mot de passe d\'application</strong> (pas le mot de passe habituel de votre compte Google : il se crée dans les réglages de sécurité de votre compte Google, section « Mots de passe des applications »).',
+  'info.fiche': 'Fiche complétée à {n} %',
+  'info.seize': '16 caractères',
+  'info.ouverture': 'Ouverture',
+  'info.fermeture': 'Fermeture'
+};

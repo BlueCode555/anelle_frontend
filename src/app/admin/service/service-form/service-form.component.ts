@@ -7,14 +7,17 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/catalogue.model';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-service-form',
-  imports: [CommonModule, FormsModule, FormField],
+  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
   templateUrl: './service-form.component.html',
   styleUrl: './service-form.component.scss'
 })
 export class ServiceFormComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   activeModal = inject(NgbActiveModal);
   private confirmation = inject(ConfirmationService);
@@ -45,10 +48,10 @@ export class ServiceFormComponent implements OnInit {
   imagePreview = computed(() => this.catalogue.imageSrc(this.serviceModel().imageUrl));
 
   serviceForm = form(this.serviceModel, (schemaPath) => {
-    required(schemaPath.nomService, { message: 'Le nom du service est obligatoire' });
-    required(schemaPath.categorieCode, { message: 'La categorie est obligatoire' });
-    required(schemaPath.dureeMinutes, { message: 'La duree est obligatoire' });
-    required(schemaPath.tarif, { message: 'Le tarif est obligatoire' });
+    required(schemaPath.nomService, { message: this.i18n.t('ts.srv.nom') });
+    required(schemaPath.categorieCode, { message: this.i18n.t('ts.srv.categorie') });
+    required(schemaPath.dureeMinutes, { message: this.i18n.t('ts.srv.duree') });
+    required(schemaPath.tarif, { message: this.i18n.t('ts.srv.tarif') });
   });
 
   ngOnInit(): void {
@@ -73,7 +76,7 @@ export class ServiceFormComponent implements OnInit {
       },
       error: () => {
         this.chargement.set(false);
-        this.serverError.set('Impossible de charger ce service.');
+        this.serverError.set(this.i18n.t('ts.srv.charger'));
       }
     });
   }
@@ -87,11 +90,11 @@ export class ServiceFormComponent implements OnInit {
     }
     this.uploadError.set('');
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(file.type)) {
-      this.uploadError.set('Format non supporte : JPEG, PNG, WebP ou AVIF.');
+      this.uploadError.set(this.i18n.t('ts.form.format'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      this.uploadError.set('Image trop lourde (5 Mo maximum).');
+      this.uploadError.set(this.i18n.t('ts.form.trop'));
       return;
     }
 
@@ -103,7 +106,7 @@ export class ServiceFormComponent implements OnInit {
       },
       error: (err) => {
         this.uploading.set(false);
-        this.uploadError.set(err?.status === 401 ? "Envoi refuse : vous n'etes pas connecte." : "Echec de l'envoi de l'image.");
+        this.uploadError.set(err?.status === 401 ? this.i18n.t('ts.form.envoiRefuse') : this.i18n.t('ts.form.envoiEchec'));
       }
     });
   }
@@ -128,9 +131,9 @@ export class ServiceFormComponent implements OnInit {
     }
 
     const ok = await this.confirmation.demander({
-      titre: this.serviceId ? 'Enregistrer les modifications ?' : 'Enregistrer ce service ?',
+      titre: this.serviceId ? this.i18n.t('ts.form.modifs') : this.i18n.t('ts.srv.enregistrer'),
       message: this.serviceModel().nomService,
-      texteConfirmer: 'Enregistrer'
+      texteConfirmer: this.i18n.t('ts.enregistrer')
     });
     if (!ok) {
       return;
@@ -144,7 +147,7 @@ export class ServiceFormComponent implements OnInit {
       next: () => this.activeModal.close('saved'),
       error: (err) => {
         this.saving.set(false);
-        this.serverError.set(err?.status === 401 || err?.status === 403 ? 'Action refusee : la connexion du personnel est requise.' : (err?.error?.message ?? 'Une erreur est survenue.'));
+        this.serverError.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.form.actionRefusee') : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique')));
       }
     });
   }

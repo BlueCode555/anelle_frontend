@@ -61,6 +61,18 @@ const appRoutes: Routes = [
         canActivate: [droitGuard],
         data: { ecran: 'SERVICES' },
         loadComponent: () => import('./admin/service/service-list/service-list.component').then((c) => c.ServiceListComponent)
+      },
+      {
+        path: 'produits',
+        canActivate: [droitGuard],
+        data: { ecran: 'PRODUITS' },
+        loadComponent: () => import('./admin/produit/produit-list/produit-list.component').then((c) => c.ProduitListComponent)
+      },
+      {
+        path: 'commandes',
+        canActivate: [droitGuard],
+        data: { ecran: 'COMMANDES' },
+        loadComponent: () => import('./admin/commande/commande-list/commande-list.component').then((c) => c.CommandeListComponent)
       }
     ]
   },
@@ -75,6 +87,14 @@ const appRoutes: Routes = [
       {
         path: 'connexion',
         loadComponent: () => import('./public/connexion/connexion.component').then((c) => c.ConnexionComponent)
+      },
+      {
+        path: 'boutique',
+        loadComponent: () => import('./public/boutique/boutique.component').then((c) => c.BoutiqueComponent)
+      },
+      {
+        path: 'panier',
+        loadComponent: () => import('./public/panier/panier.component').then((c) => c.PanierComponent)
       },
       {
         path: 'reserver',

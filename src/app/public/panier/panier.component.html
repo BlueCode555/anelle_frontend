@@ -1,0 +1,116 @@
+<div class="panier-page">
+  <app-site-header />
+
+  <main class="container panier-main">
+    @if (commande(); as cmd) {
+      <section class="panel text-center panel-confirmation">
+        <span class="confirm-icon-wrap"><i class="ti ti-circle-check confirm-icon"></i></span>
+        <span class="ar-eyebrow d-block">{{ 'panier.merci' | t }}</span>
+        <h1 class="h3 mb-2">{{ 'panier.commandeEnregistree' | t }}</h1>
+        <p class="text-muted mb-1">{{ 'panier.reference' | t: { code: cmd.code } }}</p>
+        <p class="text-muted mb-4">
+          {{ (cmd.lienPaiement ? 'panier.payerPourValider' : 'panier.payerSurPlace') | t }}
+        </p>
+        <ul class="recap-lignes mx-auto">
+          @for (l of cmd.lignes; track l.produitCode) {
+            <li><span>{{ l.quantite }} × {{ l.nom }}</span><strong>{{ formatPrix(l.sousTotal) }}</strong></li>
+          }
+          <li class="recap-total"><span>{{ 'panier.total' | t }}</span><strong>{{ formatPrix(cmd.total) }}</strong></li>
+        </ul>
+        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+          @if (cmd.lienPaiement) {
+            <a [href]="cmd.lienPaiement" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+              <i class="ti ti-credit-card me-1"></i>{{ 'espace.payer' | t }}
+            </a>
+          }
+          <a routerLink="/mon-espace" class="btn btn-outline-secondary btn-lg">{{ 'panier.suivre' | t }}</a>
+          <a routerLink="/boutique" class="btn btn-link">{{ 'panier.continuer' | t }}</a>
+        </div>
+      </section>
+    } @else {
+      <header class="panier-tete text-center">
+        <span class="ar-eyebrow">{{ 'boutique.eyebrow' | t }}</span>
+        <h1 class="panier-titre">{{ 'panier.titre' | t }}</h1>
+      </header>
+
+      @if (panier.lignes().length === 0) {
+        <div class="panier-vide">
+          <i class="ti ti-shopping-cart-off"></i>
+          <h6>{{ 'panier.vide' | t }}</h6>
+          <p>{{ 'panier.videTexte' | t }}</p>
+          <a routerLink="/boutique" class="btn btn-secondary">{{ 'panier.decouvrir' | t }}</a>
+        </div>
+      } @else {
+        <div class="row g-4">
+          <div class="col-12 col-lg-8">
+            <section class="panel">
+              <ul class="lignes">
+                @for (l of panier.lignes(); track l.code) {
+                  <li class="ligne">
+                    <div class="ligne-photo">
+                      @if (imageSrc(l); as src) {
+                        <img [src]="src" [alt]="l.nom" />
+                      } @else {
+                        <i class="ti ti-shopping-bag"></i>
+                      }
+                    </div>
+                    <div class="ligne-infos">
+                      <strong>{{ l.nom }}</strong>
+                      <span class="text-muted small">{{ formatPrix(l.prix) }}</span>
+                    </div>
+                    <div class="quantite" role="group" [attr.aria-label]="'panier.quantite' | t">
+                      <button type="button" (click)="changerQuantite(l, -1)" [attr.aria-label]="'panier.moins' | t"><i class="ti ti-minus"></i></button>
+                      <span>{{ l.quantite }}</span>
+                      <button type="button" (click)="changerQuantite(l, 1)" [disabled]="l.quantite >= l.stock || l.quantite >= 20" [attr.aria-label]="'panier.plus' | t"><i class="ti ti-plus"></i></button>
+                    </div>
+                    <strong class="ligne-total">{{ formatPrix(l.prix * l.quantite) }}</strong>
+                    <button type="button" class="ligne-retirer" (click)="panier.retirer(l.code)" [attr.aria-label]="'panier.retirer' | t" [title]="'panier.retirer' | t">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </li>
+                }
+              </ul>
+              <a routerLink="/boutique" class="btn btn-link px-0"><i class="ti ti-arrow-left me-1"></i>{{ 'panier.continuer' | t }}</a>
+            </section>
+          </div>
+
+          <div class="col-12 col-lg-4">
+            <aside class="panel resume">
+              <h2 class="h5">{{ 'panier.resume' | t }}</h2>
+              <div class="resume-ligne">
+                <span>{{ 'panier.articles' | t: { n: panier.nombreArticles() } }}</span>
+                <strong>{{ formatPrix(panier.total()) }}</strong>
+              </div>
+              <p class="small text-muted">{{ 'panier.retrait' | t }}</p>
+
+              <label class="form-label small" for="note-commande">{{ 'panier.note' | t }}</label>
+              <textarea id="note-commande" class="form-control mb-3" rows="2" maxlength="500" [placeholder]="'panier.notePlaceholder' | t" (input)="onNote($event)"></textarea>
+
+              @if (erreur()) {
+                <div class="alert alert-danger py-2 small d-flex flex-wrap align-items-center justify-content-between gap-2">
+                  <span>{{ erreur() }}</span>
+                  @if (sessionExpiree()) {
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="seConnecter()">{{ 'reserver.reconnecter' | t }}</button>
+                  }
+                </div>
+              }
+
+              @if (!auth.user()) {
+                <button type="button" class="btn btn-secondary btn-lg w-100" (click)="seConnecter()">
+                  <i class="ti ti-brand-google-filled me-2"></i>{{ 'panier.seConnecter' | t }}
+                </button>
+                <p class="small text-muted mt-2 mb-0">{{ 'panier.connexionRequise' | t }}</p>
+              } @else if (!estClient()) {
+                <div class="alert alert-info py-2 small mb-0">{{ 'panier.reserveClients' | t }}</div>
+              } @else {
+                <button type="button" class="btn btn-secondary btn-lg w-100" [disabled]="envoi()" (click)="commander()">
+                  {{ envoi() ? ('panier.envoi' | t) : ('panier.commander' | t) }}
+                </button>
+              }
+            </aside>
+          </div>
+        </div>
+      }
+    }
+  </main>
+</div>

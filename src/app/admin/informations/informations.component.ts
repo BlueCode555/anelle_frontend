@@ -5,14 +5,17 @@ import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-boot
 
 import { Horaire, Information, InformationForm, InformationService, JOURS_SEMAINE } from 'src/app/theme/shared/service/information.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-informations',
-  imports: [CommonModule, ReactiveFormsModule, NgbAccordionModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbAccordionModule, TranslatePipe],
   templateUrl: './informations.component.html',
   styleUrl: './informations.component.scss'
 })
 export class InformationsComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private fb = inject(FormBuilder);
   private informations = inject(InformationService);
   private confirmation = inject(ConfirmationService);
@@ -138,16 +141,16 @@ export class InformationsComponent implements OnInit {
       this.accordeon?.expandAll();
       this.serverError.set(
         invalidTimes
-          ? "Vérifiez les horaires : un jour ouvert doit avoir une heure d'ouverture précédant l'heure de fermeture."
+          ? this.i18n.t('ts.info.horaires')
           : 'Certains champs sont invalides.'
       );
       return;
     }
 
     const ok = await this.confirmation.demander({
-      titre: 'Enregistrer les informations ?',
-      message: 'Le site public sera mis à jour immédiatement avec ces changements.',
-      texteConfirmer: 'Enregistrer',
+      titre: this.i18n.t('ts.info.confirmerTitre'),
+      message: this.i18n.t('ts.info.confirmerMsg'),
+      texteConfirmer: this.i18n.t('ts.enregistrer'),
       icone: 'ti-device-floppy'
     });
     if (!ok) return;
@@ -163,8 +166,8 @@ export class InformationsComponent implements OnInit {
         this.saving.set(false);
         this.serverError.set(
           err?.status === 401 || err?.status === 403
-            ? "Enregistrement refusé : seule l'esthéticienne connectée peut modifier ces informations."
-            : (err?.error?.message ?? "Une erreur est survenue lors de l'enregistrement.")
+            ? this.i18n.t('ts.info.refuse')
+            : (err?.error?.message ?? this.i18n.t('ts.info.erreur'))
         );
       }
     });

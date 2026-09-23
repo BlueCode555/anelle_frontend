@@ -2,13 +2,15 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { LOGIN_FLOW_KEY, RETOUR_CLIENT_KEY, RETOUR_STAFF_KEY } from '../../theme/shared/_helpers/token-storage';
+import { TranslatePipe } from '../../theme/shared/_helpers/translate.pipe';
 import { AuthService } from '../../theme/shared/service/auth.service';
 
 // Retour de Keycloak après la connexion (personnel ou cliente) : échange le code reçu contre la session, puis
 // renvoie chacun à sa propre destination.
 @Component({
   selector: 'app-auth-callback',
-  template: `<p class="text-center text-muted py-5">Connexion en cours...</p>`
+  imports: [TranslatePipe],
+  template: `<p class="text-center text-muted py-5">{{ 'auth.encours' | t }}</p>`
 })
 export class AuthCallbackComponent implements OnInit {
   private auth = inject(AuthService);

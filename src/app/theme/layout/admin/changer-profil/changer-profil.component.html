@@ -1,9 +1,9 @@
 <div class="modal-header">
-  <h5 class="modal-title">Changer de profil</h5>
-  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+  <h5 class="modal-title">{{ 'a.changer_de_profil' | t }}</h5>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <p class="text-muted mb-3">Choisissez le profil avec lequel vous voulez travailler. Le menu s'adapte à votre choix.</p>
+  <p class="text-muted mb-3">{{ 'a.choisissez_le_profil_avec_lequel_vous_voulez_tra' | t }}</p>
 
   <div class="profils">
     @for (p of profils(); track p.code) {
@@ -22,17 +22,17 @@
             @for (e of ecrans(p); track e) {
               <span class="pastille">{{ e }}</span>
             } @empty {
-              <span class="text-muted small">Aucun écran</span>
+              <span class="text-muted small">{{ 'a.aucun_ecran' | t }}</span>
             }
           </span>
         </span>
         @if (p.code === actuel()) {
-          <span class="profil-badge">En cours</span>
+          <span class="profil-badge">{{ 'a.en_cours' | t }}</span>
         }
       </button>
     }
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Fermer</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.fermer' | t }}</button>
 </div>

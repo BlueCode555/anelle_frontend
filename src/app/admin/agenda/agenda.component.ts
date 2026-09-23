@@ -1,8 +1,11 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Observable } from 'rxjs';
 
+import { AuthService } from 'src/app/theme/shared/service/auth.service';
+import { Collaborateur, EquipeService } from 'src/app/theme/shared/service/equipe.service';
 import { InformationService } from 'src/app/theme/shared/service/information.service';
 import {
   Indisponibilite,
@@ -23,6 +26,8 @@ import {
 } from 'src/app/theme/shared/_helpers/zoned-time';
 import { NouveauRendezVousComponent } from './nouveau-rendez-vous/nouveau-rendez-vous.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 interface Groupe {
   cle: string;
@@ -32,13 +37,16 @@ interface Groupe {
 
 @Component({
   selector: 'app-agenda',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './agenda.component.html',
   styleUrl: './agenda.component.scss'
 })
 export class AgendaComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private rendezVous = inject(RendezVousService);
   private informations = inject(InformationService);
+  private equipe = inject(EquipeService);
+  private auth = inject(AuthService);
   private modals = inject(NgbModal);
   private confirmation = inject(ConfirmationService);
 
@@ -50,6 +58,8 @@ export class AgendaComponent implements OnInit {
   chargement = signal(true);
   erreur = signal('');
   indisponibilites = signal<Indisponibilite[]>([]);
+  // Affectation d'un collaborateur : reservee a la proprietaire (voir PermissionRules cote backend).
+  collaborateursActifs = signal<Collaborateur[]>([]);
 
   // Formulaire des conges (dates locales de l'institut)
   congeDebut = signal('');
@@ -90,6 +100,16 @@ export class AgendaComponent implements OnInit {
   ngOnInit(): void {
     this.informations.ensureLoaded();
     this.chargerConges();
+    if (this.estProprietaire()) {
+      this.equipe.collaborateurs().subscribe({
+        next: (liste) => this.collaborateursActifs.set(liste.filter((c) => c.actif)),
+        error: () => this.collaborateursActifs.set([])
+      });
+    }
+  }
+
+  estProprietaire(): boolean {
+    return this.auth.estProprietaire();
   }
 
   // ── Navigation ────────────────────────────────────────────────────────────
@@ -126,7 +146,7 @@ export class AgendaComponent implements OnInit {
       },
       error: (err) => {
         this.chargement.set(false);
-        this.erreur.set(this.messageErreur(err, "Impossible de charger l'agenda."));
+        this.erreur.set(this.messageErreur(err, this.i18n.t('ts.agenda.charger')));
       }
     });
   }
@@ -146,13 +166,13 @@ export class AgendaComponent implements OnInit {
   }
 
   refuser(rdv: RendezVous): void {
-    const motif = prompt('Motif du refus (facultatif, visible par la cliente) :');
+    const motif = prompt(this.i18n.t('ts.agenda.motifRefus'));
     if (motif === null) return;
     this.executer(this.rendezVous.refuser(rdv.id, motif));
   }
 
   marquerPaye(rdv: RendezVous): void {
-    const reference = prompt(`Paiement complet de ${this.formatTarif(rdv.prix)} reçu.\nRéférence (facultative) :`, '');
+    const reference = prompt(this.i18n.t('ts.agenda.paiement', { montant: this.formatTarif(rdv.prix) }), '');
     if (reference === null) return;
     this.executer(this.rendezVous.marquerPaye(rdv.id, reference));
   }
@@ -161,12 +181,17 @@ export class AgendaComponent implements OnInit {
     this.executer(this.rendezVous.terminer(rdv.id));
   }
 
+  affecter(rdv: RendezVous, event: Event): void {
+    const valeur = (event.target as HTMLSelectElement).value;
+    this.executer(this.rendezVous.assigner(rdv.id, valeur ? Number(valeur) : null));
+  }
+
   async annuler(rdv: RendezVous): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Annuler le rendez-vous de ${rdv.clientNom ?? 'ce client'} ?`,
+      titre: this.i18n.t('ts.agenda.annulerTitre', { nom: rdv.clientNom ?? this.i18n.t('ts.agenda.ceClient') }),
       message: rdv.serviceNom,
-      texteConfirmer: 'Annuler le rendez-vous',
-      texteAnnuler: 'Garder',
+      texteConfirmer: this.i18n.t('espace.annulerConfirmer'),
+      texteAnnuler: this.i18n.t('espace.garder'),
       danger: true
     });
     if (ok) {
@@ -198,7 +223,7 @@ export class AgendaComponent implements OnInit {
   ajouterConge(): void {
     this.congeErreur.set('');
     if (!this.congeDebut() || !this.congeFin()) {
-      this.congeErreur.set('Indiquez le début et la fin.');
+      this.congeErreur.set(this.i18n.t('ts.agenda.debutFin'));
       return;
     }
     this.rendezVous
@@ -214,15 +239,15 @@ export class AgendaComponent implements OnInit {
           this.congeMotif.set('');
           this.chargerConges();
         },
-        error: (err) => this.congeErreur.set(this.messageErreur(err, "Impossible d'enregistrer cette période."))
+        error: (err) => this.congeErreur.set(this.messageErreur(err, this.i18n.t('ts.agenda.periode')))
       });
   }
 
   async supprimerConge(conge: Indisponibilite): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: 'Supprimer cette période ?',
-      message: 'Les créneaux redeviendront disponibles.',
-      texteConfirmer: 'Supprimer',
+      titre: this.i18n.t('ts.agenda.supprPeriode'),
+      message: this.i18n.t('ts.agenda.creneauxDispo'),
+      texteConfirmer: this.i18n.t('ts.supprimer'),
       danger: true
     });
     if (ok) {
@@ -241,20 +266,20 @@ export class AgendaComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
   private executer(action: Observable<RendezVous>): void {
     this.erreur.set('');
     action.subscribe({
       next: () => this.charger(),
-      error: (err) => this.erreur.set(this.messageErreur(err, "L'action a échoué."))
+      error: (err) => this.erreur.set(this.messageErreur(err, this.i18n.t('ts.agenda.actionEchec')))
     });
   }
 
   private messageErreur(err: { status?: number; error?: { message?: string } }, defaut: string): string {
     if (err?.status === 401 || err?.status === 403) {
-      return 'Action refusée : connexion du personnel requise.';
+      return this.i18n.t('ts.agenda.refusee');
     }
     return err?.error?.message ?? defaut;
   }

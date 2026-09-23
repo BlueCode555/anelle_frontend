@@ -4,17 +4,20 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Collaborateur, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 // L'esthéticienne crée le compte et choisit le(s) profil(s) dans le même geste. « Voir » (lectureSeule) affiche
 // tout en consultation seule, mais laisse quand même agir sur le compte (nouveau mot de passe, etc.), qui n'a
 // rien à voir avec la validation du formulaire.
 @Component({
   selector: 'app-collaborateur-form',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './collaborateur-form.component.html',
   styleUrl: './collaborateur-form.component.scss'
 })
 export class CollaborateurFormComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private equipe = inject(EquipeService);
   private confirmation = inject(ConfirmationService);
   activeModal = inject(NgbActiveModal);
@@ -46,7 +49,7 @@ export class CollaborateurFormComponent implements OnInit {
     }
     this.equipe.profils().subscribe({
       next: (liste) => this.profils.set(liste.filter((p) => p.actif || c?.profils.some((x) => x.code === p.code))),
-      error: () => this.erreur.set('Impossible de charger les profils.')
+      error: () => this.erreur.set(this.i18n.t('ts.collab.profils'))
     });
   }
 
@@ -73,9 +76,9 @@ export class CollaborateurFormComponent implements OnInit {
     if (!complet || this.envoi()) return;
 
     const ok = await this.confirmation.demander({
-      titre: this.collaborateur ? 'Enregistrer les modifications ?' : 'Créer ce collaborateur ?',
+      titre: this.collaborateur ? this.i18n.t('ts.form.modifs') : this.i18n.t('ts.collab.creerTitre'),
       message: `${this.prenom().trim()} ${this.nom().trim()}`,
-      texteConfirmer: 'Enregistrer'
+      texteConfirmer: this.i18n.t('ts.enregistrer')
     });
     if (!ok) return;
 
@@ -99,7 +102,7 @@ export class CollaborateurFormComponent implements OnInit {
       next: (resultat) => this.activeModal.close(this.collaborateur ? 'saved' : resultat),
       error: (err) => {
         this.envoi.set(false);
-        this.erreur.set(err?.error?.message ?? "Impossible d'enregistrer le collaborateur.");
+        this.erreur.set(err?.error?.message ?? this.i18n.t('ts.collab.enregistrer'));
       }
     });
   }
@@ -109,9 +112,9 @@ export class CollaborateurFormComponent implements OnInit {
   async creerCompte(): Promise<void> {
     if (!this.collaborateur || this.envoiCompte()) return;
     const ok = await this.confirmation.demander({
-      titre: `Créer le compte de connexion de ${this.collaborateur.prenom} ${this.collaborateur.nom} ?`,
-      message: 'Un mot de passe provisoire sera généré pour se connecter.',
-      texteConfirmer: 'Créer le compte',
+      titre: this.i18n.t('ts.collab.creerCompteTitre', { nom: `${this.collaborateur.prenom} ${this.collaborateur.nom}` }),
+      message: this.i18n.t('ts.collab.mdpGenere'),
+      texteConfirmer: this.i18n.t('collab.creerCompte'),
       icone: 'ti-key'
     });
     if (!ok) return;
@@ -121,7 +124,7 @@ export class CollaborateurFormComponent implements OnInit {
       next: (resultat) => this.activeModal.close(resultat),
       error: (err) => {
         this.envoiCompte.set(false);
-        this.erreur.set(err?.error?.message ?? "Impossible de créer le compte de connexion.");
+        this.erreur.set(err?.error?.message ?? this.i18n.t('ts.collab.compteErreur'));
       }
     });
   }
@@ -130,8 +133,8 @@ export class CollaborateurFormComponent implements OnInit {
     if (!this.collaborateur || this.envoiCompte()) return;
     const ok = await this.confirmation.demander({
       titre: `Nouveau mot de passe pour ${this.collaborateur.prenom} ${this.collaborateur.nom} ?`,
-      message: "Un mot de passe provisoire sera généré. L'ancien ne fonctionnera plus.",
-      texteConfirmer: 'Générer',
+      message: this.i18n.t('ts.collab.reinitMsg'),
+      texteConfirmer: this.i18n.t('ts.collab.generer'),
       icone: 'ti-key'
     });
     if (!ok) return;
@@ -141,7 +144,7 @@ export class CollaborateurFormComponent implements OnInit {
       next: (resultat) => this.activeModal.close(resultat),
       error: (err) => {
         this.envoiCompte.set(false);
-        this.erreur.set(err?.error?.message ?? 'Impossible de réinitialiser le mot de passe.');
+        this.erreur.set(err?.error?.message ?? this.i18n.t('ts.collab.reinitErreur'));
       }
     });
   }

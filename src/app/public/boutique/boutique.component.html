@@ -1,0 +1,109 @@
+<div class="boutique-page">
+  <app-site-header />
+
+  <section class="boutique-hero">
+    <span class="ar-eyebrow">{{ 'boutique.eyebrow' | t }}</span>
+    <h1 class="boutique-titre">{{ 'boutique.titre' | t }}</h1>
+    <p class="boutique-intro">{{ 'boutique.intro' | t }}</p>
+  </section>
+
+  <main class="container boutique-main">
+    <div class="boutique-outils">
+      <div class="boutique-recherche">
+        <i class="ti ti-search"></i>
+        <input type="search" class="form-control" [placeholder]="'boutique.rechercher' | t" [value]="recherche()" (input)="onRecherche($event)" />
+      </div>
+      <div class="boutique-options">
+        @if (rayons().length > 1) {
+          <select class="form-select" [attr.aria-label]="'boutique.rayon' | t" (change)="onRayon($event)">
+            <option value="">{{ 'boutique.tousRayons' | t }}</option>
+            @for (r of rayons(); track r) {
+              <option [value]="r" [selected]="rayonActif() === r">{{ r }}</option>
+            }
+          </select>
+        }
+        <select class="form-select" [attr.aria-label]="'boutique.trier' | t" (change)="onTri($event)">
+          <option value="defaut">{{ 'boutique.triDefaut' | t }}</option>
+          <option value="prixAsc">{{ 'boutique.triPrixAsc' | t }}</option>
+          <option value="prixDesc">{{ 'boutique.triPrixDesc' | t }}</option>
+          <option value="nom">{{ 'boutique.triNom' | t }}</option>
+        </select>
+      </div>
+    </div>
+
+    @if (chargement()) {
+      <p class="text-center text-muted py-5">{{ 'boutique.chargement' | t }}</p>
+    } @else if (erreur()) {
+      <div class="alert alert-warning text-center mx-auto boutique-alerte">{{ 'boutique.erreur' | t }}</div>
+    } @else if (filtres().length === 0) {
+      <div class="boutique-vide">
+        <i class="ti ti-shopping-bag"></i>
+        <h6>{{ (visibles().length ? 'boutique.aucunResultat' : 'boutique.vide') | t }}</h6>
+        <p>{{ (visibles().length ? 'boutique.aucunResultatTexte' : 'boutique.videTexte') | t }}</p>
+      </div>
+    } @else {
+      <div class="row g-4">
+        @for (p of filtres(); track p.id) {
+          <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+            <article class="produit-carte" [class.est-epuise]="p.stock === 0">
+              <div class="produit-photo">
+                @if (imageSrc(p); as src) {
+                  <button type="button" class="produit-zoom" (click)="zoom.set(p)" [attr.aria-label]="'boutique.agrandir' | t">
+                    <img [src]="src" [alt]="p.nom" loading="lazy" />
+                    <span class="produit-zoom-icone"><i class="ti ti-zoom-in"></i></span>
+                  </button>
+                } @else {
+                  <span class="produit-photo-vide"><i class="ti ti-shopping-bag"></i></span>
+                }
+                @if (p.stock === 0) {
+                  <span class="produit-pastille est-rupture">{{ 'boutique.rupture' | t }}</span>
+                } @else if (p.stock <= 3) {
+                  <span class="produit-pastille">{{ 'boutique.pluQue' | t: { n: p.stock } }}</span>
+                }
+              </div>
+              <div class="produit-corps">
+                @if (p.rayon) {
+                  <span class="produit-rayon">{{ p.rayon }}</span>
+                }
+                <h3 class="produit-nom">{{ p.nom }}</h3>
+                @if (p.description) {
+                  <p class="produit-desc">{{ p.description }}</p>
+                }
+                <div class="produit-pied">
+                  <span class="produit-prix">{{ formatPrix(p.prix) }}</span>
+                  <button type="button" class="btn btn-secondary btn-sm" [disabled]="!peutAjouter(p)" (click)="ajouter(p)">
+                    @if (ajoute() === p.code) {
+                      <i class="ti ti-check me-1"></i>{{ 'boutique.ajoute' | t }}
+                    } @else if (p.stock === 0) {
+                      {{ 'boutique.rupture' | t }}
+                    } @else if (!peutAjouter(p)) {
+                      {{ 'boutique.maxAtteint' | t }}
+                    } @else {
+                      <i class="ti ti-shopping-cart-plus me-1"></i>{{ 'boutique.ajouter' | t }}
+                    }
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  @if (zoom(); as p) {
+    <div class="zoom-fond" (click)="zoom.set(null)" (keydown.escape)="zoom.set(null)" role="dialog" aria-modal="true" [attr.aria-label]="p.nom" tabindex="-1">
+      <button type="button" class="zoom-fermer" (click)="zoom.set(null)" [attr.aria-label]="'a.fermer' | t"><i class="ti ti-x"></i></button>
+      <img [src]="imageSrc(p)" [alt]="p.nom" (click)="$event.stopPropagation()" />
+      <p class="zoom-legende" (click)="$event.stopPropagation()">{{ p.nom }} · {{ formatPrix(p.prix) }}</p>
+    </div>
+  }
+
+  @if (panier.nombreArticles() > 0) {
+    <a routerLink="/panier" class="panier-flottant">
+      <i class="ti ti-shopping-cart"></i>
+      <span>{{ 'boutique.voirPanier' | t: { n: panier.nombreArticles() } }}</span>
+      <strong>{{ formatPrix(panier.total()) }}</strong>
+    </a>
+  }
+</div>

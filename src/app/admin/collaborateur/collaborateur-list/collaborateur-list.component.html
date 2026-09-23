@@ -1,29 +1,26 @@
 <div class="card">
   <div class="card-header entete-liste">
-    <h5 class="mb-0">Collaborateurs</h5>
+    <h5 class="mb-0">{{ 'a.collaborateurs' | t }}</h5>
     <button type="button" class="btn btn-primary" (click)="nouveau()">
-      <i class="ti ti-plus"></i>Nouveau collaborateur
+      <i class="ti ti-plus"></i>{{ 'a.nouveau_collaborateur' | t }}
     </button>
   </div>
   <div class="card-body">
     @if (identifiants(); as id) {
       <div class="alert alert-success identifiants">
-        <h6 class="mb-2"><i class="ti ti-key me-2"></i>Compte de {{ id.nom }} prêt</h6>
-        <p class="mb-2">Transmettez-lui ces deux informations (par message ou de vive voix) :</p>
+        <h6 class="mb-2"><i class="ti ti-key me-2"></i>{{ 'collab.comptePret' | t: { nom: id.nom } }}</h6>
+        <p class="mb-2">{{ 'a.transmettez_lui_ces_deux_informations_par_messag' | t }}</p>
         <ul class="mb-2">
-          <li>Adresse de connexion : <strong>{{ id.email }}</strong></li>
+          <li>{{ 'collab.adresseConnexion' | t }} <strong>{{ id.email }}</strong></li>
           <li>
-            Mot de passe provisoire : <strong class="mdp">{{ id.motDePasse }}</strong>
+            {{ 'collab.mdpProvisoire' | t }} <strong class="mdp">{{ id.motDePasse }}</strong>
             <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="copier(id.motDePasse)">
-              <i class="ti" [class.ti-copy]="!copie()" [class.ti-check]="copie()"></i> {{ copie() ? 'Copié' : 'Copier' }}
+              <i class="ti" [class.ti-copy]="!copie()" [class.ti-check]="copie()"></i> {{ copie() ? ('a.copie' | t) : ('a.copier' | t) }}
             </button>
           </li>
         </ul>
-        <p class="small mb-2">
-          Ce mot de passe ne sera <strong>plus affiché</strong> : notez-le maintenant. À sa première connexion, la personne
-          devra en choisir un nouveau que seule elle connaîtra.
-        </p>
-        <button type="button" class="btn btn-sm btn-secondary" (click)="fermerIdentifiants()">J'ai noté, fermer</button>
+        <p class="small mb-2" [innerHTML]="'collab.noteMdp' | t"></p>
+        <button type="button" class="btn btn-sm btn-secondary" (click)="fermerIdentifiants()">{{ 'a.j_ai_note_fermer' | t }}</button>
       </div>
     }
     @if (info()) {
@@ -33,13 +30,13 @@
       <div class="alert alert-danger">{{ erreur() }}</div>
     }
     @if (chargement()) {
-      <div class="text-center text-muted py-4">Chargement...</div>
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     } @else if (collaborateurs().length === 0 && !erreur()) {
       <div class="etat-vide">
         <i class="ti ti-users"></i>
-        <h6>Aucun collaborateur pour le moment</h6>
-        <p>Ajoutez les personnes de votre équipe : elles pourront se connecter et travailler selon leurs profils.</p>
-        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>Ajouter mon premier collaborateur</button>
+        <h6>{{ 'a.aucun_collaborateur_pour_le_moment' | t }}</h6>
+        <p>{{ 'a.ajoutez_les_personnes_de_votre_equipe_elles_pour' | t }}</p>
+        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>{{ 'a.ajouter_mon_premier_collaborateur' | t }}</button>
       </div>
     } @else if (collaborateurs().length) {
       @if (collaborateurs().length > 5) {
@@ -48,7 +45,7 @@
           <input
             type="search"
             class="form-control"
-            placeholder="Rechercher un nom ou un e-mail..."
+            [placeholder]="'a.rechercher_un_nom_ou_un_e_mail' | t"
             [ngModel]="recherche()"
             (ngModelChange)="recherche.set($event)"
           />
@@ -56,41 +53,41 @@
       }
 
       @if (visibles().length === 0) {
-        <p class="text-muted mb-0">Aucun collaborateur ne correspond à « {{ recherche() }} ».</p>
+        <p class="text-muted mb-0">{{ 'clients.aucunMatch' | t: { q: recherche() } }}</p>
       }
 
       <div class="table-responsive">
         <table class="table table-hover align-middle table-cartes" [class.table-compacte]="true">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>E-mail</th>
-              <th>Profils</th>
-              <th>Statut</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'a.nom' | t }}</th>
+              <th>{{ 'a.e_mail' | t }}</th>
+              <th>{{ 'a.profils' | t }}</th>
+              <th>{{ 'a.statut' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
             @for (c of visibles(); track c.id) {
               <tr>
-                <td data-label="Nom" class="fw-semibold">{{ c.prenom }} {{ c.nom }}</td>
-                <td data-label="E-mail" class="text-muted">{{ c.email }}</td>
-                <td data-label="Profils">
+                <td [attr.data-label]="'a.nom' | t" class="fw-semibold">{{ c.prenom }} {{ c.nom }}</td>
+                <td [attr.data-label]="'a.e_mail' | t" class="text-muted">{{ c.email }}</td>
+                <td [attr.data-label]="'a.profils' | t">
                   @for (p of c.profils; track p.code) {
                     <span class="badge text-bg-light border me-1">{{ p.libelle }}</span>
                   }
                 </td>
-                <td data-label="Statut">
-                  <span class="badge" [ngClass]="c.actif ? 'text-bg-success' : 'text-bg-secondary'">{{ c.actif ? 'Actif' : 'Désactivé' }}</span>
+                <td [attr.data-label]="'a.statut' | t">
+                  <span class="badge" [ngClass]="c.actif ? 'text-bg-success' : 'text-bg-secondary'">{{ c.actif ? ('a.actif' | t) : ('a.desactive' | t) }}</span>
                   @if (!c.compteCree) {
-                    <span class="badge text-bg-warning ms-1" title="Aucun compte de connexion créé automatiquement">Sans compte</span>
+                    <span class="badge text-bg-warning ms-1" [title]="'collab.sansCompteTitre' | t">{{ 'a.sans_compte' | t }}</span>
                   }
                 </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
-                    <button type="button" class="btn-icone" aria-label="Voir" title="Voir" (click)="voir(c)"><i class="ti ti-eye"></i></button>
-                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="modifier(c)"><i class="ti ti-pencil"></i></button>
-                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="supprimer(c)"><i class="ti ti-trash"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.voir' | t" [title]="'a.voir' | t" (click)="voir(c)"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="modifier(c)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="supprimer(c)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

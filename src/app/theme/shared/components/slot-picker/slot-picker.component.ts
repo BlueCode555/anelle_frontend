@@ -1,3 +1,4 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -6,6 +7,8 @@ import { ServiceResponse } from '../../service/catalogue.model';
 import { InformationService } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
 import { aujourdhui, formatHeure } from '../../_helpers/zoned-time';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 export interface ChoixCreneau {
   serviceCode: string;
@@ -15,11 +18,12 @@ export interface ChoixCreneau {
 // Choix d'un service, d'un jour, puis d'un creneau libre. Les heures sont celles de l'institut.
 @Component({
   selector: 'app-slot-picker',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './slot-picker.component.html',
   styleUrl: './slot-picker.component.scss'
 })
 export class SlotPickerComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   private rendezVous = inject(RendezVousService);
   private informations = inject(InformationService);
@@ -73,7 +77,7 @@ export class SlotPickerComponent implements OnInit {
           this.serviceCode.set(demande);
         }
       },
-      error: () => this.error.set('Impossible de charger les services pour le moment.')
+      error: () => this.error.set(this.i18n.t('ts.slots.services'))
     });
   }
 
@@ -95,7 +99,7 @@ export class SlotPickerComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
   private charger(service: string, date: string): void {
@@ -113,7 +117,7 @@ export class SlotPickerComponent implements OnInit {
         this.creneaux.set([]);
         this.loading.set(false);
         this.error.set(
-          err?.status === 401 ? 'Veuillez vous connecter pour voir les disponibilités.' : (err?.error?.message ?? 'Impossible de charger les créneaux.')
+          err?.status === 401 ? this.i18n.t('ts.slots.connexion') : (err?.error?.message ?? this.i18n.t('ts.slots.creneaux'))
         );
       }
     });

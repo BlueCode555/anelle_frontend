@@ -1,3 +1,4 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
@@ -7,7 +8,9 @@ import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
 import { SiteHeaderComponent } from '../site-header/site-header.component';
 import { CatalogueService } from '../../theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceResponse } from '../../theme/shared/service/catalogue.model';
-import { InformationService, JOURS_SEMAINE } from '../../theme/shared/service/information.service';
+import { TranslationService } from '../../theme/shared/service/i18n/translation.service';
+import { InformationService } from '../../theme/shared/service/information.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 
 interface GalleryImage {
   src: string;
@@ -26,7 +29,7 @@ const pexels = (id: number, width: number): string =>
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, NgbCarouselModule, SiteHeaderComponent],
+  imports: [CommonModule, RouterModule, NgbCarouselModule, SiteHeaderComponent, TranslatePipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -38,6 +41,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private catalogue = inject(CatalogueService);
   private informations = inject(InformationService);
   private title = inject(Title);
+  private i18n = inject(TranslationService);
 
   // Photo d'accueil (repli tant que la vidéo n'a pas chargé, et affichée seule sur mobile / mouvement réduit /
   // si la vidéo échoue a charger).
@@ -101,8 +105,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     const jours = this.info()?.horaires ?? [];
     if (!jours.some((h) => h.ouvert)) return [];
     return jours.map((h) => ({
-      jour: JOURS_SEMAINE[h.jourSemaine - 1],
-      libelle: h.ouvert && h.heureDebut && h.heureFin ? `${this.heure(h.heureDebut)} – ${this.heure(h.heureFin)}` : 'Fermé'
+      jour: this.i18n.t('jour.' + h.jourSemaine),
+      libelle: h.ouvert && h.heureDebut && h.heureFin ? `${this.heure(h.heureDebut)} – ${this.heure(h.heureFin)}` : this.i18n.t('home.ferme')
     }));
   });
 
@@ -164,7 +168,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
   // "09:30" -> "9 h 30", "19:00" -> "19 h"
@@ -189,13 +193,16 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Images par defaut du carrousel (clientes claires et foncees representees), utilisees tant qu'aucune
   // categorie/service n'a d'image (ou si l'API est injoignable).
-  private readonly defaultGallery: GalleryImage[] = [
-    { src: pexels(6945567, 1600), alt: 'Deux clientes complices en peignoir blanc', caption: 'Notre espace de soins' },
-    { src: pexels(3738349, 1600), alt: 'Soin du visage par une esthéticienne', caption: 'Soins du visage' },
-    { src: pexels(7755296, 1600), alt: 'Manucure entourée de plantes', caption: 'Manucure' },
-    { src: pexels(8312896, 1600), alt: 'Pédicure dans une cabine lumineuse', caption: 'Pédicure' },
-    { src: pexels(6186764, 1600), alt: 'Massage relaxant des épaules', caption: 'Soins du corps' }
-  ];
+  private defaultGallery(): GalleryImage[] {
+    const t = (k: string) => this.i18n.t(k);
+    return [
+    { src: pexels(6945567, 1600), alt: t('home.gallery.espace.alt'), caption: t('home.gallery.espace') },
+    { src: pexels(3738349, 1600), alt: t('home.gallery.visage.alt'), caption: t('home.gallery.visage') },
+    { src: pexels(7755296, 1600), alt: t('home.gallery.manucure.alt'), caption: t('home.gallery.manucure') },
+    { src: pexels(8312896, 1600), alt: t('home.gallery.pedicure.alt'), caption: t('home.gallery.pedicure') },
+    { src: pexels(6186764, 1600), alt: t('home.gallery.corps.alt'), caption: t('home.gallery.corps') }
+    ];
+  }
 
   // Le carrousel affiche les images des categories puis des services actifs (fichier envoye ou lien en ligne).
   galleryImages = computed<GalleryImage[]>(() => {
@@ -209,6 +216,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       .filter((s) => s.actif && !!s.imageUrl)
       .map((s) => ({ src: this.catalogue.imageSrc(s.imageUrl) as string, alt: s.nomService, caption: s.nomService }));
     const dynamic = [...fromCategories, ...fromServices];
-    return dynamic.length ? dynamic : this.defaultGallery;
+    return dynamic.length ? dynamic : this.defaultGallery();
   });
 }

@@ -6,31 +6,31 @@
       <div class="connexion-visual" aria-hidden="true">
         <div class="connexion-visual-overlay"></div>
         <blockquote class="connexion-visual-quote">
-          <p>« L'art de prendre soin, à chaque geste. »</p>
+          <p>{{ 'connexion.citation' | t }}</p>
           <cite>{{ nom() }}</cite>
         </blockquote>
       </div>
 
       <div class="connexion-card text-center">
         <i class="ti ti-user-heart connexion-icon"></i>
-        <h1 class="h3 mb-2">Bienvenue chez {{ nom() }}</h1>
-        <p class="text-muted mb-4">Connectez-vous pour réserver vos soins et retrouver l'historique de vos rendez-vous.</p>
+        <h1 class="h3 mb-2">{{ 'connexion.titre' | t: { nom: nom() } }}</h1>
+        <p class="text-muted mb-4">{{ 'connexion.intro' | t }}</p>
 
         @if (echec()) {
-          <div class="alert alert-danger">La connexion n'a pas abouti. Réessayez.</div>
+          <div class="alert alert-danger">{{ 'connexion.echec' | t }}</div>
         }
 
         @if (auth.keycloakConfigure) {
           <button type="button" class="btn-google" [disabled]="connexionEnCours()" (click)="connecter()">
             <i class="ti ti-brand-google-filled"></i>
-            {{ connexionEnCours() ? 'Redirection...' : 'Continuer avec Google' }}
+            {{ connexionEnCours() ? ('connexion.redirection' | t) : ('connexion.google' | t) }}
           </button>
-          <p class="small text-muted mt-3 mb-0">Aucun mot de passe à créer : votre compte Google suffit.</p>
+          <p class="small text-muted mt-3 mb-0">{{ 'connexion.sansMotDePasse' | t }}</p>
         } @else {
-          <div class="alert alert-warning mb-0">La connexion n'est pas encore configurée.</div>
+          <div class="alert alert-warning mb-0">{{ 'connexion.nonConfiguree' | t }}</div>
         }
 
-        <p class="small mt-4 mb-0"><a routerLink="/personnel">Espace réservé à l'équipe</a></p>
+        <p class="small mt-4 mb-0"><a routerLink="/personnel">{{ 'connexion.lienEquipe' | t }}</a></p>
       </div>
     </div>
   </main>

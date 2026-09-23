@@ -7,14 +7,17 @@ import { CategorieResponse } from 'src/app/theme/shared/service/catalogue.model'
 import { CategorieFormComponent } from '../categorie-form/categorie-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-categorie-list',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './categorie-list.component.html',
   styleUrl: './categorie-list.component.scss'
 })
 export class CategorieListComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   private modalService = inject(NgbModal);
   private confirmation = inject(ConfirmationService);
@@ -52,7 +55,7 @@ export class CategorieListComponent implements OnInit {
     ref.result.then(
       (result) => {
         if (result === 'saved') {
-          this.toast.succes('Catégorie enregistrée');
+          this.toast.succes(this.i18n.t('ts.cat.enregistree'));
           this.load();
         }
       },
@@ -66,7 +69,7 @@ export class CategorieListComponent implements OnInit {
     ref.result.then(
       (result) => {
         if (result === 'saved') {
-          this.toast.succes('Catégorie enregistrée');
+          this.toast.succes(this.i18n.t('ts.cat.enregistree'));
           this.load();
         }
       },
@@ -76,9 +79,9 @@ export class CategorieListComponent implements OnInit {
 
   async remove(categorie: CategorieResponse): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Supprimer la catégorie « ${categorie.libelle} » ?`,
-      message: 'Cette action est définitive.',
-      texteConfirmer: 'Supprimer',
+      titre: this.i18n.t('ts.cat.supprimer', { nom: categorie.libelle }),
+      message: this.i18n.t('ts.definitive'),
+      texteConfirmer: this.i18n.t('ts.supprimer'),
       danger: true
     });
     if (!ok) {
@@ -86,10 +89,10 @@ export class CategorieListComponent implements OnInit {
     }
     this.catalogue.deleteCategorie(categorie.id).subscribe({
       next: () => {
-        this.toast.succes('Catégorie supprimée');
+        this.toast.succes(this.i18n.t('ts.cat.supprimee'));
         this.load();
       },
-      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
+      error: (err) => this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.suppressionImpossible'))
     });
   }
 }

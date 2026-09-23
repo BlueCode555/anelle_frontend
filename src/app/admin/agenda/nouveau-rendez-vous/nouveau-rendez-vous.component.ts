@@ -4,14 +4,17 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ChoixCreneau, SlotPickerComponent } from 'src/app/theme/shared/components/slot-picker/slot-picker.component';
 import { RendezVousService } from 'src/app/theme/shared/service/rendez-vous.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 // Saisie d'un rendez-vous par le personnel (client au telephone ou au comptoir) : il est deja accepte.
 @Component({
   selector: 'app-nouveau-rendez-vous',
-  imports: [CommonModule, SlotPickerComponent],
+  imports: [CommonModule, SlotPickerComponent, TranslatePipe],
   templateUrl: './nouveau-rendez-vous.component.html'
 })
 export class NouveauRendezVousComponent {
+  private i18n = inject(TranslationService);
   private rendezVous = inject(RendezVousService);
   activeModal = inject(NgbActiveModal);
 
@@ -49,7 +52,7 @@ export class NouveauRendezVousComponent {
         next: () => this.activeModal.close('saved'),
         error: (err) => {
           this.envoi.set(false);
-          this.erreur.set(err?.error?.message ?? "Impossible d'enregistrer le rendez-vous.");
+          this.erreur.set(err?.error?.message ?? this.i18n.t('ts.nrdv.erreur'));
         }
       });
   }

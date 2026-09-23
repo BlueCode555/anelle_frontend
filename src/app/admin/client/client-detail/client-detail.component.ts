@@ -1,18 +1,22 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientAdmin, ClientService } from 'src/app/theme/shared/service/client.service';
 import { RendezVous, STATUT_CLASSES, STATUT_LIBELLES } from 'src/app/theme/shared/service/rendez-vous.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 // Fiche d'une cliente : coordonnees + historique de ses rendez-vous. Lecture seule.
 @Component({
   selector: 'app-client-detail',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './client-detail.component.html',
   styleUrl: './client-detail.component.scss'
 })
 export class ClientDetailComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private clients = inject(ClientService);
   activeModal = inject(NgbActiveModal);
 
@@ -33,7 +37,7 @@ export class ClientDetailComponent implements OnInit {
         this.chargement.set(false);
       },
       error: () => {
-        this.erreur.set('Impossible de charger les rendez-vous.');
+        this.erreur.set(this.i18n.t('ts.client.rdv'));
         this.chargement.set(false);
       }
     });
@@ -46,18 +50,18 @@ export class ClientDetailComponent implements OnInit {
 
   derniereConnexion(): string {
     if (!this.client.derniereConnexion) return 'Jamais';
-    return new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(this.client.derniereConnexion));
+    return new Intl.DateTimeFormat(localeCourante(), { dateStyle: 'long', timeStyle: 'short' }).format(new Date(this.client.derniereConnexion));
   }
 
   jour(iso: string): string {
-    return new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long' }).format(new Date(iso));
+    return new Intl.DateTimeFormat(localeCourante(), { dateStyle: 'long' }).format(new Date(iso));
   }
 
   heure(iso: string): string {
-    return new Intl.DateTimeFormat('fr-CA', { timeStyle: 'short' }).format(new Date(iso));
+    return new Intl.DateTimeFormat(localeCourante(), { timeStyle: 'short' }).format(new Date(iso));
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 }

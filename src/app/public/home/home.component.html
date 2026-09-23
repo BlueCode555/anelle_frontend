@@ -13,19 +13,19 @@
     <div class="hero-overlay" aria-hidden="true"></div>
 
     <div class="hero-content text-center">
-      <span class="hero-tag mb-4 d-inline-block">Pédicure &middot; Manucure &middot; Soins du corps</span>
+      <span class="hero-tag mb-4 d-inline-block">{{ 'home.tag' | t }}</span>
       <h1 class="hero-title mb-4">{{ nom() }}</h1>
       @if (info()?.slogan; as slogan) {
         <p class="mb-4 hero-subtitle mx-auto">{{ slogan }}</p>
       }
       <div class="hero-actions">
-        <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
-        <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">Voir nos services</a>
+        <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">{{ 'home.prendreRdv' | t }}</a>
+        <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">{{ 'home.voirServices' | t }}</a>
       </div>
       <ul class="hero-points">
-        <li><i class="ti ti-calendar-check"></i>Réservation en ligne</li>
-        <li><i class="ti ti-lock"></i>Paiement sécurisé</li>
-        <li><i class="ti ti-heart"></i>Accueil personnalisé</li>
+        <li><i class="ti ti-calendar-check"></i>{{ 'home.point.reservation' | t }}</li>
+        <li><i class="ti ti-lock"></i>{{ 'home.point.paiement' | t }}</li>
+        <li><i class="ti ti-heart"></i>{{ 'home.point.accueil' | t }}</li>
       </ul>
     </div>
   </section>
@@ -33,42 +33,42 @@
   @if (info()?.bannierePromo; as promo) {
     <section class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3">
       <span><i class="ti ti-gift me-2"></i>{{ promo }}</span>
-      <a routerLink="/accueil" fragment="services" class="btn btn-sm btn-dark">En profiter</a>
+      <a routerLink="/accueil" fragment="services" class="btn btn-sm btn-dark">{{ 'home.promo.cta' | t }}</a>
     </section>
   }
 
   <section id="apropos" class="features py-5 px-3">
-    <span class="ar-eyebrow text-center">Notre engagement</span>
-    <h2 class="ar-section-title mb-5">L'art de prendre soin</h2>
+    <span class="ar-eyebrow text-center">{{ 'home.engagement.eyebrow' | t }}</span>
+    <h2 class="ar-section-title mb-5">{{ 'home.engagement.titre' | t }}</h2>
     <div class="row g-4 justify-content-center text-center">
       <div class="col-12 col-md-4">
         <div class="feature">
           <span class="feature-icon"><i class="ti ti-sparkles"></i></span>
-          <h5>Produits de qualité</h5>
-          <p>Des soins réalisés avec des produits sélectionnés pour leur efficacité et leur douceur.</p>
+          <h5>{{ 'home.engagement.produits.titre' | t }}</h5>
+          <p>{{ 'home.engagement.produits.texte' | t }}</p>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="feature">
           <span class="feature-icon"><i class="ti ti-heart-handshake"></i></span>
-          <h5>Accueil personnalisé</h5>
-          <p>Chaque rendez-vous est pensé pour votre confort, dans un cadre calme et chaleureux.</p>
+          <h5>{{ 'home.engagement.accueil.titre' | t }}</h5>
+          <p>{{ 'home.engagement.accueil.texte' | t }}</p>
         </div>
       </div>
       <div class="col-12 col-md-4">
         <div class="feature">
           <span class="feature-icon"><i class="ti ti-shield-check"></i></span>
-          <h5>Hygiène rigoureuse</h5>
-          <p>Un protocole d'hygiène strict appliqué à chaque prestation, pour votre sécurité.</p>
+          <h5>{{ 'home.engagement.hygiene.titre' | t }}</h5>
+          <p>{{ 'home.engagement.hygiene.texte' | t }}</p>
         </div>
       </div>
     </div>
   </section>
 
   <section class="gallery py-5">
-    <span class="ar-eyebrow text-center">Galerie</span>
-    <h2 class="ar-section-title px-3">Notre univers</h2>
-    <p class="ar-section-lead px-3">Un aperçu de nos soins et de l'attention portée à chaque prestation.</p>
+    <span class="ar-eyebrow text-center">{{ 'home.galerie.eyebrow' | t }}</span>
+    <h2 class="ar-section-title px-3">{{ 'home.galerie.titre' | t }}</h2>
+    <p class="ar-section-lead px-3">{{ 'home.galerie.intro' | t }}</p>
     <div class="gallery-carousel-wrap mx-auto" *ngIf="galleryImages().length">
       <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
         <ng-template ngbSlide *ngFor="let img of galleryImages()">
@@ -82,9 +82,9 @@
   </section>
 
   <section id="categories" class="categories-carousel py-5" *ngIf="categorieSlides().length">
-    <span class="ar-eyebrow text-center">Explorez</span>
-    <h2 class="ar-section-title px-3">Nos catégories</h2>
-    <p class="ar-section-lead px-3">Touchez une catégorie pour voir ses soins.</p>
+    <span class="ar-eyebrow text-center">{{ 'home.categories.eyebrow' | t }}</span>
+    <h2 class="ar-section-title px-3">{{ 'home.categories.titre' | t }}</h2>
+    <p class="ar-section-lead px-3">{{ 'home.categories.intro' | t }}</p>
 
     <div class="categories-carousel-wrap mx-auto">
       <ngb-carousel
@@ -111,9 +111,9 @@
   </section>
 
   <section id="services" class="services py-5 px-3">
-    <span class="ar-eyebrow text-center">Prestations</span>
-    <h2 class="ar-section-title">Nos services</h2>
-    <p class="ar-section-lead">Découvrez nos prestations, classées par catégorie.</p>
+    <span class="ar-eyebrow text-center">{{ 'home.services.eyebrow' | t }}</span>
+    <h2 class="ar-section-title">{{ 'home.services.titre' | t }}</h2>
+    <p class="ar-section-lead">{{ 'home.services.intro' | t }}</p>
 
     <div class="category-pills d-flex flex-wrap justify-content-center gap-2 mb-5" *ngIf="categories().length">
       <button
@@ -123,7 +123,7 @@
         [class.btn-outline-secondary]="activeCategory() !== null"
         (click)="selectCategory(null)"
       >
-        Toutes
+        {{ 'home.services.toutes' | t }}
       </button>
       <button
         type="button"
@@ -137,14 +137,14 @@
       </button>
     </div>
 
-    <div *ngIf="loading()" class="text-center text-muted py-5">Chargement des services...</div>
+    <div *ngIf="loading()" class="text-center text-muted py-5">{{ 'home.services.chargement' | t }}</div>
 
     <div *ngIf="error()" class="alert alert-warning text-center mx-auto" style="max-width: 480px">
-      Impossible de charger le catalogue pour le moment. Veuillez réessayer plus tard.
+      {{ 'home.services.erreur' | t }}
     </div>
 
     <div *ngIf="!loading() && !error() && filteredServices().length === 0" class="text-center text-muted py-5">
-      Aucun service disponible pour le moment.
+      {{ 'home.services.aucun' | t }}
     </div>
 
     <div class="row g-4" *ngIf="!loading() && filteredServices().length">
@@ -160,10 +160,10 @@
             <h3 class="service-name">{{ service.nomService }}</h3>
             <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
             <div class="d-flex justify-content-between align-items-end mt-3">
-              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes }} min</span>
+              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes }} {{ 'slots.min' | t }}</span>
               <span class="service-price">{{ formatTarif(service.tarif) }}</span>
             </div>
-            <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">Réserver ce soin</a>
+            <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">{{ 'home.services.reserver' | t }}</a>
           </div>
         </div>
       </div>
@@ -171,10 +171,10 @@
   </section>
 
   <section class="cta text-center px-3 py-5">
-    <span class="ar-eyebrow">Rendez-vous</span>
-    <h2 class="mb-3">Prête à prendre soin de vous ?</h2>
-    <p class="mb-4 cta-subtitle">Réservez votre prochain rendez-vous dès aujourd'hui.</p>
-    <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">Prendre rendez-vous</a>
+    <span class="ar-eyebrow">{{ 'home.cta.eyebrow' | t }}</span>
+    <h2 class="mb-3">{{ 'home.cta.titre' | t }}</h2>
+    <p class="mb-4 cta-subtitle">{{ 'home.cta.texte' | t }}</p>
+    <a routerLink="/reserver" class="btn btn-secondary btn-lg px-4">{{ 'home.prendreRdv' | t }}</a>
   </section>
 
   <footer id="contact" class="site-footer px-4 px-lg-5 py-5">
@@ -184,24 +184,24 @@
         @if (info()?.description; as description) {
           <p class="footer-text">{{ description }}</p>
         }
-        <a routerLink="/reserver" class="footer-cta">Réservation</a>
+        <a routerLink="/reserver" class="footer-cta">{{ 'home.footer.reservation' | t }}</a>
       </div>
 
       <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
-        <h5 class="footer-heading">Liens utiles</h5>
+        <h5 class="footer-heading">{{ 'home.footer.liens' | t }}</h5>
         <ul class="footer-links">
-          <li><a routerLink="/reserver">Réservation en ligne</a></li>
-          <li><a routerLink="/accueil" fragment="services">Nos services</a></li>
-          <li><a routerLink="/connexion">Mon espace client</a></li>
+          <li><a routerLink="/reserver">{{ 'home.footer.reservationEnLigne' | t }}</a></li>
+          <li><a routerLink="/accueil" fragment="services">{{ 'home.footer.nosServices' | t }}</a></li>
+          <li><a routerLink="/connexion">{{ 'home.footer.espaceClient' | t }}</a></li>
           @if (info()?.siteWeb; as site) {
-            <li><a [href]="site" target="_blank" rel="noopener">Site web</a></li>
+            <li><a [href]="site" target="_blank" rel="noopener">{{ 'home.footer.siteWeb' | t }}</a></li>
           }
-          <li><a routerLink="/personnel" class="footer-admin-link">Espace administration</a></li>
+          <li><a routerLink="/personnel" class="footer-admin-link">{{ 'home.footer.admin' | t }}</a></li>
         </ul>
       </div>
 
       <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
-        <h5 class="footer-heading">Contact</h5>
+        <h5 class="footer-heading">{{ 'home.footer.contact' | t }}</h5>
         @if (aDesCoordonnees()) {
           @for (ligne of adresseLignes(); track ligne) {
             <p class="mb-1">{{ ligne }}</p>
@@ -213,7 +213,7 @@
             <p class="mb-1"><a class="footer-contact-link" [href]="'mailto:' + mail">{{ mail }}</a></p>
           }
         } @else {
-          <p class="footer-text">Nos coordonnées seront bientôt disponibles.</p>
+          <p class="footer-text">{{ 'home.footer.bientot' | t }}</p>
         }
         @if (info()?.lienInstagram || info()?.lienFacebook) {
           <div class="d-flex gap-3 footer-social mt-3">
@@ -229,7 +229,7 @@
 
       @if (horaires().length) {
         <div class="col-12 col-md-6 col-lg-3">
-          <h5 class="footer-heading">Horaires</h5>
+          <h5 class="footer-heading">{{ 'home.footer.horaires' | t }}</h5>
           <ul class="footer-hours">
             @for (ligne of horaires(); track ligne.jour) {
               <li><span>{{ ligne.jour }}</span><span>{{ ligne.libelle }}</span></li>
@@ -241,6 +241,6 @@
 
     <hr class="footer-divider" />
 
-    <p class="small text-center footer-copy mb-0">&copy; {{ currentYear }} {{ nom() }}. Tous droits réservés.</p>
+    <p class="small text-center footer-copy mb-0">&copy; {{ currentYear }} {{ nom() }}. {{ 'home.footer.droits' | t }}</p>
   </footer>
 </div>

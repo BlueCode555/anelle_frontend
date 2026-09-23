@@ -1,20 +1,23 @@
 // Dates et heures dans le fuseau horaire de l'institut (et non celui du navigateur) :
 // un rendez-vous a 10 h a Toronto s'affiche 10 h partout.
 
-const LOCALE = 'fr-CA';
+// Suit la langue choisie (TranslationService la reporte sur <html lang>).
+export function localeCourante(): string {
+  return document.documentElement.lang === 'en' ? 'en-CA' : 'fr-CA';
+}
 
 export function formatHeure(iso: string, zone: string): string {
-  return new Intl.DateTimeFormat(LOCALE, { timeZone: zone, hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+  return new Intl.DateTimeFormat(localeCourante(), { timeZone: zone, hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
 }
 
 export function formatJour(iso: string, zone: string): string {
-  return new Intl.DateTimeFormat(LOCALE, { timeZone: zone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(
+  return new Intl.DateTimeFormat(localeCourante(), { timeZone: zone, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(
     new Date(iso)
   );
 }
 
 export function formatJourCourt(iso: string, zone: string): string {
-  return new Intl.DateTimeFormat(LOCALE, { timeZone: zone, weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(iso));
+  return new Intl.DateTimeFormat(localeCourante(), { timeZone: zone, weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(iso));
 }
 
 // "AAAA-MM-JJ" du jour de l'instant dans le fuseau donne ; sert a regrouper par jour et a borner les calendriers.

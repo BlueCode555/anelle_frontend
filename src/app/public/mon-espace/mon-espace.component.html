@@ -10,12 +10,12 @@
           <span class="profile-avatar profile-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
         }
         <div class="profile-info">
-          <span class="ar-eyebrow d-block mb-1">Mon espace</span>
-          <h1 class="profile-nom">Bonjour {{ auth.displayName() }}</h1>
+          <span class="ar-eyebrow d-block mb-1">{{ 'espace.eyebrow' | t }}</span>
+          <h1 class="profile-nom">{{ 'espace.bonjour' | t: { nom: auth.displayName() } }}</h1>
           <p class="text-muted mb-0">{{ user.email }}</p>
         </div>
         <a routerLink="/reserver" class="btn btn-secondary btn-lg">
-          <i class="ti ti-calendar-plus me-1"></i>Prendre rendez-vous
+          <i class="ti ti-calendar-plus me-1"></i>{{ 'espace.prendreRdv' | t }}
         </a>
       </section>
 
@@ -24,23 +24,23 @@
           <span>{{ erreur() }}</span>
           @if (sessionExpiree()) {
             <button type="button" class="btn btn-sm btn-outline-danger" (click)="reconnecter()">
-              <i class="ti ti-refresh me-1"></i>Se reconnecter
+              <i class="ti ti-refresh me-1"></i>{{ 'espace.reconnecter' | t }}
             </button>
           }
         </div>
       }
 
       <section class="history-card">
-        <h2 class="h5"><span class="history-icone"><i class="ti ti-calendar-event"></i></span>Mes rendez-vous</h2>
+        <h2 class="h5"><span class="history-icone"><i class="ti ti-calendar-event"></i></span>{{ 'espace.mesRdv' | t }}</h2>
 
         @if (chargement()) {
-          <p class="text-muted mb-0">Chargement...</p>
+          <p class="text-muted mb-0">{{ 'espace.chargement' | t }}</p>
         } @else if (rdvs().length === 0) {
           <div class="etat-vide">
             <i class="ti ti-calendar-heart"></i>
-            <h6>Aucun rendez-vous pour le moment</h6>
-            <p>Vos réservations apparaîtront ici dès que vous en aurez pris un.</p>
-            <a routerLink="/accueil" fragment="services" class="btn btn-outline-secondary">Découvrir nos services</a>
+            <h6>{{ 'espace.aucunRdv' | t }}</h6>
+            <p>{{ 'espace.aucunRdvTexte' | t }}</p>
+            <a routerLink="/accueil" fragment="services" class="btn btn-outline-secondary">{{ 'espace.decouvrir' | t }}</a>
           </div>
         } @else {
           <ul class="rdv-list">
@@ -54,21 +54,24 @@
                   <strong>{{ rdv.serviceNom }}</strong>
                   <span class="text-muted">{{ formatTarif(rdv.prix) }}</span>
                   @if (rdv.statut === 'REFUSE' && rdv.motifRefus) {
-                    <span class="text-muted small">Motif : {{ rdv.motifRefus }}</span>
+                    <span class="text-muted small">{{ 'espace.motif' | t: { motif: rdv.motifRefus! } }}</span>
                   }
                   @if (rdv.statut === 'ACCEPTE') {
-                    <span class="text-muted small">Acceptée : le paiement du montant complet confirme votre rendez-vous.</span>
+                    <span class="text-muted small">{{ 'espace.accepteeTexte' | t }}</span>
+                  }
+                  @if (afficherAvecQui(rdv)) {
+                    <span class="text-muted small">{{ 'espace.avec' | t: { nom: avecQui(rdv) } }}</span>
                   }
                 </div>
                 <div class="rdv-status">
-                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ libelles[rdv.statut] }}</span>
+                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ ('statut.' + rdv.statut) | t }}</span>
                   @if (rdv.statut === 'ACCEPTE' && rdv.lienPaiement) {
                     <a [href]="rdv.lienPaiement" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">
-                      <i class="ti ti-credit-card me-1"></i>Payer maintenant
+                      <i class="ti ti-credit-card me-1"></i>{{ 'espace.payer' | t }}
                     </a>
                   }
                   @if (peutAnnuler(rdv)) {
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">Annuler</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">{{ 'espace.annuler' | t }}</button>
                   }
                 </div>
               </li>
@@ -78,12 +81,55 @@
       </section>
 
       <section class="history-card">
-        <h2 class="h5"><span class="history-icone"><i class="ti ti-receipt"></i></span>Mes paiements</h2>
+        <h2 class="h5"><span class="history-icone"><i class="ti ti-shopping-bag"></i></span>{{ 'espace.mesCommandes' | t }}</h2>
+        @if (commandes().length === 0) {
+          <div class="etat-vide">
+            <i class="ti ti-shopping-cart"></i>
+            <h6>{{ 'espace.aucuneCommande' | t }}</h6>
+            <p>{{ 'espace.aucuneCommandeTexte' | t }}</p>
+            <a routerLink="/boutique" class="btn btn-outline-secondary">{{ 'espace.visiterBoutique' | t }}</a>
+          </div>
+        } @else {
+          <ul class="rdv-list">
+            @for (c of commandes(); track c.id) {
+              <li class="rdv-item">
+                <div class="rdv-when">
+                  <strong>{{ c.code }}</strong>
+                  <span>{{ formatDate(c.creeLe) }}</span>
+                </div>
+                <div class="rdv-what">
+                  @for (l of c.lignes; track l.produitCode) {
+                    <span>{{ l.quantite }} × {{ l.nom }}</span>
+                  }
+                  <span class="text-muted">{{ formatTarif(c.total) }}</span>
+                  @if (c.statut === 'PAYEE') {
+                    <span class="text-muted small">{{ 'espace.retraitPret' | t }}</span>
+                  }
+                </div>
+                <div class="rdv-status">
+                  <span class="badge" [ngClass]="classesCommande[c.statut]">{{ ('cmd.statut.' + c.statut) | t }}</span>
+                  @if (c.statut === 'EN_ATTENTE_PAIEMENT' && c.lienPaiement) {
+                    <a [href]="c.lienPaiement" target="_blank" rel="noopener" class="btn btn-sm btn-secondary">
+                      <i class="ti ti-credit-card me-1"></i>{{ 'espace.payer' | t }}
+                    </a>
+                  }
+                  @if (c.statut === 'EN_ATTENTE_PAIEMENT') {
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annulerCommande(c)">{{ 'espace.annuler' | t }}</button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="history-card">
+        <h2 class="h5"><span class="history-icone"><i class="ti ti-receipt"></i></span>{{ 'espace.mesPaiements' | t }}</h2>
         @if (paiements().length === 0) {
           <div class="etat-vide">
             <i class="ti ti-receipt-2"></i>
-            <h6>Aucun paiement pour le moment</h6>
-            <p>Vos reçus apparaîtront ici après le règlement d'un rendez-vous.</p>
+            <h6>{{ 'espace.aucunPaiement' | t }}</h6>
+            <p>{{ 'espace.aucunPaiementTexte' | t }}</p>
           </div>
         } @else {
           <ul class="rdv-list">
@@ -94,7 +140,7 @@
                   <span class="text-capitalize">{{ jour(rdv.debut) }}</span>
                 </div>
                 <div class="rdv-what">
-                  <span class="text-muted small">Payé le {{ jour(rdv.payeLe!) }}</span>
+                  <span class="text-muted small">{{ 'espace.payeLe' | t: { date: jour(rdv.payeLe!) } }}</span>
                 </div>
                 <div class="rdv-status">
                   <strong>{{ formatTarif(rdv.prix) }}</strong>
@@ -105,7 +151,7 @@
         }
       </section>
     } @else {
-      <p class="text-center text-muted py-5">Chargement de votre espace...</p>
+      <p class="text-center text-muted py-5">{{ 'espace.chargementEspace' | t }}</p>
     }
   </main>
 </div>

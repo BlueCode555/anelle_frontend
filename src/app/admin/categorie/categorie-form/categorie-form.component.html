@@ -1,19 +1,19 @@
 <div class="modal-header">
-  <h5 class="modal-title">{{ categorieId ? 'Modifier la categorie' : 'Nouvelle categorie' }}</h5>
-  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+  <h5 class="modal-title">{{ categorieId ? ('a.modifier_la_categorie' | t) : ('a.nouvelle_categorie' | t) }}</h5>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <div *ngIf="chargement()" class="text-center text-muted py-4">Chargement de la catégorie...</div>
+  <div *ngIf="chargement()" class="text-center text-muted py-4">{{ 'a.chargement_de_la_categorie' | t }}</div>
   <form id="categorieForm" *ngIf="!chargement()" (ngSubmit)="onSubmit($event)">
     <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
     <div class="mb-3">
-      <label class="form-label" for="libelle">Libelle</label>
+      <label class="form-label" for="libelle">{{ 'a.libelle' | t }}</label>
       <input
         id="libelle"
         type="text"
         class="form-control"
-        placeholder="Ex. Pedicure"
+        [placeholder]="'a.ex_pedicure' | t"
         [formField]="categorieForm.libelle"
         [class.is-invalid]="submitted() && categorieForm.libelle().invalid()"
       />
@@ -27,34 +27,34 @@
     </div>
 
     <div class="mb-3">
-      <label class="form-label" for="description">Description</label>
+      <label class="form-label" for="description">{{ 'a.description' | t }}</label>
       <textarea id="description" class="form-control" rows="3" [formField]="categorieForm.description"></textarea>
     </div>
 
     <div class="mb-1">
-      <label class="form-label" for="image">Image (affichee dans le carrousel du site)</label>
+      <label class="form-label" for="image">{{ 'a.image_affichee_dans_le_carrousel_du_site' | t }}</label>
       <div *ngIf="imagePreview() as preview" class="image-preview mb-2">
-        <img [src]="preview" alt="Apercu" />
+        <img [src]="preview" [alt]="'a.apercu' | t" />
         <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeImage()">
-          <i class="ti ti-trash"></i> Retirer
+          <i class="ti ti-trash"></i> {{ 'a.retirer' | t }}
         </button>
       </div>
       <input id="image" type="file" class="form-control" accept="image/jpeg,image/png,image/webp,image/avif" (change)="onImageSelected($event)" [disabled]="uploading()" />
       <input
         type="url"
         class="form-control mt-2"
-        placeholder="... ou collez un lien https:// vers une image en ligne"
+        [placeholder]="'a.ou_collez_un_lien_https_vers_une_image_en_ligne' | t"
         [value]="categorieModel().imageUrl.startsWith('https://') ? categorieModel().imageUrl : ''"
         (change)="onImageUrlInput($event)"
       />
-      <div class="form-text" *ngIf="uploading()">Envoi en cours...</div>
+      <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
       <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
     </div>
   </form>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.annuler' | t }}</button>
   <button type="submit" form="categorieForm" class="btn btn-primary" [disabled]="saving() || chargement()">
-    {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
+    {{ saving() ? ('a.enregistrement' | t) : ('a.enregistrer' | t) }}
   </button>
 </div>

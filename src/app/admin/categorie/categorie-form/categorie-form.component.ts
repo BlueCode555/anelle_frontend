@@ -7,14 +7,17 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieForm } from 'src/app/theme/shared/service/catalogue.model';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-categorie-form',
-  imports: [CommonModule, FormsModule, FormField],
+  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
   templateUrl: './categorie-form.component.html',
   styleUrl: './categorie-form.component.scss'
 })
 export class CategorieFormComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   activeModal = inject(NgbActiveModal);
   private confirmation = inject(ConfirmationService);
@@ -40,7 +43,7 @@ export class CategorieFormComponent implements OnInit {
   imagePreview = computed(() => this.catalogue.imageSrc(this.categorieModel().imageUrl));
 
   categorieForm = form(this.categorieModel, (schemaPath) => {
-    required(schemaPath.libelle, { message: 'Le libelle est obligatoire' });
+    required(schemaPath.libelle, { message: this.i18n.t('ts.cat.libelleObligatoire') });
   });
 
   ngOnInit(): void {
@@ -59,7 +62,7 @@ export class CategorieFormComponent implements OnInit {
       },
       error: () => {
         this.chargement.set(false);
-        this.serverError.set('Impossible de charger cette catégorie.');
+        this.serverError.set(this.i18n.t('ts.cat.charger'));
       }
     });
   }
@@ -73,11 +76,11 @@ export class CategorieFormComponent implements OnInit {
     }
     this.uploadError.set('');
     if (!['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(file.type)) {
-      this.uploadError.set('Format non supporte : JPEG, PNG, WebP ou AVIF.');
+      this.uploadError.set(this.i18n.t('ts.form.format'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      this.uploadError.set('Image trop lourde (5 Mo maximum).');
+      this.uploadError.set(this.i18n.t('ts.form.trop'));
       return;
     }
 
@@ -89,7 +92,7 @@ export class CategorieFormComponent implements OnInit {
       },
       error: (err) => {
         this.uploading.set(false);
-        this.uploadError.set(err?.status === 401 ? "Envoi refuse : vous n'etes pas connecte." : "Echec de l'envoi de l'image.");
+        this.uploadError.set(err?.status === 401 ? this.i18n.t('ts.form.envoiRefuse') : this.i18n.t('ts.form.envoiEchec'));
       }
     });
   }
@@ -106,9 +109,9 @@ export class CategorieFormComponent implements OnInit {
 
   private messageErreur(err: { status?: number; error?: { message?: string } }): string {
     if (err?.status === 401 || err?.status === 403) {
-      return "Action refusee : la connexion du personnel est requise.";
+      return this.i18n.t('ts.form.actionRefusee');
     }
-    return err?.error?.message ?? 'Une erreur est survenue.';
+    return err?.error?.message ?? this.i18n.t('ts.erreurGenerique');
   }
 
   async onSubmit(event: Event): Promise<void> {
@@ -121,9 +124,9 @@ export class CategorieFormComponent implements OnInit {
     }
 
     const ok = await this.confirmation.demander({
-      titre: this.categorieId ? 'Enregistrer les modifications ?' : 'Enregistrer cette catégorie ?',
+      titre: this.categorieId ? this.i18n.t('ts.form.modifs') : this.i18n.t('ts.cat.enregistrer'),
       message: this.categorieModel().libelle,
-      texteConfirmer: 'Enregistrer'
+      texteConfirmer: this.i18n.t('ts.enregistrer')
     });
     if (!ok) {
       return;

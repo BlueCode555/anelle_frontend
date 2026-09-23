@@ -1,3 +1,4 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,15 +6,18 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ClientAdmin, ClientService } from 'src/app/theme/shared/service/client.service';
 import { ClientDetailComponent } from '../client-detail/client-detail.component';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 // Consultation des clientes (lecture seule) : creees automatiquement a la connexion Google, jamais ici.
 @Component({
   selector: 'app-client-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss'
 })
 export class ClientListComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private clients = inject(ClientService);
   private modals = inject(NgbModal);
 
@@ -44,7 +48,7 @@ export class ClientListComponent implements OnInit {
       },
       error: (err) => {
         this.chargement.set(false);
-        this.erreur.set(err?.status === 401 || err?.status === 403 ? "Réservé à l'esthéticienne." : 'Impossible de charger les clientes.');
+        this.erreur.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.reserveProprio') : this.i18n.t('ts.client.charger'));
       }
     });
   }
@@ -60,7 +64,7 @@ export class ClientListComponent implements OnInit {
   }
 
   derniereConnexion(c: ClientAdmin): string {
-    if (!c.derniereConnexion) return 'Jamais reconnectée depuis';
-    return new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(c.derniereConnexion));
+    if (!c.derniereConnexion) return this.i18n.t('ts.client.jamais');
+    return new Intl.DateTimeFormat(localeCourante(), { dateStyle: 'long', timeStyle: 'short' }).format(new Date(c.derniereConnexion));
   }
 }

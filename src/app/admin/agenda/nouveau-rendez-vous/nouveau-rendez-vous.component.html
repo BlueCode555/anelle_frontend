@@ -1,39 +1,39 @@
 <div class="modal-header">
-  <h5 class="modal-title">Nouveau rendez-vous</h5>
-  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+  <h5 class="modal-title">{{ 'a.nouveau_rendez_vous' | t }}</h5>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
   <div *ngIf="erreur()" class="alert alert-danger">{{ erreur() }}</div>
 
   <app-slot-picker (choix)="choix.set($event)" />
-  <div *ngIf="soumis() && !choix()" class="text-danger small mt-2">Choisissez un soin, un jour et un créneau.</div>
+  <div *ngIf="soumis() && !choix()" class="text-danger small mt-2">{{ 'a.choisissez_un_soin_un_jour_et_un_creneau' | t }}</div>
 
   <hr />
 
-  <h6 class="mb-3">Client</h6>
+  <h6 class="mb-3">{{ 'a.client' | t }}</h6>
   <div class="row g-3">
     <div class="col-12 col-md-6">
-      <label class="form-label" for="nr-nom">Nom</label>
+      <label class="form-label" for="nr-nom">{{ 'a.nom' | t }}</label>
       <input id="nr-nom" class="form-control" [class.is-invalid]="soumis() && !contactNom().trim()" (input)="champ(contactNom, $event)" />
-      <div class="invalid-feedback">Le nom du client est obligatoire.</div>
+      <div class="invalid-feedback">{{ 'a.le_nom_du_client_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12 col-md-6">
-      <label class="form-label" for="nr-tel">Téléphone</label>
+      <label class="form-label" for="nr-tel">{{ 'a.telephone' | t }}</label>
       <input id="nr-tel" class="form-control" placeholder="+1 514 555-0199" (input)="champ(contactTelephone, $event)" />
     </div>
     <div class="col-12">
-      <label class="form-label" for="nr-email">Adresse e-mail</label>
+      <label class="form-label" for="nr-email">{{ 'a.adresse_e_mail' | t }}</label>
       <input id="nr-email" type="email" class="form-control" (input)="champ(contactEmail, $event)" />
     </div>
     <div class="col-12">
-      <label class="form-label" for="nr-note">Note</label>
+      <label class="form-label" for="nr-note">{{ 'a.note' | t }}</label>
       <textarea id="nr-note" class="form-control" rows="2" maxlength="500" (input)="champ(note, $event)"></textarea>
     </div>
   </div>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.annuler' | t }}</button>
   <button type="button" class="btn btn-primary" [disabled]="envoi()" (click)="enregistrer()">
-    {{ envoi() ? 'Enregistrement...' : 'Enregistrer le rendez-vous' }}
+    {{ envoi() ? ('a.enregistrement' | t) : ('a.enregistrer_le_rendez_vous' | t) }}
   </button>
 </div>

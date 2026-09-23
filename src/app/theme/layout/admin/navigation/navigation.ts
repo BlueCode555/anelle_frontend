@@ -14,7 +14,7 @@ export interface NavigationItem {
   role?: string[];
   isMainParent?: boolean;
   // Droit de lecture exigé sur cet écran pour voir l'entrée du menu
-  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES';
+  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES';
   // Entrée réservée à l'esthéticienne
   proprietaire?: boolean;
 }
@@ -57,6 +57,16 @@ export const NavigationItems: NavigationItem[] = [
     children: [
       { id: 'categories', title: 'Catégories', type: 'item', url: '/categories', icon: 'ti ti-category', ecran: 'CATEGORIES' },
       { id: 'services', title: 'Services', type: 'item', url: '/services', icon: 'ti ti-list-details', ecran: 'SERVICES' }
+    ]
+  },
+  {
+    id: 'boutique',
+    title: 'Boutique',
+    type: 'collapse',
+    icon: 'ti ti-shopping-bag',
+    children: [
+      { id: 'produits', title: 'Produits', type: 'item', url: '/produits', icon: 'ti ti-package', ecran: 'PRODUITS' },
+      { id: 'commandes', title: 'Commandes', type: 'item', url: '/commandes', icon: 'ti ti-receipt-2', ecran: 'COMMANDES' }
     ]
   }
 ];

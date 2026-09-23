@@ -36,7 +36,7 @@ export interface ProfilAcces {
   permissions: Permission[];
 }
 
-export type EcranCode = 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES';
+export type EcranCode = 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES';
 export type ActionCode = 'lire' | 'creer' | 'modifier' | 'supprimer';
 
 export interface Permission {

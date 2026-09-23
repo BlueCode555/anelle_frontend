@@ -28,6 +28,9 @@ export interface RendezVous {
   motifRefus: string | null;
   // Lien de paiement Square, présent seulement quand le rendez-vous est "Acceptée" et Square configuré.
   lienPaiement: string | null;
+  // Collaborateur affecté au soin ; null = l'esthéticienne elle-même (comportement par défaut).
+  collaborateurNom: string | null;
+  collaborateurId: number | null;
 }
 
 export interface Creneau {
@@ -108,6 +111,11 @@ export class RendezVousService {
 
   accepter(id: number): Observable<RendezVous> {
     return this.action(id, 'accepter');
+  }
+
+  // collaborateurId absent/null = retire l'affectation (l'esthéticienne elle-même s'en occupe).
+  assigner(id: number, collaborateurId: number | null): Observable<RendezVous> {
+    return this.action(id, 'assigner', { collaborateurId });
   }
 
   refuser(id: number, motif?: string): Observable<RendezVous> {

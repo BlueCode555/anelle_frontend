@@ -1,3 +1,4 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -7,14 +8,17 @@ import { ServiceResponse } from 'src/app/theme/shared/service/catalogue.model';
 import { ServiceFormComponent } from '../service-form/service-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-service-list',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './service-list.component.html',
   styleUrl: './service-list.component.scss'
 })
 export class ServiceListComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   private modalService = inject(NgbModal);
   private confirmation = inject(ConfirmationService);
@@ -44,7 +48,7 @@ export class ServiceListComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
   imageSrc(url?: string | null): string | null {
@@ -56,7 +60,7 @@ export class ServiceListComponent implements OnInit {
     ref.result.then(
       (result) => {
         if (result === 'saved') {
-          this.toast.succes('Service enregistré');
+          this.toast.succes(this.i18n.t('ts.srv.enregistre'));
           this.load();
         }
       },
@@ -70,7 +74,7 @@ export class ServiceListComponent implements OnInit {
     ref.result.then(
       (result) => {
         if (result === 'saved') {
-          this.toast.succes('Service enregistré');
+          this.toast.succes(this.i18n.t('ts.srv.enregistre'));
           this.load();
         }
       },
@@ -80,9 +84,9 @@ export class ServiceListComponent implements OnInit {
 
   async remove(service: ServiceResponse): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Supprimer le service « ${service.nomService} » ?`,
-      message: 'Cette action est définitive.',
-      texteConfirmer: 'Supprimer',
+      titre: this.i18n.t('ts.srv.supprimer', { nom: service.nomService }),
+      message: this.i18n.t('ts.definitive'),
+      texteConfirmer: this.i18n.t('ts.supprimer'),
       danger: true
     });
     if (!ok) {
@@ -90,10 +94,10 @@ export class ServiceListComponent implements OnInit {
     }
     this.catalogue.deleteService(service.id).subscribe({
       next: () => {
-        this.toast.succes('Service supprimé');
+        this.toast.succes(this.i18n.t('ts.srv.supprime'));
         this.load();
       },
-      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
+      error: (err) => this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.suppressionImpossible'))
     });
   }
 }

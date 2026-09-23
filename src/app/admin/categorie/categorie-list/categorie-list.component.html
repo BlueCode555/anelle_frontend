@@ -1,25 +1,25 @@
 <div class="card">
   <div class="card-header entete-liste">
-    <h5 class="mb-0">Catégories</h5>
+    <h5 class="mb-0">{{ 'a.categories' | t }}</h5>
     <button type="button" class="btn btn-primary" (click)="openCreate()">
-      <i class="ti ti-plus"></i>Nouvelle catégorie
+      <i class="ti ti-plus"></i>{{ 'a.nouvelle_categorie' | t }}
     </button>
   </div>
   <div class="card-body">
     @if (loading()) {
-      <div class="text-center text-muted py-4">Chargement...</div>
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     }
 
     @if (error()) {
-      <div class="alert alert-danger">Impossible de charger les catégories. Vérifiez que le serveur est démarré.</div>
+      <div class="alert alert-danger">{{ 'a.impossible_de_charger_les_categories_verifiez_qu' | t }}</div>
     }
 
     @if (!loading() && !error() && categories().length === 0) {
       <div class="etat-vide">
         <i class="ti ti-category-2"></i>
-        <h6>Aucune catégorie pour le moment</h6>
-        <p>Une catégorie regroupe vos soins, par exemple « Pédicure » ou « Manucure ».</p>
-        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>Ajouter ma première catégorie</button>
+        <h6>{{ 'a.aucune_categorie_pour_le_moment' | t }}</h6>
+        <p>{{ 'a.une_categorie_regroupe_vos_soins_par_exemple_ped' | t }}</p>
+        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>{{ 'a.ajouter_ma_premiere_categorie' | t }}</button>
       </div>
     }
 
@@ -28,28 +28,28 @@
         <table class="table table-hover align-middle table-cartes">
           <thead>
             <tr>
-              <th style="width: 72px">Image</th>
-              <th>Libellé</th>
-              <th>Description</th>
-              <th class="text-end">Actions</th>
+              <th style="width: 72px">{{ 'a.image' | t }}</th>
+              <th>{{ 'a.libelle' | t }}</th>
+              <th>{{ 'a.description' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
             @for (cat of categories(); track cat.id) {
               <tr>
-                <td data-label="Image">
+                <td [attr.data-label]="'a.image' | t">
                   @if (imageSrc(cat.imageUrl); as src) {
                     <img [src]="src" alt="" class="row-thumb" />
                   } @else {
                     <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
                   }
                 </td>
-                <td data-label="Catégorie" class="fw-semibold">{{ cat.libelle }}</td>
-                <td data-label="Description" class="text-muted">{{ cat.description }}</td>
+                <td [attr.data-label]="'a.categorie' | t" class="fw-semibold">{{ cat.libelle }}</td>
+                <td [attr.data-label]="'a.description' | t" class="text-muted">{{ cat.description }}</td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
-                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="openEdit(cat)"><i class="ti ti-pencil"></i></button>
-                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="remove(cat)"><i class="ti ti-trash"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="openEdit(cat)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="remove(cat)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

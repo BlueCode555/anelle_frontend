@@ -1,3 +1,4 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -9,14 +10,17 @@ import { InformationService } from '../../theme/shared/service/information.servi
 import { RendezVous, RendezVousService } from '../../theme/shared/service/rendez-vous.service';
 import { RETOUR_CLIENT_KEY } from '../../theme/shared/_helpers/token-storage';
 import { formatHeure, formatJour } from '../../theme/shared/_helpers/zoned-time';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-reserver',
-  imports: [CommonModule, RouterModule, SiteHeaderComponent, SlotPickerComponent],
+  imports: [CommonModule, RouterModule, SiteHeaderComponent, SlotPickerComponent, TranslatePipe],
   templateUrl: './reserver.component.html',
   styleUrl: './reserver.component.scss'
 })
 export class ReserverComponent {
+  private i18n = inject(TranslationService);
   private rendezVous = inject(RendezVousService);
   private informations = inject(InformationService);
   private auth = inject(AuthService);
@@ -65,7 +69,7 @@ export class ReserverComponent {
         this.sessionExpiree.set(expiree);
         this.erreur.set(
           expiree
-            ? 'Votre session a expiré pendant que vous choisissiez votre créneau.'
+            ? this.i18n.t('reserver.sessionExpiree')
             : (err?.error?.message ?? "Impossible d'enregistrer votre demande. Choisissez un autre créneau.")
         );
       }
@@ -89,6 +93,6 @@ export class ReserverComponent {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 }

@@ -2,12 +2,12 @@
   <div class="ad-backdrop" (click)="fermerMobile()" aria-hidden="true"></div>
 
   <!-- ══ MENU LATÉRAL ══ -->
-  <aside class="ad-sidebar" aria-label="Menu principal">
+  <aside class="ad-sidebar" [attr.aria-label]="'admin.menuPrincipal' | t">
     <a class="ad-brand" routerLink="/default">
       <span class="ad-brand-mark">A</span>
       <span class="ad-brand-text">
         <span class="ad-brand-name">Arnelle Institut</span>
-        <span class="ad-brand-sub">Espace de gestion</span>
+        <span class="ad-brand-sub">{{ 'admin.espaceGestion' | t }}</span>
       </span>
     </a>
 
@@ -19,27 +19,27 @@
             class="ad-link ad-link-group"
             [class.is-active-parent]="sectionActive(item)"
             [attr.aria-expanded]="estOuverte(item.id)"
-            [title]="item.title"
+            [title]="('nav.' + item.id) | t"
             (click)="basculerSection(item.id)"
           >
             <i [class]="item.icon"></i>
-            <span class="ad-label">{{ item.title }}</span>
+            <span class="ad-label">{{ ('nav.' + item.id) | t }}</span>
             <i class="ti ti-chevron-down ad-chevron" [class.is-open]="estOuverte(item.id)"></i>
           </button>
           <div class="ad-children" [class.is-open]="estOuverte(item.id)">
             <div class="ad-children-inner">
               @for (enfant of item.children; track enfant.id) {
-                <a class="ad-link ad-link-child" [routerLink]="enfant.url" [class.is-active]="estActif(enfant.url)" [title]="enfant.title">
+                <a class="ad-link ad-link-child" [routerLink]="enfant.url" [class.is-active]="estActif(enfant.url)" [title]="('nav.' + enfant.id) | t">
                   <i [class]="enfant.icon"></i>
-                  <span class="ad-label">{{ enfant.title }}</span>
+                  <span class="ad-label">{{ ('nav.' + enfant.id) | t }}</span>
                 </a>
               }
             </div>
           </div>
         } @else {
-          <a class="ad-link" [routerLink]="item.url" [class.is-active]="estActif(item.url)" [title]="item.title">
+          <a class="ad-link" [routerLink]="item.url" [class.is-active]="estActif(item.url)" [title]="('nav.' + item.id) | t">
             <i [class]="item.icon"></i>
-            <span class="ad-label">{{ item.title }}</span>
+            <span class="ad-label">{{ ('nav.' + item.id) | t }}</span>
             @if (item.id === 'agenda' && demandes() > 0) {
               <span class="ad-pill">{{ demandes() > 9 ? '9+' : demandes() }}</span>
             }
@@ -49,13 +49,13 @@
     </nav>
 
     <div class="ad-side-foot">
-      <a class="ad-link" routerLink="/accueil" title="Voir le site">
+      <a class="ad-link" routerLink="/accueil" [title]="'admin.voirSite' | t">
         <i class="ti ti-external-link"></i>
-        <span class="ad-label">Voir le site</span>
+        <span class="ad-label">{{ 'admin.voirSite' | t }}</span>
       </a>
-      <button type="button" class="ad-link ad-logout" title="Déconnexion" (click)="deconnexion()">
+      <button type="button" class="ad-link ad-logout" [title]="'header.deconnexion' | t" (click)="deconnexion()">
         <i class="ti ti-logout-2"></i>
-        <span class="ad-label">Déconnexion</span>
+        <span class="ad-label">{{ 'header.deconnexion' | t }}</span>
       </button>
     </div>
   </aside>
@@ -64,10 +64,10 @@
   <div class="ad-body">
     <header class="ad-topbar">
       <div class="ad-top-left">
-        <button type="button" class="ad-icon-btn" (click)="basculerMenu()" aria-label="Réduire ou ouvrir le menu">
+        <button type="button" class="ad-icon-btn" (click)="basculerMenu()" [attr.aria-label]="'admin.menuBascule' | t">
           <i class="ti ti-menu-2"></i>
         </button>
-        <nav class="ad-crumbs" aria-label="Fil d'Ariane">
+        <nav class="ad-crumbs" [attr.aria-label]="'admin.filAriane' | t">
           @for (miette of fil(); track $index; let dernier = $last) {
             @if (dernier) {
               <span class="ad-crumb-current" aria-current="page">{{ miette.libelle }}</span>
@@ -83,13 +83,14 @@
       </div>
 
       <div class="ad-top-right">
+        <app-lang-switcher />
         <button type="button" class="ad-icon-btn" (click)="theme.basculer()"
-          [attr.aria-label]="theme.sombre() ? 'Passer en thème clair' : 'Passer en thème sombre'"
-          [title]="theme.sombre() ? 'Thème clair' : 'Thème sombre'">
+          [attr.aria-label]="theme.sombre() ? ('admin.themeClair' | t) : ('admin.themeSombre' | t)"
+          [title]="theme.sombre() ? ('admin.themeClairCourt' | t) : ('admin.themeSombreCourt' | t)">
           <i class="ti" [class.ti-sun]="theme.sombre()" [class.ti-moon]="!theme.sombre()"></i>
         </button>
 
-        <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="demandes() + ' demande(s) à traiter'" title="Demandes de rendez-vous à traiter">
+        <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="'admin.demandesAria' | t: { n: demandes() }" [title]="'admin.demandesTitre' | t">
           <i class="ti ti-bell"></i>
           @if (demandes() > 0) {
             <span class="ad-bell-badge">{{ demandes() > 9 ? '9+' : demandes() }}</span>
@@ -122,16 +123,16 @@
               }
               @if (auth.user()?.type === 'PERSONNEL' && !auth.user()?.superAdmin) {
                 <button type="button" class="ad-menu-action" [disabled]="!auth.peutChangerProfil()"
-                  [title]="auth.peutChangerProfil() ? '' : 'Un seul profil disponible'" (click)="changerProfil()" role="menuitem">
-                  <i class="ti ti-switch-horizontal"></i>Changer de profil
+                  [title]="auth.peutChangerProfil() ? '' : ('admin.unSeulProfilDispo' | t)" (click)="changerProfil()" role="menuitem">
+                  <i class="ti ti-switch-horizontal"></i>{{ 'admin.changerProfil' | t }}
                   @if (!auth.peutChangerProfil()) {
-                    <span class="ad-menu-hint">Un seul profil</span>
+                    <span class="ad-menu-hint">{{ 'admin.unSeulProfil' | t }}</span>
                   }
                 </button>
               }
-              <a class="ad-menu-action" routerLink="/accueil" role="menuitem"><i class="ti ti-external-link"></i>Voir le site</a>
+              <a class="ad-menu-action" routerLink="/accueil" role="menuitem"><i class="ti ti-external-link"></i>{{ 'admin.voirSite' | t }}</a>
               <button type="button" class="ad-menu-action is-danger" (click)="deconnexion()" role="menuitem">
-                <i class="ti ti-logout-2"></i>Déconnexion
+                <i class="ti ti-logout-2"></i>{{ 'header.deconnexion' | t }}
               </button>
             </div>
           }
@@ -143,7 +144,7 @@
       <span class="ad-band-role">{{ role() }}</span>
       <span class="ad-band-sep"></span>
       <span class="ad-band-text">Arnelle Institut</span>
-      <span class="ad-band-date text-capitalize">{{ aujourdhuiTexte }}</span>
+      <span class="ad-band-date text-capitalize">{{ aujourdhuiTexte() }}</span>
     </div>
 
     <main class="ad-main">
@@ -151,8 +152,8 @@
     </main>
 
     <footer class="ad-footer">
-      <span>Arnelle Institut &middot; Espace de gestion</span>
-      <a routerLink="/accueil">Voir le site</a>
+      <span>Arnelle Institut &middot; {{ 'admin.espaceGestion' | t }}</span>
+      <a routerLink="/accueil">{{ 'admin.voirSite' | t }}</a>
     </footer>
   </div>
 
@@ -162,7 +163,7 @@
       <div class="ad-toast" [class.is-erreur]="t.type === 'erreur'" role="status">
         <i class="ti" [class.ti-circle-check]="t.type === 'succes'" [class.ti-alert-circle]="t.type === 'erreur'"></i>
         <span>{{ t.texte }}</span>
-        <button type="button" aria-label="Fermer ce message" (click)="toast.fermer(t.id)"><i class="ti ti-x"></i></button>
+        <button type="button" [attr.aria-label]="'admin.fermerMessage' | t" (click)="toast.fermer(t.id)"><i class="ti ti-x"></i></button>
       </div>
     }
   </div>

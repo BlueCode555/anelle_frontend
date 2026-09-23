@@ -6,13 +6,16 @@ import { EquipeService, Profil } from 'src/app/theme/shared/service/equipe.servi
 import { ProfilFormComponent } from '../profil-form/profil-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-profil-list',
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './profil-list.component.html'
 })
 export class ProfilListComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private equipe = inject(EquipeService);
   private modals = inject(NgbModal);
   private confirmation = inject(ConfirmationService);
@@ -35,7 +38,7 @@ export class ProfilListComponent implements OnInit {
       },
       error: (err) => {
         this.chargement.set(false);
-        this.erreur.set(err?.status === 401 || err?.status === 403 ? 'Réservé à l\'esthéticienne.' : 'Impossible de charger les profils.');
+        this.erreur.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.reserveProprio') : this.i18n.t('ts.profil.charger'));
       }
     });
   }
@@ -55,25 +58,25 @@ export class ProfilListComponent implements OnInit {
 
   async supprimer(profil: Profil): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Supprimer le profil « ${profil.libelle} » ?`,
-      message: 'Cette action est définitive.',
-      texteConfirmer: 'Supprimer',
+      titre: this.i18n.t('ts.profil.supprimer', { nom: profil.libelle }),
+      message: this.i18n.t('ts.definitive'),
+      texteConfirmer: this.i18n.t('ts.supprimer'),
       danger: true
     });
     if (!ok) return;
     this.erreur.set('');
     this.equipe.supprimerProfil(profil.id).subscribe({
       next: () => {
-        this.toast.succes('Profil supprimé');
+        this.toast.succes(this.i18n.t('ts.profil.supprime'));
         this.charger();
       },
-      error: (err) => this.erreur.set(err?.error?.message ?? 'Suppression impossible.')
+      error: (err) => this.erreur.set(err?.error?.message ?? this.i18n.t('ts.suppressionImpossible'))
     });
   }
 
   resume(profil: Profil): string {
     const ecrans = profil.permissions.filter((p) => p.lire || p.creer || p.modifier || p.supprimer).length;
-    return ecrans === 0 ? 'Aucun accès' : `${ecrans} écran${ecrans > 1 ? 's' : ''}`;
+    return ecrans === 0 ? this.i18n.t('ts.profil.aucunAcces') : this.i18n.t('ts.profil.ecransN', { n: ecrans });
   }
 
   private ouvrir(profil: Profil | null, lectureSeule = false): void {
@@ -83,7 +86,7 @@ export class ProfilListComponent implements OnInit {
     ref.result.then(
       (r) => {
         if (r === 'saved') {
-          this.toast.succes('Profil enregistré');
+          this.toast.succes(this.i18n.t('ts.profil.enregistre'));
           this.charger();
         }
       },

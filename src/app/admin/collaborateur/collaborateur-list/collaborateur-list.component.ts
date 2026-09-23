@@ -7,14 +7,17 @@ import { Collaborateur, EquipeService } from 'src/app/theme/shared/service/equip
 import { CollaborateurFormComponent } from '../collaborateur-form/collaborateur-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-collaborateur-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './collaborateur-list.component.html',
   styleUrl: './collaborateur-list.component.scss'
 })
 export class CollaborateurListComponent implements OnInit {
+  private i18n = inject(TranslationService);
   private equipe = inject(EquipeService);
   private modals = inject(NgbModal);
   private confirmation = inject(ConfirmationService);
@@ -51,7 +54,7 @@ export class CollaborateurListComponent implements OnInit {
       },
       error: (err) => {
         this.chargement.set(false);
-        this.erreur.set(err?.status === 401 || err?.status === 403 ? "Réservé à l'esthéticienne." : 'Impossible de charger les collaborateurs.');
+        this.erreur.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.reserveProprio') : this.i18n.t('ts.collab.charger'));
       }
     });
   }
@@ -70,19 +73,19 @@ export class CollaborateurListComponent implements OnInit {
 
   async supprimer(c: Collaborateur): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: `Supprimer ${c.prenom} ${c.nom} ?`,
-      message: c.compteCree ? 'Son compte de connexion sera aussi désactivé.' : 'Cette action est définitive.',
-      texteConfirmer: 'Supprimer',
+      titre: this.i18n.t('ts.collab.supprimer', { nom: `${c.prenom} ${c.nom}` }),
+      message: c.compteCree ? this.i18n.t('ts.collab.compteDesactive') : this.i18n.t('ts.definitive'),
+      texteConfirmer: this.i18n.t('ts.supprimer'),
       danger: true
     });
     if (!ok) return;
     this.erreur.set('');
     this.equipe.supprimerCollaborateur(c.id).subscribe({
       next: () => {
-        this.toast.succes('Collaborateur supprimé');
+        this.toast.succes(this.i18n.t('ts.collab.supprime'));
         this.charger();
       },
-      error: (err) => this.toast.erreur(err?.error?.message ?? 'Suppression impossible.')
+      error: (err) => this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.suppressionImpossible'))
     });
   }
 
@@ -119,7 +122,7 @@ export class CollaborateurListComponent implements OnInit {
             this.info.set(this.messageCreation(resultat));
           }
         }
-        if (r === 'saved') this.toast.succes('Collaborateur modifié');
+        if (r === 'saved') this.toast.succes(this.i18n.t('ts.collab.modifie'));
         if (r) this.charger();
       },
       () => {}

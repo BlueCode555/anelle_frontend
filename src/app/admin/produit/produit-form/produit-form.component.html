@@ -1,0 +1,88 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ (produitId ? 'prd.modifier' : 'prd.nouveau') | t }}</h5>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div *ngIf="chargement()" class="text-center text-muted py-4">{{ 'prd.chargement' | t }}</div>
+  <form id="produitForm" *ngIf="!chargement()" (ngSubmit)="onSubmit($event)">
+    <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
+
+    <div class="mb-3">
+      <label class="form-label" for="prd-nom">{{ 'prd.nom' | t }}</label>
+      <input id="prd-nom" type="text" class="form-control" [placeholder]="'prd.nomEx' | t" [formField]="produitForm.nom"
+        [class.is-invalid]="submitted() && produitForm.nom().invalid()" />
+      @if (submitted() && produitForm.nom().invalid()) {
+        <div class="invalid-feedback">
+          @for (error of produitForm.nom().errors(); track error.kind) {
+            <div>{{ error.message }}</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="prd-rayon">{{ 'prd.rayon' | t }}</label>
+      <input id="prd-rayon" type="text" class="form-control" [placeholder]="'prd.rayonEx' | t" [formField]="produitForm.rayon" />
+      <div class="form-text">{{ 'prd.rayonAide' | t }}</div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="prd-desc">{{ 'a.description' | t }}</label>
+      <textarea id="prd-desc" class="form-control" rows="3" [formField]="produitForm.description"></textarea>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="prd-prix">{{ 'prd.prix' | t }}</label>
+        <input id="prd-prix" type="number" step="0.01" class="form-control" [formField]="produitForm.prix"
+          [class.is-invalid]="submitted() && produitForm.prix().invalid()" />
+        @if (submitted() && produitForm.prix().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of produitForm.prix().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label" for="prd-stock">{{ 'prd.stock' | t }}</label>
+        <input id="prd-stock" type="number" step="1" class="form-control" [formField]="produitForm.stock"
+          [class.is-invalid]="submitted() && produitForm.stock().invalid()" />
+        @if (submitted() && produitForm.stock().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of produitForm.stock().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
+      </div>
+      <div class="col-md-4 mb-3 d-flex align-items-end">
+        <div class="form-check">
+          <input id="prd-actif" type="checkbox" class="form-check-input" [formField]="produitForm.actif" />
+          <label class="form-check-label" for="prd-actif">{{ 'prd.actif' | t }}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-1">
+      <label class="form-label" for="prd-image">{{ 'prd.image' | t }}</label>
+      <div *ngIf="imagePreview() as preview" class="image-preview mb-2">
+        <img [src]="preview" [alt]="'a.apercu' | t" />
+        <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeImage()">
+          <i class="ti ti-trash"></i> {{ 'a.retirer' | t }}
+        </button>
+      </div>
+      <input id="prd-image" type="file" class="form-control" accept="image/jpeg,image/png,image/webp,image/avif" (change)="onImageSelected($event)" [disabled]="uploading()" />
+      <input type="url" class="form-control mt-2" [placeholder]="'a.ou_collez_un_lien_https_vers_une_image_en_ligne' | t"
+        [value]="produitModel().imageUrl.startsWith('https://') ? produitModel().imageUrl : ''" (change)="onImageUrlInput($event)" />
+      <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
+      <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.annuler' | t }}</button>
+  <button type="submit" form="produitForm" class="btn btn-primary" [disabled]="saving() || chargement()">
+    {{ saving() ? ('a.enregistrement' | t) : ('a.enregistrer' | t) }}
+  </button>
+</div>

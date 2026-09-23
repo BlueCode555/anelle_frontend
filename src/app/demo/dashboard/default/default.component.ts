@@ -1,4 +1,5 @@
 // Angular Import
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -10,6 +11,8 @@ import { AuthService } from 'src/app/theme/shared/service/auth.service';
 import { InformationService } from 'src/app/theme/shared/service/information.service';
 import { RendezVous, RendezVousService, STATUT_CLASSES, STATUT_LIBELLES } from 'src/app/theme/shared/service/rendez-vous.service';
 import { ajouterJours, aujourdhui, cleJour, formatHeure, formatJourCourt } from 'src/app/theme/shared/_helpers/zoned-time';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 interface CategoryStat {
   libelle: string;
@@ -19,7 +22,7 @@ interface CategoryStat {
 
 @Component({
   selector: 'app-default',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './default.component.html',
   styleUrl: './default.component.scss'
 })
@@ -73,7 +76,11 @@ export class DefaultComponent implements OnInit {
   voitCatalogue = computed(() => this.auth.peut('CATEGORIES') || this.auth.peut('SERVICES'));
   aucunAcces = computed(() => !this.voitAgenda() && !this.voitCatalogue());
 
-  today = new Date().toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  today = computed(() => {
+    this.i18n.langue();
+    return new Date().toLocaleDateString(localeCourante(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  });
+  private i18n = inject(TranslationService);
 
   constructor() {
     effect(() => {
@@ -130,6 +137,6 @@ export class DefaultComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 }

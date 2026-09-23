@@ -1,18 +1,18 @@
 <div class="card">
   <div class="card-header entete-liste">
-    <h5 class="mb-0">Clientèle</h5>
+    <h5 class="mb-0">{{ 'a.clientele' | t }}</h5>
   </div>
   <div class="card-body">
     @if (erreur()) {
       <div class="alert alert-danger">{{ erreur() }}</div>
     }
     @if (chargement()) {
-      <div class="text-center text-muted py-4">Chargement...</div>
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     } @else if (liste().length === 0 && !erreur()) {
       <div class="etat-vide">
         <i class="ti ti-users"></i>
-        <h6>Aucune cliente pour le moment</h6>
-        <p>Dès qu'une personne se connectera avec Google sur le site, elle apparaîtra ici.</p>
+        <h6>{{ 'a.aucune_cliente_pour_le_moment' | t }}</h6>
+        <p>{{ 'a.des_qu_une_personne_se_connectera_avec_google_su' | t }}</p>
       </div>
     } @else if (liste().length) {
       @if (liste().length > 5) {
@@ -21,7 +21,7 @@
           <input
             type="search"
             class="form-control"
-            placeholder="Rechercher un nom ou un e-mail..."
+            [placeholder]="'a.rechercher_un_nom_ou_un_e_mail' | t"
             [ngModel]="recherche()"
             (ngModelChange)="recherche.set($event)"
           />
@@ -29,25 +29,25 @@
       }
 
       @if (visibles().length === 0) {
-        <p class="text-muted mb-0">Aucune cliente ne correspond à « {{ recherche() }} ».</p>
+        <p class="text-muted mb-0">{{ 'clients.aucunMatch' | t: { q: recherche() } }}</p>
       }
 
       <div class="table-responsive">
         <table class="table table-hover align-middle table-cartes">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>E-mail</th>
-              <th>Téléphone</th>
-              <th>Dernière connexion</th>
-              <th class="text-end">Rendez-vous</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'a.nom' | t }}</th>
+              <th>{{ 'a.e_mail' | t }}</th>
+              <th>{{ 'a.telephone' | t }}</th>
+              <th>{{ 'a.derniere_connexion' | t }}</th>
+              <th class="text-end">{{ 'a.rendez_vous' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
             @for (c of visibles(); track c.id) {
               <tr>
-                <td data-label="Nom" class="d-flex align-items-center gap-2">
+                <td [attr.data-label]="'a.nom' | t" class="d-flex align-items-center gap-2">
                   @if (c.photoUrl) {
                     <img [src]="c.photoUrl" alt="" class="client-avatar" referrerpolicy="no-referrer" />
                   } @else {
@@ -55,15 +55,15 @@
                   }
                   <span class="fw-semibold">{{ nomAffiche(c) }}</span>
                 </td>
-                <td data-label="E-mail" class="text-muted">{{ c.email }}</td>
-                <td data-label="Téléphone" class="text-muted">{{ c.telephone || '—' }}</td>
-                <td data-label="Dernière connexion" class="text-muted small">{{ derniereConnexion(c) }}</td>
-                <td data-label="Rendez-vous" class="text-end">
+                <td [attr.data-label]="'a.e_mail' | t" class="text-muted">{{ c.email }}</td>
+                <td [attr.data-label]="'a.telephone' | t" class="text-muted">{{ c.telephone || '—' }}</td>
+                <td [attr.data-label]="'a.derniere_connexion' | t" class="text-muted small">{{ derniereConnexion(c) }}</td>
+                <td [attr.data-label]="'a.rendez_vous' | t" class="text-end">
                   <span class="badge text-bg-light border">{{ c.nombreRendezVous }}</span>
                 </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
-                    <button type="button" class="btn-icone" aria-label="Voir" title="Voir" (click)="voir(c)"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.voir' | t" [title]="'a.voir' | t" (click)="voir(c)"><i class="ti ti-eye"></i></button>
                   </div>
                 </td>
               </tr>

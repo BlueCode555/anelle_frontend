@@ -1,5 +1,9 @@
+import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, HostListener, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LangSwitcherComponent } from 'src/app/theme/shared/component/lang-switcher/lang-switcher.component';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -25,12 +29,13 @@ const COLLAPSE_KEY = 'arnelle.nav.collapsed';
 // Coque du back-office : menu latéral repliable, barre du haut (fil d'Ariane, notifications, profil), contenu, pied de page.
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe, LangSwitcherComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
+  private i18n = inject(TranslationService);
   private informations = inject(InformationService);
   private rendezVous = inject(RendezVousService);
   auth = inject(AuthService);
@@ -47,31 +52,34 @@ export class AdminComponent implements OnInit, OnDestroy {
   ouverts = signal<string[]>(['administration']);
   demandes = signal(0);
 
-  aujourdhuiTexte = new Intl.DateTimeFormat('fr-CA', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  aujourdhuiTexte = computed(() => {
+    this.i18n.langue();
+    return new Intl.DateTimeFormat(localeCourante(), { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  });
 
   // Menu filtré selon les droits (les sections vides disparaissent)
   menu = computed(() => this.filtrer(NavigationItems));
 
-  nomAffiche = computed(() => (this.auth.user() ? this.auth.displayName() : 'Espace de gestion'));
+  nomAffiche = computed(() => (this.auth.user() ? this.auth.displayName() : this.i18n.t('admin.espaceGestion')));
   initiale = computed(() => this.nomAffiche().charAt(0).toUpperCase());
   role = computed(() => {
     const u = this.auth.user();
-    if (!u) return 'Gestion';
+    if (!u) return this.i18n.t('admin.role.gestion');
     // Le collaborateur voit le nom du profil avec lequel il travaille en ce moment
-    return u.superAdmin ? 'Esthéticienne' : (this.auth.profilActif()?.libelle ?? 'Collaborateur');
+    return u.superAdmin ? this.i18n.t('admin.role.esthéticienne') : (this.auth.profilActif()?.libelle ?? this.i18n.t('admin.role.collaborateur'));
   });
 
   fil = computed<Miette[]>(() => {
     const courant = this.url().split(/[?#]/)[0];
-    const fil: Miette[] = [{ libelle: 'Accueil', url: '/default' }];
+    const fil: Miette[] = [{ libelle: this.i18n.t('admin.crumb.accueil'), url: '/default' }];
     for (const item of NavigationItems) {
       if (item.url === courant) {
-        if (courant !== '/default') fil.push({ libelle: item.title });
+        if (courant !== '/default') fil.push({ libelle: this.i18n.t('nav.' + item.id) });
         return fil;
       }
       const enfant = item.children?.find((c) => c.url === courant);
       if (enfant) {
-        fil.push({ libelle: item.title }, { libelle: enfant.title });
+        fil.push({ libelle: this.i18n.t('nav.' + item.id) }, { libelle: this.i18n.t('nav.' + enfant.id) });
         return fil;
       }
     }
@@ -165,9 +173,9 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   async deconnexion(): Promise<void> {
     const ok = await this.confirmation.demander({
-      titre: 'Se déconnecter ?',
+      titre: this.i18n.t('header.confirmerDeconnexion.titre'),
       message: "Vous allez quitter l'espace de gestion.",
-      texteConfirmer: 'Se déconnecter',
+      texteConfirmer: this.i18n.t('header.confirmerDeconnexion.bouton'),
       danger: true,
       icone: 'ti-logout-2'
     });

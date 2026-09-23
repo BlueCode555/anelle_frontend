@@ -1,25 +1,25 @@
 <div class="card">
   <div class="card-header entete-liste">
-    <h5 class="mb-0">Services</h5>
+    <h5 class="mb-0">{{ 'a.services' | t }}</h5>
     <button type="button" class="btn btn-primary" (click)="openCreate()">
-      <i class="ti ti-plus"></i>Nouveau service
+      <i class="ti ti-plus"></i>{{ 'a.nouveau_service' | t }}
     </button>
   </div>
   <div class="card-body">
     @if (loading()) {
-      <div class="text-center text-muted py-4">Chargement...</div>
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     }
 
     @if (error()) {
-      <div class="alert alert-danger">Impossible de charger les services. Vérifiez que le serveur est démarré.</div>
+      <div class="alert alert-danger">{{ 'a.impossible_de_charger_les_services_verifiez_que_' | t }}</div>
     }
 
     @if (!loading() && !error() && services().length === 0) {
       <div class="etat-vide">
         <i class="ti ti-list-details"></i>
-        <h6>Aucun service pour le moment</h6>
-        <p>Un service est un soin que vos clientes peuvent réserver, avec son prix et sa durée.</p>
-        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>Ajouter mon premier service</button>
+        <h6>{{ 'a.aucun_service_pour_le_moment' | t }}</h6>
+        <p>{{ 'a.un_service_est_un_soin_que_vos_clientes_peuvent_' | t }}</p>
+        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>{{ 'a.ajouter_mon_premier_service' | t }}</button>
       </div>
     }
 
@@ -28,19 +28,19 @@
         <table class="table table-hover align-middle table-cartes">
           <thead>
             <tr>
-              <th style="width: 72px">Image</th>
-              <th>Nom</th>
-              <th>Catégorie</th>
-              <th>Durée</th>
-              <th>Tarif</th>
-              <th>Statut</th>
-              <th class="text-end">Actions</th>
+              <th style="width: 72px">{{ 'a.image' | t }}</th>
+              <th>{{ 'a.nom' | t }}</th>
+              <th>{{ 'a.categorie' | t }}</th>
+              <th>{{ 'a.duree' | t }}</th>
+              <th>{{ 'a.tarif' | t }}</th>
+              <th>{{ 'a.statut' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
             @for (service of services(); track service.id) {
               <tr>
-                <td data-label="Image">
+                <td [attr.data-label]="'a.image' | t">
                   @if (imageSrc(service.imageUrl); as src) {
                     <img [src]="src" alt="" class="row-thumb" />
                   } @else {
@@ -48,18 +48,18 @@
                   }
                 </td>
                 <td data-label="Service" class="fw-semibold">{{ service.nomService }}</td>
-                <td data-label="Catégorie" class="text-muted">{{ service.categorieLibelle }}</td>
-                <td data-label="Durée">{{ service.dureeMinutes }} min</td>
-                <td data-label="Tarif" class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
-                <td data-label="Statut">
+                <td [attr.data-label]="'a.categorie' | t" class="text-muted">{{ service.categorieLibelle }}</td>
+                <td [attr.data-label]="'a.duree' | t">{{ service.dureeMinutes }} min</td>
+                <td [attr.data-label]="'a.tarif' | t" class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
+                <td [attr.data-label]="'a.statut' | t">
                   <span class="badge" [class.text-bg-success]="service.actif" [class.text-bg-secondary]="!service.actif">
-                    {{ service.actif ? 'Visible sur le site' : 'Masqué' }}
+                    {{ service.actif ? ('a.visible_sur_le_site' | t) : ('a.masque' | t) }}
                   </span>
                 </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
-                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="openEdit(service)"><i class="ti ti-pencil"></i></button>
-                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="remove(service)"><i class="ti ti-trash"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="openEdit(service)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="remove(service)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

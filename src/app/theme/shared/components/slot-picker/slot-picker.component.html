@@ -1,11 +1,11 @@
 <div class="etape">
   <span class="etape-numero">1</span>
   <div class="etape-contenu">
-    <h2 class="etape-titre">Votre soin</h2>
+    <h2 class="etape-titre">{{ 'slots.soin' | t }}</h2>
     <select id="sp-service" class="form-select" [value]="serviceCode()" (change)="onService($event)">
-      <option value="" disabled>Choisir un soin</option>
+      <option value="" disabled>{{ 'slots.choisirSoin' | t }}</option>
       <option *ngFor="let s of services()" [value]="s.code" [selected]="s.code === serviceCode()">
-        {{ s.nomService }} · {{ s.dureeMinutes }} min · {{ formatTarif(s.tarif) }}
+        {{ s.nomService }} · {{ s.dureeMinutes }} {{ 'slots.min' | t }} · {{ formatTarif(s.tarif) }}
       </option>
     </select>
 
@@ -18,7 +18,7 @@
         }
         <div>
           <strong>{{ soin.nomService }}</strong>
-          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes }} min · {{ formatTarif(soin.tarif) }}</span>
+          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes }} {{ 'slots.min' | t }} · {{ formatTarif(soin.tarif) }}</span>
         </div>
       </div>
     }
@@ -28,16 +28,16 @@
 <div class="etape" [class.est-desactivee]="!serviceCode()">
   <span class="etape-numero">2</span>
   <div class="etape-contenu">
-    <h2 class="etape-titre">Date et heure</h2>
+    <h2 class="etape-titre">{{ 'slots.dateHeure' | t }}</h2>
     <input id="sp-date" type="date" class="form-control etape-date" [value]="date()" [min]="minDate()" (change)="onDate($event)" [disabled]="!serviceCode()" />
 
     <div *ngIf="error()" class="alert alert-warning mt-3">{{ error() }}</div>
 
     <ng-container *ngIf="serviceCode(); else pickService">
-      <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>Recherche des créneaux...</div>
+      <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>{{ 'slots.recherche' | t }}</div>
 
       <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted mt-3">
-        Aucun créneau disponible ce jour-là. Essayez un autre jour.
+        {{ 'slots.aucun' | t }}
       </div>
 
       <div class="slots" *ngIf="!loading() && creneaux().length">
@@ -53,7 +53,7 @@
       </div>
     </ng-container>
     <ng-template #pickService>
-      <p class="text-muted mt-3 mb-0">Choisissez d'abord un soin pour voir les créneaux disponibles.</p>
+      <p class="text-muted mt-3 mb-0">{{ 'slots.choisirDabord' | t }}</p>
     </ng-template>
   </div>
 </div>

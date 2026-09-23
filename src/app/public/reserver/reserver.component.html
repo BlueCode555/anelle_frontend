@@ -5,24 +5,24 @@
     @if (confirmation(); as rdv) {
       <section class="panel text-center panel-confirmation">
         <span class="confirm-icon-wrap"><i class="ti ti-circle-check confirm-icon"></i></span>
-        <span class="ar-eyebrow d-block">C'est envoyé</span>
-        <h1 class="h3 mb-2">Votre demande est en route</h1>
+        <span class="ar-eyebrow d-block">{{ 'reserver.envoye' | t }}</span>
+        <h1 class="h3 mb-2">{{ 'reserver.enRoute' | t }}</h1>
         <p class="text-muted mb-4">
-          Nous confirmerons votre rendez-vous dès que possible. Une fois accepté, il vous restera à régler le montant pour le garantir.
+          {{ 'reserver.enRouteTexte' | t }}
         </p>
         <dl class="recap mx-auto">
-          <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>Soin</dt><dd>{{ rdv.serviceNom }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-calendar-event"></i><dt>Date</dt><dd class="text-capitalize">{{ jour(rdv.debut) }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-clock"></i><dt>Heure</dt><dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-coin"></i><dt>Prix</dt><dd>{{ formatTarif(rdv.prix) }}</dd></div>
+          <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>{{ 'reserver.soin' | t }}</dt><dd>{{ rdv.serviceNom }}</dd></div>
+          <div class="recap-ligne"><i class="ti ti-calendar-event"></i><dt>{{ 'reserver.date' | t }}</dt><dd class="text-capitalize">{{ jour(rdv.debut) }}</dd></div>
+          <div class="recap-ligne"><i class="ti ti-clock"></i><dt>{{ 'reserver.heure' | t }}</dt><dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd></div>
+          <div class="recap-ligne"><i class="ti ti-coin"></i><dt>{{ 'reserver.prix' | t }}</dt><dd>{{ formatTarif(rdv.prix) }}</dd></div>
         </dl>
-        <a routerLink="/mon-espace" class="btn btn-primary mt-4">Suivre mes rendez-vous</a>
+        <a routerLink="/mon-espace" class="btn btn-primary mt-4">{{ 'reserver.suivre' | t }}</a>
       </section>
     } @else {
       <header class="reserver-tete text-center">
-        <span class="ar-eyebrow">Réservation</span>
-        <h1 class="reserver-titre">Prendre rendez-vous</h1>
-        <p class="text-muted">Choisissez votre soin, le jour et l'heure qui vous conviennent — en trois étapes.</p>
+        <span class="ar-eyebrow">{{ 'reserver.eyebrow' | t }}</span>
+        <h1 class="reserver-titre">{{ 'reserver.titre' | t }}</h1>
+        <p class="text-muted">{{ 'reserver.sousTitre' | t }}</p>
       </header>
 
       <section class="panel">
@@ -32,8 +32,8 @@
           <div class="etape">
             <span class="etape-numero">3</span>
             <div class="etape-contenu">
-              <h2 class="etape-titre">Un mot pour l'esthéticienne (facultatif)</h2>
-              <textarea id="note" class="form-control" rows="3" maxlength="500" placeholder="Une allergie, une préférence, un souhait particulier..." (input)="onNote($event)"></textarea>
+              <h2 class="etape-titre">{{ 'reserver.note.titre' | t }}</h2>
+              <textarea id="note" class="form-control" rows="3" maxlength="500" [placeholder]="'reserver.note.placeholder' | t" (input)="onNote($event)"></textarea>
             </div>
           </div>
         }
@@ -43,7 +43,7 @@
             <span>{{ erreur() }}</span>
             @if (sessionExpiree()) {
               <button type="button" class="btn btn-sm btn-outline-danger" (click)="reconnecter()">
-                <i class="ti ti-refresh me-1"></i>Se reconnecter
+                <i class="ti ti-refresh me-1"></i>{{ 'reserver.reconnecter' | t }}
               </button>
             }
           </div>
@@ -51,7 +51,7 @@
 
         <div class="d-flex justify-content-end mt-4">
           <button type="button" class="btn btn-secondary btn-lg px-4" [disabled]="!choix() || envoi()" (click)="envoyer()">
-            {{ envoi() ? 'Envoi en cours...' : 'Envoyer ma demande' }}
+            {{ envoi() ? ('reserver.envoi' | t) : ('reserver.envoyer' | t) }}
           </button>
         </div>
       </section>

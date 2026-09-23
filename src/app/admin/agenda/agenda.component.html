@@ -3,40 +3,35 @@
     <div class="card">
       <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
         <h5 class="mb-0">
-          Agenda
+          {{ 'nav.agenda' | t }}
           @if (aTraiter() > 0) {
-            <span class="badge bg-warning text-dark ms-2">{{ aTraiter() }} à traiter</span>
+            <span class="badge bg-warning text-dark ms-2">{{ 'agenda.aTraiter' | t: { n: aTraiter() } }}</span>
           }
         </h5>
         <div class="agenda-nav">
-          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semainePrecedente()" aria-label="Semaine précédente">
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semainePrecedente()" [attr.aria-label]="'a.semaine_precedente' | t">
             <i class="ti ti-chevron-left"></i>
           </button>
           <span class="fw-semibold">{{ libelleSemaine() }}</span>
-          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semaineSuivante()" aria-label="Semaine suivante">
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="semaineSuivante()" [attr.aria-label]="'a.semaine_suivante' | t">
             <i class="ti ti-chevron-right"></i>
           </button>
-          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cetteSemaine()">Aujourd'hui</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="cetteSemaine()">{{ 'a.aujourd_hui' | t }}</button>
           <button type="button" class="btn btn-sm btn-primary" (click)="nouveau()">
-            <i class="ti ti-plus me-1"></i>Nouveau rendez-vous
+            <i class="ti ti-plus me-1"></i>{{ 'a.nouveau_rendez_vous' | t }}
           </button>
         </div>
       </div>
       <div class="card-body">
-        <p class="text-muted small agenda-intro">
-          La liste des rendez-vous de la semaine affichée ci-dessus. Une demande reçue en ligne doit d'abord être
-          <strong>acceptée ou refusée</strong> ; une fois acceptée et le <strong>paiement reçu</strong>, elle devient
-          <strong>confirmée</strong> ; une fois passée, marquez-la <strong>terminée</strong>. « Nouveau rendez-vous »
-          sert à inscrire vous-même un rendez-vous pris par téléphone ou sur place.
-        </p>
+        <p class="text-muted small agenda-intro" [innerHTML]="'agenda.intro' | t"></p>
         @if (erreur()) {
           <div class="alert alert-danger">{{ erreur() }}</div>
         }
 
         @if (chargement()) {
-          <p class="text-muted mb-0">Chargement...</p>
+          <p class="text-muted mb-0">{{ 'a.chargement' | t }}</p>
         } @else if (groupes().length === 0) {
-          <p class="text-muted mb-0">Aucun rendez-vous cette semaine.</p>
+          <p class="text-muted mb-0">{{ 'a.aucun_rendez_vous_cette_semaine' | t }}</p>
         } @else {
           @for (groupe of groupes(); track groupe.cle) {
             <h6 class="jour-titre text-capitalize">{{ groupe.libelle }}</h6>
@@ -50,30 +45,48 @@
                   <strong>{{ rdv.serviceNom }}</strong>
                   <span class="text-muted"> · {{ formatTarif(rdv.prix) }}</span>
                   <div class="small text-muted">
-                    {{ rdv.clientNom ?? 'Client' }}
+                    {{ rdv.clientNom ?? ('a.client' | t) }}
                     @if (rdv.clientTelephone) { · {{ rdv.clientTelephone }} }
                     @if (rdv.clientEmail) { · {{ rdv.clientEmail }} }
                   </div>
                   @if (rdv.note) {
                     <div class="small fst-italic">« {{ rdv.note }} »</div>
                   }
+                  @if (estProprietaire()) {
+                    <div class="small mt-1">
+                      <label class="text-muted me-1" [for]="'affecte-' + rdv.id">{{ 'a.avec' | t }}</label>
+                      <select
+                        [id]="'affecte-' + rdv.id"
+                        class="form-select form-select-sm d-inline-block w-auto"
+                        [value]="rdv.collaborateurId ?? ''"
+                        (change)="affecter(rdv, $event)"
+                      >
+                        <option value="">{{ 'a.moi_meme' | t }}</option>
+                        @for (c of collaborateursActifs(); track c.id) {
+                          <option [value]="c.id">{{ c.prenom }} {{ c.nom }}</option>
+                        }
+                      </select>
+                    </div>
+                  } @else if (rdv.collaborateurNom) {
+                    <div class="small text-muted mt-1">{{ 'espace.avec' | t: { nom: rdv.collaborateurNom! } }}</div>
+                  }
                 </div>
                 <div>
-                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ libelles[rdv.statut] }}</span>
+                  <span class="badge" [ngClass]="classes[rdv.statut]">{{ ('statut.' + rdv.statut) | t }}</span>
                 </div>
                 <div class="agenda-actions">
                   @if (rdv.statut === 'DEMANDE') {
-                    <button type="button" class="btn btn-sm btn-success" (click)="accepter(rdv)">Accepter</button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="refuser(rdv)">Refuser</button>
+                    <button type="button" class="btn btn-sm btn-success" (click)="accepter(rdv)">{{ 'a.accepter' | t }}</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="refuser(rdv)">{{ 'a.refuser' | t }}</button>
                   }
                   @if (rdv.statut === 'ACCEPTE') {
-                    <button type="button" class="btn btn-sm btn-outline-success" (click)="marquerPaye(rdv)">Paiement reçu</button>
+                    <button type="button" class="btn btn-sm btn-outline-success" (click)="marquerPaye(rdv)">{{ 'a.paiement_recu' | t }}</button>
                   }
                   @if (peutTerminer(rdv)) {
-                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="terminer(rdv)">Terminé</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="terminer(rdv)">{{ 'a.termine' | t }}</button>
                   }
                   @if (peutAnnuler(rdv)) {
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">Annuler</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(rdv)">{{ 'a.annuler' | t }}</button>
                   }
                 </div>
               </div>
@@ -86,27 +99,24 @@
 
   <div class="col-12">
     <div class="card">
-      <div class="card-header"><h5 class="mb-0">Congés et fermetures</h5></div>
+      <div class="card-header"><h5 class="mb-0">{{ 'a.conges_et_fermetures' | t }}</h5></div>
       <div class="card-body">
-        <p class="text-muted small agenda-intro">
-          Bloquez une période (vacances, fermeture exceptionnelle...) pour qu'elle disparaisse des créneaux proposés
-          aux clientes sur le site de réservation.
-        </p>
+        <p class="text-muted small agenda-intro">{{ 'agenda.conges.intro' | t }}</p>
         <div class="row g-2 align-items-end mb-3">
           <div class="col-12 col-md-3">
-            <label class="form-label" for="cg-debut">Début</label>
+            <label class="form-label" for="cg-debut">{{ 'a.debut' | t }}</label>
             <input id="cg-debut" type="datetime-local" class="form-control" [value]="congeDebut()" (input)="champ(congeDebut, $event)" />
           </div>
           <div class="col-12 col-md-3">
-            <label class="form-label" for="cg-fin">Fin</label>
+            <label class="form-label" for="cg-fin">{{ 'a.fin' | t }}</label>
             <input id="cg-fin" type="datetime-local" class="form-control" [value]="congeFin()" (input)="champ(congeFin, $event)" />
           </div>
           <div class="col-12 col-md-4">
-            <label class="form-label" for="cg-motif">Motif</label>
+            <label class="form-label" for="cg-motif">{{ 'a.motif' | t }}</label>
             <input id="cg-motif" class="form-control" maxlength="200" [value]="congeMotif()" (input)="champ(congeMotif, $event)" />
           </div>
           <div class="col-12 col-md-2">
-            <button type="button" class="btn btn-primary w-100" (click)="ajouterConge()">Ajouter</button>
+            <button type="button" class="btn btn-primary w-100" (click)="ajouterConge()">{{ 'a.ajouter' | t }}</button>
           </div>
         </div>
         @if (congeErreur()) {
@@ -118,10 +128,10 @@
               {{ periode(conge) }}
               @if (conge.motif) { <span class="text-muted"> · {{ conge.motif }}</span> }
             </div>
-            <button type="button" class="btn btn-sm btn-outline-danger" (click)="supprimerConge(conge)">Supprimer</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" (click)="supprimerConge(conge)">{{ 'a.supprimer' | t }}</button>
           </div>
         } @empty {
-          <p class="text-muted mb-0">Aucune période bloquée.</p>
+          <p class="text-muted mb-0">{{ 'a.aucune_periode_bloquee' | t }}</p>
         }
       </div>
     </div>

@@ -6,30 +6,30 @@
       <div class="connexion-visual" aria-hidden="true">
         <div class="connexion-visual-overlay"></div>
         <blockquote class="connexion-visual-quote">
-          <p>« Chaque rendez-vous compte. »</p>
-          <cite>Espace de gestion</cite>
+          <p>{{ 'personnel.citation' | t }}</p>
+          <cite>{{ 'personnel.titre' | t }}</cite>
         </blockquote>
       </div>
 
       <div class="connexion-card text-center">
         <i class="ti ti-lock-heart connexion-icon"></i>
-        <h1 class="h3 mb-2">Espace de gestion</h1>
-        <p class="text-muted mb-4">Réservé à l'équipe de {{ nom() }} : agenda, catalogue, informations de l'institut.</p>
+        <h1 class="h3 mb-2">{{ 'personnel.titre' | t }}</h1>
+        <p class="text-muted mb-4">{{ 'personnel.intro' | t: { nom: nom() } }}</p>
 
         @if (erreur) {
-          <div class="alert alert-danger">La connexion n'a pas abouti. Réessayez.</div>
+          <div class="alert alert-danger">{{ 'connexion.echec' | t }}</div>
         }
 
         @if (auth.keycloakConfigure) {
           <button type="button" class="btn btn-primary btn-lg px-4" (click)="connexion()">
-            <i class="ti ti-login-2 me-2"></i>Se connecter
+            <i class="ti ti-login-2 me-2"></i>{{ 'personnel.seConnecter' | t }}
           </button>
-          <p class="small text-muted mt-3 mb-0">Vous utiliserez l'adresse e-mail et le mot de passe de votre compte professionnel.</p>
+          <p class="small text-muted mt-3 mb-0">{{ 'personnel.indice' | t }}</p>
         } @else {
-          <div class="alert alert-warning mb-0">La connexion du personnel n'est pas encore configurée.</div>
+          <div class="alert alert-warning mb-0">{{ 'personnel.nonConfiguree' | t }}</div>
         }
 
-        <p class="small mt-4 mb-0"><a routerLink="/connexion">Vous souhaitez réserver un soin ? Connectez-vous ici</a></p>
+        <p class="small mt-4 mb-0"><a routerLink="/connexion">{{ 'personnel.lienClient' | t }}</a></p>
       </div>
     </div>
   </main>

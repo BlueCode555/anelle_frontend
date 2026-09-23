@@ -1,60 +1,60 @@
 <div class="card">
   <div class="card-header entete-liste">
-    <h5 class="mb-0">Profils et droits</h5>
+    <h5 class="mb-0">{{ 'a.profils_et_droits' | t }}</h5>
     <button type="button" class="btn btn-primary" (click)="nouveau()">
-      <i class="ti ti-plus"></i>Nouveau profil
+      <i class="ti ti-plus"></i>{{ 'a.nouveau_profil' | t }}
     </button>
   </div>
   <div class="card-body">
     <p class="text-muted">
-      Un profil décide de ce que peut faire une personne de l'équipe. Vous pouvez donner plusieurs profils à un collaborateur.
+      {{ 'a.un_profil_decide_de_ce_que_peut_faire_une_person' | t }}
     </p>
 
     @if (erreur()) {
       <div class="alert alert-danger">{{ erreur() }}</div>
     }
     @if (chargement()) {
-      <div class="text-center text-muted py-4">Chargement...</div>
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     } @else if (profils().length === 0 && !erreur()) {
       <div class="etat-vide">
         <i class="ti ti-shield-lock"></i>
-        <h6>Aucun profil pour le moment</h6>
+        <h6>{{ 'a.aucun_profil_pour_le_moment' | t }}</h6>
         <p>Créez un profil, par exemple « Réceptionniste », puis choisissez ce qu'il a le droit de faire.</p>
-        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>Créer mon premier profil</button>
+        <button type="button" class="btn btn-primary" (click)="nouveau()"><i class="ti ti-plus"></i>{{ 'a.creer_mon_premier_profil' | t }}</button>
       </div>
     } @else if (profils().length) {
       <div class="table-responsive">
         <table class="table table-hover align-middle table-cartes">
           <thead>
             <tr>
-              <th>Profil</th>
-              <th>Accès</th>
-              <th>Collaborateurs</th>
-              <th>Statut</th>
-              <th class="text-end">Actions</th>
+              <th>{{ 'a.profil' | t }}</th>
+              <th>{{ 'a.acces' | t }}</th>
+              <th>{{ 'a.collaborateurs' | t }}</th>
+              <th>{{ 'a.statut' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
             @for (profil of profils(); track profil.id) {
               <tr>
-                <td data-label="Profil">
+                <td [attr.data-label]="'a.profil' | t">
                   <strong>{{ profil.libelle }}</strong>
                   @if (profil.description) {
                     <div class="text-muted small">{{ profil.description }}</div>
                   }
                 </td>
-                <td data-label="Accès">{{ resume(profil) }}</td>
-                <td data-label="Collaborateurs">{{ profil.nombreCollaborateurs }}</td>
-                <td data-label="Statut">
+                <td [attr.data-label]="'a.acces' | t">{{ resume(profil) }}</td>
+                <td [attr.data-label]="'a.collaborateurs' | t">{{ profil.nombreCollaborateurs }}</td>
+                <td [attr.data-label]="'a.statut' | t">
                   <span class="badge" [ngClass]="profil.actif ? 'text-bg-success' : 'text-bg-secondary'">
-                    {{ profil.actif ? 'Actif' : 'Désactivé' }}
+                    {{ profil.actif ? ('a.actif' | t) : ('a.desactive' | t) }}
                   </span>
                 </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
-                    <button type="button" class="btn-icone" aria-label="Voir les accès" title="Voir les accès" (click)="voir(profil)"><i class="ti ti-eye"></i></button>
-                    <button type="button" class="btn-icone" aria-label="Modifier" title="Modifier" (click)="modifier(profil)"><i class="ti ti-pencil"></i></button>
-                    <button type="button" class="btn-icone est-danger" aria-label="Supprimer" title="Supprimer" (click)="supprimer(profil)"><i class="ti ti-trash"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.voir_les_acces' | t" [title]="'a.voir_les_acces' | t" (click)="voir(profil)"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="modifier(profil)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="supprimer(profil)"><i class="ti ti-trash"></i></button>
                   </div>
                 </td>
               </tr>

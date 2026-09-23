@@ -1,30 +1,29 @@
 import { Component, computed, inject } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { AuthService, EcranCode, ProfilAcces } from '../../../shared/service/auth.service';
+import { AuthService, ProfilAcces } from '../../../shared/service/auth.service';
 
-const LIBELLES_ECRANS: Record<EcranCode, string> = {
-  AGENDA: 'Agenda',
-  INFORMATIONS: 'Mon institut',
-  CATEGORIES: 'Catégories',
-  SERVICES: 'Services'
-};
 
 // Choix du profil avec lequel on travaille : chaque carte montre ce que le profil permet de faire.
+import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+
 @Component({
   selector: 'app-changer-profil',
+  imports: [TranslatePipe],
   templateUrl: './changer-profil.component.html',
   styleUrl: './changer-profil.component.scss'
 })
 export class ChangerProfilComponent {
   private auth = inject(AuthService);
+  private i18n = inject(TranslationService);
   activeModal = inject(NgbActiveModal);
 
   profils = computed(() => this.auth.user()?.profils ?? []);
   actuel = computed(() => this.auth.profilActif()?.code ?? null);
 
   ecrans(profil: ProfilAcces): string[] {
-    return profil.permissions.filter((p) => p.lire).map((p) => LIBELLES_ECRANS[p.ecran]);
+    return profil.permissions.filter((p) => p.lire).map((p) => this.i18n.t('ecran.' + p.ecran));
   }
 
   choisir(profil: ProfilAcces): void {

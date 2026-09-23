@@ -70,6 +70,7 @@ $or-fonce: #c9a227;
 }
 
 .header-actions {
+  color: $creme;
   justify-self: end;
   display: flex;
   align-items: center;
@@ -164,6 +165,7 @@ $or-fonce: #c9a227;
 }
 
 .mobile-menu {
+  color: $creme;
   display: none;
   margin: 0;
   padding: 0.5rem 1.5rem 1rem;
@@ -194,6 +196,11 @@ $or-fonce: #c9a227;
   &:hover {
     color: $or;
   }
+}
+
+.mobile-lang {
+  padding-top: 0.75rem;
+  border-bottom: none;
 }
 
 @media (max-width: 991.98px) {
@@ -239,4 +246,36 @@ $or-fonce: #c9a227;
     padding: 0.4rem 0.9rem;
     font-size: 0.8rem;
   }
+}
+
+.header-panier {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 1.35rem;
+  color: $creme;
+  text-decoration: none;
+
+  &:hover {
+    color: $or;
+  }
+}
+
+.header-panier-badge {
+  position: absolute;
+  top: -0.15rem;
+  right: -0.35rem;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.25rem;
+  border-radius: 999px;
+  background: $or;
+  color: $brun;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.15rem;
+  text-align: center;
 }

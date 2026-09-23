@@ -1,0 +1,81 @@
+<div class="card">
+  <div class="card-header entete-liste">
+    <h5 class="mb-0">
+      {{ 'nav.produits' | t }}
+      @if (enRupture() > 0) {
+        <span class="badge bg-warning text-dark ms-2">{{ 'prd.enRupture' | t: { n: enRupture() } }}</span>
+      }
+    </h5>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">
+      <i class="ti ti-plus"></i>{{ 'prd.nouveau' | t }}
+    </button>
+  </div>
+  <div class="card-body">
+    @if (loading()) {
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-danger">{{ 'prd.erreurCharger' | t }}</div>
+    }
+
+    @if (!loading() && !error() && liste().length === 0) {
+      <div class="etat-vide">
+        <i class="ti ti-package"></i>
+        <h6>{{ 'prd.aucun' | t }}</h6>
+        <p>{{ 'prd.aucunTexte' | t }}</p>
+        <button type="button" class="btn btn-primary" (click)="openCreate()"><i class="ti ti-plus"></i>{{ 'prd.premier' | t }}</button>
+      </div>
+    }
+
+    @if (!loading() && liste().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th style="width: 72px">{{ 'a.image' | t }}</th>
+              <th>{{ 'a.nom' | t }}</th>
+              <th>{{ 'prd.rayon' | t }}</th>
+              <th>{{ 'a.tarif' | t }}</th>
+              <th>{{ 'prd.stock' | t }}</th>
+              <th>{{ 'a.statut' | t }}</th>
+              <th class="text-end">{{ 'a.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of liste(); track p.id) {
+              <tr>
+                <td [attr.data-label]="'a.image' | t">
+                  @if (imageSrc(p.imageUrl); as src) {
+                    <img [src]="src" alt="" class="row-thumb" />
+                  } @else {
+                    <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
+                  }
+                </td>
+                <td [attr.data-label]="'a.nom' | t" class="fw-semibold">{{ p.nom }}</td>
+                <td [attr.data-label]="'prd.rayon' | t" class="text-muted">{{ p.rayon || '—' }}</td>
+                <td [attr.data-label]="'a.tarif' | t" class="fw-bold text-primary">{{ formatPrix(p.prix) }}</td>
+                <td [attr.data-label]="'prd.stock' | t">
+                  <span class="badge" [class.text-bg-success]="p.stock > 3" [class.text-bg-warning]="p.stock > 0 && p.stock <= 3" [class.text-bg-danger]="p.stock === 0">
+                    {{ p.stock }}
+                  </span>
+                </td>
+                <td [attr.data-label]="'a.statut' | t">
+                  <span class="badge" [class.text-bg-success]="p.actif" [class.text-bg-secondary]="!p.actif">
+                    {{ (p.actif ? 'prd.visible' : 'a.masque') | t }}
+                  </span>
+                </td>
+                <td class="cellule-actions text-end">
+                  <div class="actions actions-icones">
+                    <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="openEdit(p)"><i class="ti ti-pencil"></i></button>
+                    <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="remove(p)"><i class="ti ti-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

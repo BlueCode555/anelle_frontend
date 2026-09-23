@@ -4,11 +4,12 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../theme/shared/service/auth.service';
 import { InformationService } from '../../theme/shared/service/information.service';
 import { SiteHeaderComponent } from '../site-header/site-header.component';
+import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 
 // Page de connexion du personnel (esthéticienne et collaborateurs) : le mot de passe se saisit chez Keycloak, jamais ici.
 @Component({
   selector: 'app-personnel',
-  imports: [RouterModule, SiteHeaderComponent],
+  imports: [RouterModule, SiteHeaderComponent, TranslatePipe],
   templateUrl: './personnel.component.html',
   styleUrl: '../connexion/connexion.component.scss'
 })

@@ -3,13 +3,21 @@
     <a class="brand" routerLink="/accueil" fragment="top" (click)="closeMenu()">{{ nom() }}</a>
 
     <ul class="nav-links">
-      <li><a routerLink="/accueil" fragment="top">Accueil</a></li>
-      <li><a routerLink="/accueil" fragment="services">Services</a></li>
-      <li><a routerLink="/accueil" fragment="apropos">À propos</a></li>
-      <li><a routerLink="/accueil" fragment="contact">Contact</a></li>
+      <li><a routerLink="/accueil" fragment="top">{{ 'header.nav.accueil' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="services">{{ 'header.nav.services' | t }}</a></li>
+      <li><a routerLink="/boutique" routerLinkActive="is-active">{{ 'header.nav.boutique' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="apropos">{{ 'header.nav.apropos' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="contact">{{ 'header.nav.contact' | t }}</a></li>
     </ul>
 
     <div class="header-actions">
+      <app-lang-switcher />
+      <a routerLink="/panier" class="header-panier" [attr.aria-label]="'header.panier' | t" [title]="'header.panier' | t">
+        <i class="ti ti-shopping-cart"></i>
+        @if (panier.nombreArticles() > 0) {
+          <span class="header-panier-badge">{{ panier.nombreArticles() > 9 ? '9+' : panier.nombreArticles() }}</span>
+        }
+      </a>
       @if (auth.user(); as user) {
         @if (user.type === 'CLIENT') {
           <a routerLink="/mon-espace" class="header-user">
@@ -18,14 +26,14 @@
             } @else {
               <span class="header-avatar header-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
             }
-            <span class="header-user-label">Mon espace</span>
+            <span class="header-user-label">{{ 'header.monEspace' | t }}</span>
           </a>
         } @else {
-          <a routerLink="/default" class="btn-header btn-header-outline">Espace de gestion</a>
+          <a routerLink="/default" class="btn-header btn-header-outline">{{ 'header.espaceGestion' | t }}</a>
         }
-        <button type="button" class="header-logout" (click)="logout()">Déconnexion</button>
+        <button type="button" class="header-logout" (click)="logout()">{{ 'header.deconnexion' | t }}</button>
       } @else {
-        <a routerLink="/connexion" class="btn-header btn-header-solid">Se connecter</a>
+        <a routerLink="/connexion" class="btn-header btn-header-solid">{{ 'header.seConnecter' | t }}</a>
       }
 
       <button type="button" class="menu-toggle" [attr.aria-expanded]="menuOpen()" aria-label="Ouvrir le menu" (click)="toggleMenu()">
@@ -36,20 +44,22 @@
 
   @if (menuOpen()) {
     <ul class="mobile-menu">
-      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()">Accueil</a></li>
-      <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()">Services</a></li>
-      <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()">À propos</a></li>
-      <li><a routerLink="/accueil" fragment="contact" (click)="closeMenu()">Contact</a></li>
+      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()">{{ 'header.nav.accueil' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()">{{ 'header.nav.services' | t }}</a></li>
+      <li><a routerLink="/boutique" (click)="closeMenu()">{{ 'header.nav.boutique' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()">{{ 'header.nav.apropos' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="contact" (click)="closeMenu()">{{ 'header.nav.contact' | t }}</a></li>
       @if (auth.user(); as user) {
         <li>
           <a [routerLink]="user.type === 'CLIENT' ? '/mon-espace' : '/default'" (click)="closeMenu()">
-            {{ user.type === 'CLIENT' ? 'Mon espace' : 'Espace de gestion' }}
+            {{ user.type === 'CLIENT' ? ('header.monEspace' | t) : ('header.espaceGestion' | t) }}
           </a>
         </li>
-        <li><button type="button" class="mobile-logout" (click)="logout()">Déconnexion</button></li>
+        <li><button type="button" class="mobile-logout" (click)="logout()">{{ 'header.deconnexion' | t }}</button></li>
       } @else {
-        <li><a routerLink="/connexion" (click)="closeMenu()">Se connecter</a></li>
+        <li><a routerLink="/connexion" (click)="closeMenu()">{{ 'header.seConnecter' | t }}</a></li>
       }
+      <li class="mobile-lang"><app-lang-switcher /></li>
     </ul>
   }
 </header>

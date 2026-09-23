@@ -1,0 +1,21 @@
+.ligne-commande {
+  cursor: pointer;
+}
+
+.detail-commande td {
+  background: rgba(232, 200, 116, 0.1);
+}
+
+.detail-lignes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 520px;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.25rem 0;
+  }
+}

@@ -1,0 +1,27 @@
+// Back-office texts with markup or parameters.
+export const EN_ADMIN_EXTRA: Record<string, string> = {
+  'agenda.intro': 'The list of this week\'s appointments shown above. A request received online must first be <strong>accepted or declined</strong>; once accepted and <strong>payment received</strong>, it becomes <strong>confirmed</strong>; once past, mark it <strong>done</strong>. "New appointment" is for entering an appointment taken by phone or on site yourself.',
+  'agenda.conges.intro': 'Block a period (holidays, exceptional closure...) so it disappears from the slots offered to clients on the booking site.',
+  'agenda.aTraiter': '{n} to handle',
+  'clients.aucunMatch': 'No result for "{q}".',
+  'clients.derniereConnexion': 'Last login: {date}',
+  'collab.noteMdp': 'This password will <strong>not be shown again</strong>: note it now. On first login, the person must choose a new one only they know. It is also emailed to them and expires after 24 h if unused.',
+  'collab.comptePret': '{nom}\'s account is ready',
+  'collab.adresseConnexion': 'Login address:',
+  'collab.mdpProvisoire': 'Temporary password:',
+  'collab.sansCompteTitre': 'No login account was created automatically',
+  'collab.modifier': 'Edit team member',
+  'collab.aideEmail': 'This is their login address. A temporary password will be shown after creation and emailed to the person: they have 24 h to log in.',
+  'collab.creation': 'Creating...',
+  'collab.creerCompte': 'Create account',
+  'collab.generation': 'Generating...',
+  'collab.nouveauMdp': 'New password',
+  'profil.note': 'Managing team members and profiles remains reserved for the owner. Uploading an image requires the right to create or edit on at least one catalogue or details screen.',
+  'profil.accesDe': 'Profile access',
+  'profil.modifier': 'Edit profile',
+  'info.mailIntro': 'When a client books online, an email alerts you here — handy if you are not logged in to the management area at that moment. Enter your Gmail address and its <strong>app password</strong> (not the usual password of your Google account: it is created in your Google account security settings, "App passwords" section).',
+  'info.fiche': 'Profile {n}% complete',
+  'info.seize': '16 characters',
+  'info.ouverture': 'Opening',
+  'info.fermeture': 'Closing'
+};

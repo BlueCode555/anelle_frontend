@@ -1,8 +1,8 @@
 <div class="modal-header">
   <h5 class="modal-title">
-    {{ lectureSeule ? collaborateur?.prenom + ' ' + collaborateur?.nom : collaborateur ? 'Modifier le collaborateur' : 'Nouveau collaborateur' }}
+    {{ lectureSeule ? collaborateur?.prenom + ' ' + collaborateur?.nom : collaborateur ? ('collab.modifier' | t) : ('a.nouveau_collaborateur' | t) }}
   </h5>
-  <button type="button" class="btn-close" aria-label="Fermer" (click)="activeModal.dismiss()"></button>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
   @if (erreur()) {
@@ -10,28 +10,28 @@
   }
   <div class="row g-3">
     <div class="col-12 col-md-6">
-      <label class="form-label" for="co-prenom">Prénom</label>
+      <label class="form-label" for="co-prenom">{{ 'a.prenom' | t }}</label>
       <input id="co-prenom" class="form-control" maxlength="150" [disabled]="lectureSeule"
         [class.is-invalid]="soumis() && !prenom().trim()" [value]="prenom()" (input)="texte(prenom, $event)" />
-      <div class="invalid-feedback">Le prénom est obligatoire.</div>
+      <div class="invalid-feedback">{{ 'a.le_prenom_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12 col-md-6">
-      <label class="form-label" for="co-nom">Nom</label>
+      <label class="form-label" for="co-nom">{{ 'a.nom' | t }}</label>
       <input id="co-nom" class="form-control" maxlength="150" [disabled]="lectureSeule"
         [class.is-invalid]="soumis() && !nom().trim()" [value]="nom()" (input)="texte(nom, $event)" />
-      <div class="invalid-feedback">Le nom est obligatoire.</div>
+      <div class="invalid-feedback">{{ 'a.le_nom_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12">
-      <label class="form-label" for="co-email">Adresse e-mail</label>
+      <label class="form-label" for="co-email">{{ 'a.adresse_e_mail' | t }}</label>
       <input id="co-email" type="email" class="form-control" maxlength="255" [disabled]="lectureSeule || !!collaborateur"
         [class.is-invalid]="soumis() && !collaborateur && !emailValide()" [value]="email()" (input)="texte(email, $event)" />
-      <div class="invalid-feedback">Saisissez une adresse e-mail valide.</div>
+      <div class="invalid-feedback">{{ 'a.saisissez_une_adresse_e_mail_valide' | t }}</div>
       @if (!collaborateur) {
-        <div class="form-text">C'est son adresse de connexion. Un mot de passe provisoire vous sera affiché après la création : vous le lui transmettez.</div>
+        <div class="form-text">{{ 'collab.aideEmail' | t }}</div>
       }
     </div>
     <div class="col-12">
-      <span class="form-label d-block">Profils attribués</span>
+      <span class="form-label d-block">{{ 'a.profils_attribues' | t }}</span>
       <div class="choix-profils" [class.is-invalid]="soumis() && profilCodes().length === 0" [class.est-lecture-seule]="lectureSeule">
         @for (p of profils(); track p.code) {
           <label class="choix-profil" [class.is-coche]="estCoche(p.code)">
@@ -44,35 +44,35 @@
             </span>
           </label>
         } @empty {
-          <p class="text-muted mb-0">Aucun profil disponible : créez d'abord un profil.</p>
+          <p class="text-muted mb-0">{{ 'a.aucun_profil_disponible_creez_d_abord_un_profil' | t }}</p>
         }
       </div>
       @if (soumis() && profilCodes().length === 0) {
-        <div class="text-danger small mt-1">Cochez au moins un profil.</div>
+        <div class="text-danger small mt-1">{{ 'a.cochez_au_moins_un_profil' | t }}</div>
       }
       @if (!lectureSeule) {
-        <div class="form-text">Vous pouvez en cocher plusieurs ; décochez un profil pour le retirer à cette personne.</div>
+        <div class="form-text">{{ 'a.vous_pouvez_en_cocher_plusieurs_decochez_un_prof' | t }}</div>
       }
     </div>
     @if (collaborateur) {
       <div class="col-12">
         <div class="form-check form-switch">
           <input id="co-actif" class="form-check-input" type="checkbox" [disabled]="lectureSeule" [checked]="actif()" (change)="actif.set($any($event.target).checked)" />
-          <label class="form-check-label" for="co-actif">Compte actif (désactivé : il ne peut plus se connecter ni agir)</label>
+          <label class="form-check-label" for="co-actif">{{ 'a.compte_actif_desactive_il_ne_peut_plus_se_connec' | t }}</label>
         </div>
       </div>
 
       <div class="col-12">
         <div class="bloc-compte">
-          <span class="form-label d-block mb-2">Compte de connexion</span>
+          <span class="form-label d-block mb-2">{{ 'a.compte_de_connexion' | t }}</span>
           @if (!collaborateur.compteCree) {
-            <p class="text-muted small mb-2">Aucun compte créé automatiquement pour cette personne.</p>
+            <p class="text-muted small mb-2">{{ 'a.aucun_compte_cree_automatiquement_pour_cette_per' | t }}</p>
             <button type="button" class="btn btn-sm btn-secondary" [disabled]="envoiCompte()" (click)="creerCompte()">
-              <i class="ti ti-user-check me-1"></i>{{ envoiCompte() ? 'Création...' : 'Créer le compte' }}
+              <i class="ti ti-user-check me-1"></i>{{ envoiCompte() ? ('collab.creation' | t) : ('collab.creerCompte' | t) }}
             </button>
           } @else {
             <button type="button" class="btn btn-sm btn-outline-secondary" [disabled]="envoiCompte()" (click)="nouveauMotDePasse()">
-              <i class="ti ti-key me-1"></i>{{ envoiCompte() ? 'Génération...' : 'Nouveau mot de passe' }}
+              <i class="ti ti-key me-1"></i>{{ envoiCompte() ? ('collab.generation' | t) : ('collab.nouveauMdp' | t) }}
             </button>
           }
         </div>
@@ -82,11 +82,11 @@
 </div>
 <div class="modal-footer">
   @if (lectureSeule) {
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Fermer</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.fermer' | t }}</button>
   } @else {
-    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">Annuler</button>
+    <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.annuler' | t }}</button>
     <button type="button" class="btn btn-primary" [disabled]="envoi()" (click)="enregistrer()">
-      {{ envoi() ? 'Enregistrement...' : 'Enregistrer' }}
+      {{ envoi() ? ('a.enregistrement' | t) : ('a.enregistrer' | t) }}
     </button>
   }
 </div>
