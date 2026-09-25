@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -9,14 +9,23 @@ import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { ProduitFormComponent } from '../produit-form/produit-form.component';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-produit-list',
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, PaginationComponent],
   templateUrl: './produit-list.component.html',
   styleUrl: './produit-list.component.scss'
 })
 export class ProduitListComponent implements OnInit {
+  page = signal(1);
+  readonly taille = 10;
+  pagees = computed(() => this.liste().slice((this.page() - 1) * this.taille, this.page() * this.taille));
+
+  private retourPage1 = effect(() => {
+    this.liste();
+    this.page.set(1);
+  });
   private i18n = inject(TranslationService);
   private produits = inject(ProduitService);
   private modalService = inject(NgbModal);
@@ -53,6 +62,31 @@ export class ProduitListComponent implements OnInit {
 
   imageSrc(url?: string | null): string | null {
     return this.produits.imageSrc(url);
+  }
+
+  // Un clic : affiche ou masque le produit dans la boutique (sans ouvrir le formulaire).
+  basculer(p: ProduitResponse, event: Event): void {
+    const actif = (event.target as HTMLInputElement).checked;
+    this.produits
+      .update(p.id, {
+        nom: p.nom,
+        rayon: p.rayon ?? '',
+        description: p.description ?? '',
+        prix: p.prix,
+        stock: p.stock,
+        actif,
+        imageUrl: p.imageUrl ?? ''
+      })
+      .subscribe({
+        next: () => {
+          this.liste.update((l) => l.map((x) => (x.id === p.id ? { ...x, actif } : x)));
+          this.toast.succes(this.i18n.t(actif ? 'toggle.affiche' : 'toggle.masque'));
+        },
+        error: (err) => {
+          (event.target as HTMLInputElement).checked = !actif;
+          this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.erreurGenerique'));
+        }
+      });
   }
 
   openCreate(): void {

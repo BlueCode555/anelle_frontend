@@ -4,8 +4,8 @@
 </div>
 <div class="modal-body">
   <div class="client-profil">
-    @if (client.photoUrl) {
-      <img [src]="client.photoUrl" alt="" class="client-avatar-lg" referrerpolicy="no-referrer" />
+    @if (client.photoUrl && !photoErreur()) {
+      <img [src]="client.photoUrl" alt="" class="client-avatar-lg" referrerpolicy="no-referrer" (error)="photoErreur.set(true)" />
     } @else {
       <span class="client-avatar-lg client-avatar-initial">{{ nomAffiche().charAt(0).toUpperCase() }}</span>
     }

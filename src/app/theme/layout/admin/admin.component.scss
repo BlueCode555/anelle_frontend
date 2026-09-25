@@ -725,3 +725,34 @@
 // attribut d'encapsulation propre au composant), or ce meme attribut est aussi ajoute a `body` dans le
 // selecteur, empechant toute regle "body[data-theme='dark'] ..." ecrite ici de jamais s'appliquer. Voir
 // la section « Mode sombre » de brand.scss.
+
+// ── Téléphone : la barre du haut doit tenir sur 360 px ──
+@media (max-width: 575.98px) {
+  .ad-top-left {
+    min-width: 0;
+    overflow: hidden;
+    gap: 0.35rem;
+  }
+
+  .ad-top-right {
+    gap: 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .ad-divider,
+  .ad-crumb,
+  .ad-crumb-sep {
+    display: none;
+  }
+
+  .ad-crumb-current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ad-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
+}

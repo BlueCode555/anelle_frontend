@@ -70,9 +70,13 @@ export class AgendaComponent implements OnInit {
   zone = computed(() => this.informations.info()?.fuseauHoraire ?? 'America/Toronto');
   finSemaine = computed(() => (this.debutSemaine() ? ajouterJours(this.debutSemaine(), 6) : ''));
 
+  // Les demandes expirées, refusées ou annulées restent en base (historique) mais ne encombrent plus l'agenda.
+  voirInactifs = signal(false);
+  nombreInactifs = computed(() => this.items().filter((r) => this.estInactif(r)).length);
+
   groupes = computed<Groupe[]>(() => {
     const parJour = new Map<string, RendezVous[]>();
-    for (const rdv of this.items()) {
+    for (const rdv of this.items().filter((r) => this.voirInactifs() || !this.estInactif(r))) {
       const cle = cleJour(rdv.debut, this.zone());
       parJour.set(cle, [...(parJour.get(cle) ?? []), rdv]);
     }
@@ -80,6 +84,10 @@ export class AgendaComponent implements OnInit {
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([cle, items]) => ({ cle, libelle: formatJour(items[0].debut, this.zone()), items }));
   });
+
+  private estInactif(r: RendezVous): boolean {
+    return r.statut === 'EXPIRE' || r.statut === 'ANNULE' || r.statut === 'REFUSE';
+  }
 
   aTraiter = computed(() => this.items().filter((r) => r.statut === 'DEMANDE').length);
 

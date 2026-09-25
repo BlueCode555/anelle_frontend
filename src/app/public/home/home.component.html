@@ -72,7 +72,7 @@
     <div class="gallery-carousel-wrap mx-auto" *ngIf="galleryImages().length">
       <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
         <ng-template ngbSlide *ngFor="let img of galleryImages()">
-          <div class="gallery-slide">
+          <div class="gallery-slide" [style.--fond]="'url(' + img.src + ')'">
             <img [src]="img.src" [alt]="img.alt" />
             <div class="gallery-caption">{{ img.caption }}</div>
           </div>
@@ -148,10 +148,12 @@
     </div>
 
     <div class="row g-4" *ngIf="!loading() && filteredServices().length">
-      <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of filteredServices()">
+      <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of servicesPagees()">
         <div class="card h-100 service-card">
           @if (serviceImage(service); as photo) {
-            <img [src]="photo" [alt]="service.nomService" class="service-photo" loading="lazy" />
+            <div class="service-photo-wrap" [style.--fond]="'url(' + photo + ')'">
+              <img [src]="photo" [alt]="service.nomService" class="service-photo" loading="lazy" />
+            </div>
           } @else {
             <div class="service-photo-empty"><i class="ti {{ categoryIcon(service.categorieCode) }}"></i></div>
           }
@@ -160,7 +162,7 @@
             <h3 class="service-name">{{ service.nomService }}</h3>
             <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
             <div class="d-flex justify-content-between align-items-end mt-3">
-              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes }} {{ 'slots.min' | t }}</span>
+              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes | duree }}</span>
               <span class="service-price">{{ formatTarif(service.tarif) }}</span>
             </div>
             <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">{{ 'home.services.reserver' | t }}</a>
@@ -168,6 +170,7 @@
         </div>
       </div>
     </div>
+    <app-pagination [total]="filteredServices().length" [taille]="tailleServices" [(page)]="pageServices" />
   </section>
 
   <section class="cta text-center px-3 py-5">

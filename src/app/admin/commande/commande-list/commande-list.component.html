@@ -20,6 +20,10 @@
         <p>{{ 'cmd.aucuneTexte' | t }}</p>
       </div>
     } @else if (liste().length) {
+      <div class="onglets" role="tablist">
+        <button type="button" role="tab" class="onglet" [class.is-actif]="onglet() === 'cours'" (click)="choisirOnglet('cours')">{{ 'cmd.enCours' | t }} <span class="onglet-n">{{ enCours().length }}</span></button>
+        <button type="button" role="tab" class="onglet" [class.is-actif]="onglet() === 'historique'" (click)="choisirOnglet('historique')">{{ 'cmd.historique' | t }} <span class="onglet-n">{{ historique().length }}</span></button>
+      </div>
       <div class="table-responsive">
         <table class="table align-middle table-cartes">
           <thead>
@@ -32,7 +36,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (c of liste(); track c.id) {
+            @for (c of pagees(); track c.id) {
               <tr class="ligne-commande" (click)="basculer(c.id)">
                 <td [attr.data-label]="'cmd.commande' | t">
                   <strong>{{ c.code }}</strong>
@@ -41,6 +45,9 @@
                 <td [attr.data-label]="'a.client' | t">
                   {{ c.clientNom }}
                   <div class="text-muted small">{{ c.clientEmail }}</div>
+                  @if (c.telephone) {
+                    <a class="small tel-lien" [href]="'tel:' + c.telephone" (click)="$event.stopPropagation()"><i class="ti ti-phone"></i> {{ c.telephone }}</a>
+                  }
                 </td>
                 <td [attr.data-label]="'cmd.total' | t" class="fw-bold">{{ formatPrix(c.total) }}</td>
                 <td [attr.data-label]="'a.statut' | t">
@@ -53,10 +60,13 @@
                         <button type="button" class="btn btn-sm btn-outline-success" (click)="marquerPaye(c)">{{ 'a.paiement_recu' | t }}</button>
                       }
                       @if (c.statut === 'PAYEE') {
+                        <button type="button" class="btn btn-sm btn-success" (click)="prete(c)">{{ 'cmd.marquerPrete' | t }}</button>
+                      }
+                      @if (c.statut === 'PRETE') {
                         <button type="button" class="btn btn-sm btn-success" (click)="remettre(c)">{{ 'cmd.remettre' | t }}</button>
                       }
                     }
-                    @if (c.statut === 'EN_ATTENTE_PAIEMENT' || c.statut === 'PAYEE') {
+                    @if (c.statut === 'EN_ATTENTE_PAIEMENT' || c.statut === 'PAYEE' || c.statut === 'PRETE') {
                       <button type="button" class="btn btn-sm btn-outline-danger" (click)="annuler(c)">{{ 'a.annuler' | t }}</button>
                     }
                     <button type="button" class="btn-icone" [attr.aria-label]="'cmd.details' | t" [title]="'cmd.details' | t" (click)="basculer(c.id)">
@@ -76,6 +86,13 @@
                         </li>
                       }
                     </ul>
+                    <div class="contact-boutons">
+                      @if (c.telephone) {
+                        <a class="btn btn-sm btn-outline-secondary" [href]="'tel:' + c.telephone"><i class="ti ti-phone-call me-1"></i>{{ 'cmd.appeler' | t }}</a>
+                        <a class="btn btn-sm btn-outline-secondary" [href]="lienSms(c)"><i class="ti ti-message me-1"></i>{{ 'cmd.sms' | t }}</a>
+                      }
+                      <a class="btn btn-sm btn-outline-secondary" [href]="lienMail(c)"><i class="ti ti-mail me-1"></i>{{ 'cmd.ecrire' | t }}</a>
+                    </div>
                     @if (c.note) {
                       <div class="small fst-italic mt-2">« {{ c.note }} »</div>
                     }
@@ -89,6 +106,7 @@
           </tbody>
         </table>
       </div>
+      <app-pagination [total]="affichees().length" [taille]="taille" [(page)]="page" />
     }
   </div>
 </div>

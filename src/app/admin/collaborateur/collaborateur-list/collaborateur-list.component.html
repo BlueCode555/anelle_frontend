@@ -68,7 +68,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (c of visibles(); track c.id) {
+            @for (c of pagees(); track c.id) {
               <tr>
                 <td [attr.data-label]="'a.nom' | t" class="fw-semibold">{{ c.prenom }} {{ c.nom }}</td>
                 <td [attr.data-label]="'a.e_mail' | t" class="text-muted">{{ c.email }}</td>
@@ -95,6 +95,7 @@
           </tbody>
         </table>
       </div>
+      <app-pagination [total]="visibles().length" [taille]="taille" [(page)]="page" />
     }
   </div>
 </div>

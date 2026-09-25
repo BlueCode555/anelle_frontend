@@ -11,3 +11,14 @@
     border: 1px solid #e6d9c3;
   }
 }
+
+.duree-champs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+
+  .form-text {
+    display: block;
+    margin-top: 0.25rem;
+  }
+}

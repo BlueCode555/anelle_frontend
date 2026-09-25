@@ -6,6 +6,8 @@ export interface CategorieResponse {
   libelle: string;
   description?: string;
   imageUrl?: string | null;
+  // Affichee sur la page d'accueil (absent sur un ancien serveur = affichee)
+  actif?: boolean;
 }
 
 export interface ServiceResponse {
@@ -27,6 +29,7 @@ export interface CategorieForm {
   libelle: string;
   description: string;
   imageUrl: string;
+  actif: boolean;
 }
 
 export interface ServiceForm {

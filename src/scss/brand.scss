@@ -780,3 +780,126 @@ body[data-theme='dark'] {
     color: #6b5d47;
   }
 }
+
+// ── Fenêtres modales : aucune animation de déplacement ──
+// Bootstrap fait glisser la fenêtre de 50 px vers le bas à l'ouverture ; on ne garde que le fondu. Et la barre de
+// défilement de la page reste toujours affichée (sans quoi elle apparaît/disparaît (ça décalait tout le contenu quand une fenêtre s'ouvrait).
+.modal.fade .modal-dialog,
+.modal.show .modal-dialog {
+  transform: none !important;
+  transition: none !important;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+// ── Mode sombre : tableau de bord et listes du back-office ──
+body[data-theme='dark'] {
+  .kpi {
+    background: #2b2015;
+    border-color: var(--ar-nude);
+  }
+
+  .kpi-alert:not(.is-calm) {
+    background: linear-gradient(180deg, #3d2d12, #2b2015);
+  }
+
+  .kpi-value {
+    color: #f3e2b3;
+  }
+
+  .card-header a.small,
+  .card-header .small a {
+    color: var(--ar-dore-clair);
+  }
+
+  .rdv-row,
+  .agenda-item,
+  .conge-item,
+  .jour-titre,
+  .agenda-intro,
+  .taux-remplissage-tete {
+    border-color: var(--ar-nude) !important;
+  }
+
+  .badge.text-bg-light {
+    background-color: #322616 !important;
+    color: var(--ar-texte) !important;
+    border-color: var(--ar-nude) !important;
+  }
+
+  .detail-commande td {
+    background: rgba(232, 200, 116, 0.06);
+  }
+
+  .form-select option {
+    background: #1c1710;
+    color: var(--ar-texte);
+  }
+
+  .card-header {
+    background: transparent;
+    border-color: var(--ar-nude);
+  }
+
+  .image-preview img {
+    background: #1c1710 !important;
+    border-color: var(--ar-nude) !important;
+  }
+
+  .etat-vide {
+    color: var(--ar-texte-doux);
+  }
+
+  .table-cartes thead th {
+    color: var(--ar-texte-doux);
+  }
+}
+
+.statut-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  min-height: 0;
+}
+
+.statut-libelle {
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+// ── Mode sombre : tableaux (lignes et en-têtes) ──
+body[data-theme='dark'] {
+  .table {
+    --bs-table-bg: #241b12;
+    --bs-table-color: var(--ar-texte);
+    --bs-table-border-color: var(--ar-nude);
+    --bs-table-striped-bg: #2b2015;
+  }
+
+  .table > :not(caption) > * > * {
+    background-color: var(--bs-table-bg);
+    color: var(--ar-texte);
+    box-shadow: none;
+  }
+
+  .table > thead > tr > th {
+    background-color: #1c1710;
+    color: var(--ar-texte-doux);
+  }
+
+  .table .text-muted,
+  .table td.text-muted {
+    color: var(--ar-texte-doux) !important;
+  }
+
+  .table .text-primary {
+    color: var(--ar-dore-clair) !important;
+  }
+
+  .detail-commande > td {
+    background-color: #2b2015 !important;
+  }
+}

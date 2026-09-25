@@ -43,7 +43,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (p of liste(); track p.id) {
+            @for (p of pagees(); track p.id) {
               <tr>
                 <td [attr.data-label]="'a.image' | t">
                   @if (imageSrc(p.imageUrl); as src) {
@@ -61,9 +61,10 @@
                   </span>
                 </td>
                 <td [attr.data-label]="'a.statut' | t">
-                  <span class="badge" [class.text-bg-success]="p.actif" [class.text-bg-secondary]="!p.actif">
-                    {{ (p.actif ? 'prd.visible' : 'a.masque') | t }}
-                  </span>
+                  <div class="form-check form-switch statut-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" [checked]="p.actif" (change)="basculer(p, $event)" [attr.aria-label]="'toggle.accueil' | t" />
+                    <span class="statut-libelle">{{ (p.actif ? 'prd.visible' : 'a.masque') | t }}</span>
+                  </div>
                 </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
@@ -76,6 +77,7 @@
           </tbody>
         </table>
       </div>
+      <app-pagination [total]="liste().length" [taille]="taille" [(page)]="page" />
     }
   </div>
 </div>

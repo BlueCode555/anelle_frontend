@@ -5,7 +5,7 @@
     <select id="sp-service" class="form-select" [value]="serviceCode()" (change)="onService($event)">
       <option value="" disabled>{{ 'slots.choisirSoin' | t }}</option>
       <option *ngFor="let s of services()" [value]="s.code" [selected]="s.code === serviceCode()">
-        {{ s.nomService }} · {{ s.dureeMinutes }} {{ 'slots.min' | t }} · {{ formatTarif(s.tarif) }}
+        {{ s.nomService }} · {{ s.dureeMinutes | duree }} · {{ formatTarif(s.tarif) }}
       </option>
     </select>
 
@@ -18,7 +18,7 @@
         }
         <div>
           <strong>{{ soin.nomService }}</strong>
-          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes }} {{ 'slots.min' | t }} · {{ formatTarif(soin.tarif) }}</span>
+          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes | duree }} · {{ formatTarif(soin.tarif) }}</span>
         </div>
       </div>
     }

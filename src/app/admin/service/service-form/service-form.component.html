@@ -54,17 +54,27 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4 mb-3">
-        <label class="form-label" for="dureeMinutes">{{ 'a.duree_minutes' | t }}</label>
-        <input
-          id="dureeMinutes"
-          type="number"
-          class="form-control"
-          [formField]="serviceForm.dureeMinutes"
-          [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()"
-        />
+      <div class="col-md-7 mb-3">
+        <span class="form-label d-block">{{ 'srv.duree' | t }}</span>
+        <div class="duree-champs">
+          <div>
+            <input id="dureeHeures" type="number" step="1" class="form-control" placeholder="0" [value]="dureeHeures()" (input)="onDuree($event, 'h')"
+              [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()" />
+            <label class="form-text" for="dureeHeures">{{ 'srv.heures' | t }}</label>
+          </div>
+          <div>
+            <input id="dureeMin" type="number" step="5" class="form-control" placeholder="0" [value]="dureeMin()" (input)="onDuree($event, 'm')"
+              [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()" />
+            <label class="form-text" for="dureeMin">{{ 'srv.minutes' | t }}</label>
+          </div>
+        </div>
+        @if (serviceModel().dureeMinutes) {
+          <div class="form-text">{{ 'srv.dureeResume' | t: { d: (serviceModel().dureeMinutes | duree) } }}</div>
+        } @else {
+          <div class="form-text">{{ 'srv.dureeAide' | t }}</div>
+        }
         @if (submitted() && serviceForm.dureeMinutes().invalid()) {
-          <div class="invalid-feedback">
+          <div class="text-danger small mt-1">
             @for (error of serviceForm.dureeMinutes().errors(); track error.kind) {
               <div>{{ error.message }}</div>
             }
@@ -72,8 +82,8 @@
         }
       </div>
 
-      <div class="col-md-4 mb-3">
-        <label class="form-label" for="tarif">{{ 'a.tarif_cad' | t }}</label>
+      <div class="col-md-5 mb-3">
+        <label class="form-label" for="tarif">{{ 'srv.tarif' | t }}</label>
         <input
           id="tarif"
           type="number"
@@ -82,6 +92,7 @@
           [formField]="serviceForm.tarif"
           [class.is-invalid]="submitted() && serviceForm.tarif().invalid()"
         />
+        <div class="form-text">{{ 'srv.cadAide' | t }}</div>
         @if (submitted() && serviceForm.tarif().invalid()) {
           <div class="invalid-feedback">
             @for (error of serviceForm.tarif().errors(); track error.kind) {
@@ -91,7 +102,7 @@
         }
       </div>
 
-      <div class="col-md-4 mb-3 d-flex align-items-end">
+      <div class="col-12 mb-3 d-flex align-items-end">
         <div class="form-check">
           <input id="actif" type="checkbox" class="form-check-input" [formField]="serviceForm.actif" />
           <label class="form-check-label" for="actif">{{ 'a.service_actif_visible_sur_le_site' | t }}</label>
@@ -117,6 +128,7 @@
       />
       <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
       <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
+      <div class="text-warning small mt-1" *ngIf="uploadAvertissement()"><i class="ti ti-alert-triangle me-1"></i>{{ uploadAvertissement() }}</div>
     </div>
   </form>
 </div>

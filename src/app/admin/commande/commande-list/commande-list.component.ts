@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 import { Commande, CommandeService, STATUT_COMMANDE_CLASSES } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
@@ -11,7 +12,7 @@ import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 
 @Component({
   selector: 'app-commande-list',
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, PaginationComponent],
   templateUrl: './commande-list.component.html',
   styleUrl: './commande-list.component.scss'
 })
@@ -27,7 +28,20 @@ export class CommandeListComponent implements OnInit {
   chargement = signal(true);
   erreur = signal('');
   ouverte = signal<number | null>(null);
-  aTraiter = computed(() => this.liste().filter((c) => c.statut === 'EN_ATTENTE_PAIEMENT' || c.statut === 'PAYEE').length);
+  // Deux onglets : ce qui reste à faire, et l'historique (remises et annulées : rien à faire, gardées pour mémoire).
+  onglet = signal<'cours' | 'historique'>('cours');
+  page = signal(1);
+  readonly taille = 10;
+  enCours = computed(() => this.liste().filter((c) => c.statut === 'EN_ATTENTE_PAIEMENT' || c.statut === 'PAYEE' || c.statut === 'PRETE'));
+  historique = computed(() => this.liste().filter((c) => c.statut === 'REMISE' || c.statut === 'ANNULEE'));
+  affichees = computed(() => (this.onglet() === 'cours' ? this.enCours() : this.historique()));
+  pagees = computed(() => this.affichees().slice((this.page() - 1) * this.taille, this.page() * this.taille));
+
+  choisirOnglet(o: 'cours' | 'historique'): void {
+    this.onglet.set(o);
+    this.page.set(1);
+  }
+  aTraiter = computed(() => this.liste().filter((c) => c.statut === 'EN_ATTENTE_PAIEMENT' || c.statut === 'PAYEE' || c.statut === 'PRETE').length);
 
   ngOnInit(): void {
     this.charger();
@@ -63,6 +77,22 @@ export class CommandeListComponent implements OnInit {
     const reference = prompt(this.i18n.t('cmd.promptPaiement', { montant: this.formatPrix(c.total) }), '');
     if (reference === null) return;
     this.executer(this.commandes.marquerPaye(c.id, reference));
+  }
+
+  prete(c: Commande): void {
+    this.executer(this.commandes.prete(c.id));
+  }
+
+  // Liens d'contact : appel, SMS et courriel préremplis (ouvrent l'application du téléphone ou de messagerie).
+  lienSms(c: Commande): string {
+    return 'sms:' + c.telephone + '?&body=' + encodeURIComponent(this.i18n.t('cmd.smsTexte', { code: c.code }));
+  }
+
+  lienMail(c: Commande): string {
+    return (
+      'mailto:' + c.clientEmail + '?subject=' + encodeURIComponent(this.i18n.t('cmd.mailSujet', { code: c.code })) +
+      '&body=' + encodeURIComponent(this.i18n.t('cmd.mailTexte', { code: c.code }))
+    );
   }
 
   remettre(c: Commande): void {

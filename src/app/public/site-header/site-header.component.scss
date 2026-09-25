@@ -203,9 +203,11 @@ $or-fonce: #c9a227;
   border-bottom: none;
 }
 
-@media (max-width: 991.98px) {
+// Le menu se replie dans le bouton burger avant que les liens ne se chevauchent avec le nom et les boutons (surtout
+// pour le personnel, dont les boutons "Espace de gestion" et "Déconnexion" sont plus larges).
+@media (max-width: 1279.98px) {
   .header-bar {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
   }
 
@@ -278,4 +280,40 @@ $or-fonce: #c9a227;
   font-weight: 700;
   line-height: 1.15rem;
   text-align: center;
+}
+
+// ── Petits téléphones (360 px) : tout doit tenir sur une ligne ──
+.header-bar > .brand {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+  .header-bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .header-actions {
+    gap: 0.4rem;
+  }
+
+  .brand {
+    font-size: 1.15rem;
+  }
+
+  .btn-header {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+}
+
+// Téléphone : la langue et l'espace de gestion sont dans le menu burger (déjà présents dedans), pas dans la barre.
+@media (max-width: 575.98px) {
+  .header-actions app-lang-switcher,
+  .header-actions .btn-header-outline {
+    display: none;
+  }
 }

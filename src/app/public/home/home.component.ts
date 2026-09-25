@@ -10,6 +10,8 @@ import { CatalogueService } from '../../theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceResponse } from '../../theme/shared/service/catalogue.model';
 import { TranslationService } from '../../theme/shared/service/i18n/translation.service';
 import { InformationService } from '../../theme/shared/service/information.service';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
+import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 
 interface GalleryImage {
@@ -29,7 +31,7 @@ const pexels = (id: number, width: number): string =>
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, NgbCarouselModule, SiteHeaderComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, NgbCarouselModule, SiteHeaderComponent, TranslatePipe, DureePipe, PaginationComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -80,6 +82,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     return pages;
   });
+
+  // Les soins s'affichent 9 par page : au-delà, une pagination apparaît.
+  pageServices = signal(1);
+  readonly tailleServices = 9;
+  servicesPagees = computed(() =>
+    this.filteredServices().slice((this.pageServices() - 1) * this.tailleServices, this.pageServices() * this.tailleServices)
+  );
 
   filteredServices = computed(() => {
     const code = this.activeCategory();
@@ -135,7 +144,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.informations.ensureLoaded();
 
     this.catalogue.listCategories().subscribe({
-      next: (page) => this.categories.set(page.content),
+      next: (page) => this.categories.set(page.content.filter((c) => c.actif !== false)),
       error: () => this.error.set(true)
     });
 
@@ -155,6 +164,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   selectCategory(code: string | null): void {
     this.activeCategory.set(code);
+    this.pageServices.set(1);
   }
 
   // Choix depuis le carrousel de catégories : filtre puis amène la personne directement sur les services.

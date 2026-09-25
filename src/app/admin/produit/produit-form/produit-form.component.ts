@@ -7,6 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProduitForm, ProduitService } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
+import { largeurImage } from 'src/app/theme/shared/_helpers/image-info';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 
 @Component({
@@ -30,6 +31,7 @@ export class ProduitFormComponent implements OnInit {
   serverError = signal('');
   uploading = signal(false);
   uploadError = signal('');
+  uploadAvertissement = signal('');
 
   produitModel = signal<ProduitForm>({
     nom: '',
@@ -92,6 +94,7 @@ export class ProduitFormComponent implements OnInit {
       this.uploadError.set(this.i18n.t('ts.form.trop'));
       return;
     }
+    largeurImage(file).then((l) => this.uploadAvertissement.set(l < 800 ? this.i18n.t('ts.form.petiteImage', { n: l }) : ''));
     this.uploading.set(true);
     this.produits.uploadImage(file).subscribe({
       next: (res) => {
@@ -110,8 +113,11 @@ export class ProduitFormComponent implements OnInit {
     this.produitModel.update((m) => ({ ...m, imageUrl: (event.target as HTMLInputElement).value.trim() }));
   }
 
-  removeImage(): void {
-    this.produitModel.update((m) => ({ ...m, imageUrl: '' }));
+  async removeImage(): Promise<void> {
+    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    if (ok) {
+      this.produitModel.update((m) => ({ ...m, imageUrl: '' }));
+    }
   }
 
   async onSubmit(event: Event): Promise<void> {

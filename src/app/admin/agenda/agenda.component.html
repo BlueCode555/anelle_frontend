@@ -28,6 +28,13 @@
           <div class="alert alert-danger">{{ erreur() }}</div>
         }
 
+        @if (nombreInactifs() > 0) {
+          <button type="button" class="btn btn-sm btn-outline-secondary mb-3" (click)="voirInactifs.set(!voirInactifs())">
+            <i class="ti me-1" [class.ti-eye]="!voirInactifs()" [class.ti-eye-off]="voirInactifs()"></i>
+            {{ (voirInactifs() ? 'agenda.masquerExpirees' : 'agenda.afficherExpirees') | t: { n: nombreInactifs() } }}
+          </button>
+        }
+
         @if (chargement()) {
           <p class="text-muted mb-0">{{ 'a.chargement' | t }}</p>
         } @else if (groupes().length === 0) {

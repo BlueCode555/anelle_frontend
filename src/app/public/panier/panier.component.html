@@ -2,92 +2,130 @@
   <app-site-header />
 
   <main class="container panier-main">
+    <!-- Étapes -->
+    <ol class="etapes" [attr.aria-label]="'panier.etapes' | t">
+      <li [class.is-fait]="commande()" [class.is-actif]="!commande()"><span class="etape-pastille">@if (commande()) { <i class="ti ti-check"></i> } @else { 1 }</span>{{ 'panier.etape1' | t }}</li>
+      <li class="etape-trait"></li>
+      <li [class.is-actif]="commande()"><span class="etape-pastille">2</span>{{ 'panier.etape2' | t }}</li>
+      <li class="etape-trait"></li>
+      <li><span class="etape-pastille">3</span>{{ 'panier.etape3' | t }}</li>
+    </ol>
+
     @if (commande(); as cmd) {
-      <section class="panel text-center panel-confirmation">
-        <span class="confirm-icon-wrap"><i class="ti ti-circle-check confirm-icon"></i></span>
-        <span class="ar-eyebrow d-block">{{ 'panier.merci' | t }}</span>
-        <h1 class="h3 mb-2">{{ 'panier.commandeEnregistree' | t }}</h1>
-        <p class="text-muted mb-1">{{ 'panier.reference' | t: { code: cmd.code } }}</p>
-        <p class="text-muted mb-4">
-          {{ (cmd.lienPaiement ? 'panier.payerPourValider' : 'panier.payerSurPlace') | t }}
-        </p>
-        <ul class="recap-lignes mx-auto">
-          @for (l of cmd.lignes; track l.produitCode) {
-            <li><span>{{ l.quantite }} × {{ l.nom }}</span><strong>{{ formatPrix(l.sousTotal) }}</strong></li>
-          }
-          <li class="recap-total"><span>{{ 'panier.total' | t }}</span><strong>{{ formatPrix(cmd.total) }}</strong></li>
-        </ul>
-        <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+      <!-- ═════ Commande enregistrée : on passe au paiement ═════ -->
+      <section class="carte-paiement">
+        <div class="paiement-entete">
+          <span class="confirm-icon-wrap"><i class="ti ti-circle-check confirm-icon"></i></span>
+          <h1>{{ 'panier.commandeEnregistree' | t }}</h1>
+          <span class="reference-puce"><i class="ti ti-hash"></i>{{ cmd.code }}</span>
+        </div>
+
+        <div class="paiement-corps">
+          <ul class="recap-lignes">
+            @for (l of cmd.lignes; track l.produitCode) {
+              <li><span>{{ l.quantite }} × {{ l.nom }}</span><strong>{{ formatPrix(l.sousTotal) }}</strong></li>
+            }
+          </ul>
+          <div class="recap-total"><span>{{ 'panier.total' | t }}</span><strong>{{ formatPrix(cmd.total) }}</strong></div>
+
           @if (cmd.lienPaiement) {
-            <a [href]="cmd.lienPaiement" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
-              <i class="ti ti-credit-card me-1"></i>{{ 'espace.payer' | t }}
+            <a [href]="cmd.lienPaiement" target="_blank" rel="noopener" class="btn-payer">
+              <i class="ti ti-lock"></i>
+              <span>{{ 'panier.payerMaintenant' | t: { montant: formatPrix(cmd.total) } }}</span>
+              <i class="ti ti-arrow-right"></i>
             </a>
+            <p class="paiement-securite"><i class="ti ti-shield-check"></i>{{ 'panier.securite' | t }}</p>
+          } @else {
+            <div class="paiement-surplace"><i class="ti ti-building-store"></i>{{ 'panier.payerSurPlace' | t }}</div>
           }
-          <a routerLink="/mon-espace" class="btn btn-outline-secondary btn-lg">{{ 'panier.suivre' | t }}</a>
-          <a routerLink="/boutique" class="btn btn-link">{{ 'panier.continuer' | t }}</a>
+
+          <ol class="suite">
+            <li><i class="ti ti-credit-card"></i><span>{{ (cmd.lienPaiement ? 'panier.suite1' : 'panier.suite1surplace') | t }}</span></li>
+            <li><i class="ti ti-bell-ringing"></i><span>{{ 'panier.suite2' | t: { tel: cmd.telephone ?? '' } }}</span></li>
+            <li><i class="ti ti-building-store"></i><span>{{ 'panier.suite3' | t }}</span></li>
+          </ol>
+
+          <div class="paiement-liens">
+            <a routerLink="/mon-espace" class="btn btn-outline-secondary">{{ 'panier.suivre' | t }}</a>
+            <a routerLink="/boutique" class="btn btn-link">{{ 'panier.continuer' | t }}</a>
+          </div>
         </div>
       </section>
     } @else {
-      <header class="panier-tete text-center">
-        <span class="ar-eyebrow">{{ 'boutique.eyebrow' | t }}</span>
+      <header class="panier-tete">
         <h1 class="panier-titre">{{ 'panier.titre' | t }}</h1>
+        @if (panier.lignes().length) {
+          <p class="text-muted mb-0">{{ 'panier.articles' | t: { n: panier.nombreArticles() } }}</p>
+        }
       </header>
 
       @if (panier.lignes().length === 0) {
         <div class="panier-vide">
-          <i class="ti ti-shopping-cart-off"></i>
+          <span class="panier-vide-icone"><i class="ti ti-shopping-cart-off"></i></span>
           <h6>{{ 'panier.vide' | t }}</h6>
           <p>{{ 'panier.videTexte' | t }}</p>
-          <a routerLink="/boutique" class="btn btn-secondary">{{ 'panier.decouvrir' | t }}</a>
+          <a routerLink="/boutique" class="btn btn-secondary btn-lg px-4">{{ 'panier.decouvrir' | t }}</a>
         </div>
       } @else {
-        <div class="row g-4">
-          <div class="col-12 col-lg-8">
-            <section class="panel">
-              <ul class="lignes">
-                @for (l of panier.lignes(); track l.code) {
-                  <li class="ligne">
-                    <div class="ligne-photo">
-                      @if (imageSrc(l); as src) {
-                        <img [src]="src" [alt]="l.nom" />
-                      } @else {
-                        <i class="ti ti-shopping-bag"></i>
-                      }
-                    </div>
-                    <div class="ligne-infos">
-                      <strong>{{ l.nom }}</strong>
-                      <span class="text-muted small">{{ formatPrix(l.prix) }}</span>
-                    </div>
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-7 col-xl-8">
+            <ul class="lignes">
+              @for (l of panier.lignes(); track l.code) {
+                <li class="ligne">
+                  <div class="ligne-photo">
+                    @if (imageSrc(l); as src) {
+                      <img [src]="src" [alt]="l.nom" />
+                    } @else {
+                      <i class="ti ti-shopping-bag"></i>
+                    }
+                  </div>
+                  <div class="ligne-infos">
+                    <strong>{{ l.nom }}</strong>
+                    <span class="ligne-prix">{{ formatPrix(l.prix) }}</span>
                     <div class="quantite" role="group" [attr.aria-label]="'panier.quantite' | t">
                       <button type="button" (click)="changerQuantite(l, -1)" [attr.aria-label]="'panier.moins' | t"><i class="ti ti-minus"></i></button>
                       <span>{{ l.quantite }}</span>
                       <button type="button" (click)="changerQuantite(l, 1)" [disabled]="l.quantite >= l.stock || l.quantite >= 20" [attr.aria-label]="'panier.plus' | t"><i class="ti ti-plus"></i></button>
                     </div>
+                  </div>
+                  <div class="ligne-droite">
                     <strong class="ligne-total">{{ formatPrix(l.prix * l.quantite) }}</strong>
-                    <button type="button" class="ligne-retirer" (click)="panier.retirer(l.code)" [attr.aria-label]="'panier.retirer' | t" [title]="'panier.retirer' | t">
+                    <button type="button" class="ligne-retirer" (click)="retirer(l)" [attr.aria-label]="'panier.retirer' | t" [title]="'panier.retirer' | t">
                       <i class="ti ti-trash"></i>
                     </button>
-                  </li>
-                }
-              </ul>
-              <a routerLink="/boutique" class="btn btn-link px-0"><i class="ti ti-arrow-left me-1"></i>{{ 'panier.continuer' | t }}</a>
-            </section>
+                  </div>
+                </li>
+              }
+            </ul>
+            <a routerLink="/boutique" class="lien-retour"><i class="ti ti-arrow-left"></i>{{ 'panier.continuer' | t }}</a>
           </div>
 
-          <div class="col-12 col-lg-4">
-            <aside class="panel resume">
-              <h2 class="h5">{{ 'panier.resume' | t }}</h2>
-              <div class="resume-ligne">
-                <span>{{ 'panier.articles' | t: { n: panier.nombreArticles() } }}</span>
-                <strong>{{ formatPrix(panier.total()) }}</strong>
-              </div>
-              <p class="small text-muted">{{ 'panier.retrait' | t }}</p>
+          <div class="col-12 col-lg-5 col-xl-4">
+            <aside class="resume">
+              <h2>{{ 'panier.resume' | t }}</h2>
+              <div class="resume-ligne"><span>{{ 'panier.sousTotal' | t }}</span><span>{{ formatPrix(panier.total()) }}</span></div>
+              <div class="resume-ligne"><span>{{ 'panier.livraison' | t }}</span><span class="resume-gratuit">{{ 'panier.retraitGratuit' | t }}</span></div>
+              <div class="resume-total"><span>{{ 'panier.total' | t }}</span><strong>{{ formatPrix(panier.total()) }}</strong></div>
 
-              <label class="form-label small" for="note-commande">{{ 'panier.note' | t }}</label>
-              <textarea id="note-commande" class="form-control mb-3" rows="2" maxlength="500" [placeholder]="'panier.notePlaceholder' | t" (input)="onNote($event)"></textarea>
+              @if (auth.user() && estClient()) {
+                <label class="resume-label" for="tel-commande">{{ 'panier.telephone' | t }}</label>
+                <div class="champ-icone">
+                  <i class="ti ti-phone"></i>
+                  <input id="tel-commande" type="tel" class="form-control" autocomplete="tel" placeholder="+1 514 555-0199"
+                    [value]="telephone()" (input)="onTelephone($event)" [class.is-invalid]="soumis() && !telephoneValide()" />
+                </div>
+                @if (soumis() && !telephoneValide()) {
+                  <div class="text-danger small mt-1">{{ 'panier.telephoneInvalide' | t }}</div>
+                } @else {
+                  <div class="resume-aide">{{ 'panier.telephoneAide' | t }}</div>
+                }
+
+                <label class="resume-label" for="note-commande">{{ 'panier.note' | t }}</label>
+                <textarea id="note-commande" class="form-control" rows="2" maxlength="500" [placeholder]="'panier.notePlaceholder' | t" (input)="onNote($event)"></textarea>
+              }
 
               @if (erreur()) {
-                <div class="alert alert-danger py-2 small d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <div class="alert alert-danger py-2 small mt-3 mb-0 d-flex flex-wrap align-items-center justify-content-between gap-2">
                   <span>{{ erreur() }}</span>
                   @if (sessionExpiree()) {
                     <button type="button" class="btn btn-sm btn-outline-danger" (click)="seConnecter()">{{ 'reserver.reconnecter' | t }}</button>
@@ -96,16 +134,17 @@
               }
 
               @if (!auth.user()) {
-                <button type="button" class="btn btn-secondary btn-lg w-100" (click)="seConnecter()">
-                  <i class="ti ti-brand-google-filled me-2"></i>{{ 'panier.seConnecter' | t }}
+                <button type="button" class="btn-commander" (click)="seConnecter()">
+                  <i class="ti ti-brand-google-filled"></i>{{ 'panier.seConnecter' | t }}
                 </button>
-                <p class="small text-muted mt-2 mb-0">{{ 'panier.connexionRequise' | t }}</p>
+                <p class="resume-aide text-center mt-2">{{ 'panier.connexionRequise' | t }}</p>
               } @else if (!estClient()) {
-                <div class="alert alert-info py-2 small mb-0">{{ 'panier.reserveClients' | t }}</div>
+                <div class="alert alert-info py-2 small mt-3 mb-0">{{ 'panier.reserveClients' | t }}</div>
               } @else {
-                <button type="button" class="btn btn-secondary btn-lg w-100" [disabled]="envoi()" (click)="commander()">
-                  {{ envoi() ? ('panier.envoi' | t) : ('panier.commander' | t) }}
+                <button type="button" class="btn-commander" [disabled]="envoi()" (click)="commander()">
+                  <i class="ti ti-lock"></i>{{ envoi() ? ('panier.envoi' | t) : ('panier.commander' | t) }}
                 </button>
+                <p class="resume-aide text-center mt-2 mb-0"><i class="ti ti-shield-check me-1"></i>{{ 'panier.securite' | t }}</p>
               }
             </aside>
           </div>

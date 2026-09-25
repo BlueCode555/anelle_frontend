@@ -16,6 +16,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
   styleUrl: './client-detail.component.scss'
 })
 export class ClientDetailComponent implements OnInit {
+  photoErreur = signal(false);
   private i18n = inject(TranslationService);
   private clients = inject(ClientService);
   activeModal = inject(NgbActiveModal);

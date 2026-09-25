@@ -43,7 +43,7 @@
       </div>
     } @else {
       <div class="row g-4">
-        @for (p of filtres(); track p.id) {
+        @for (p of pagees(); track p.id) {
           <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
             <article class="produit-carte" [class.est-epuise]="p.stock === 0">
               <div class="produit-photo">
@@ -88,6 +88,7 @@
           </div>
         }
       </div>
+      <app-pagination [total]="filtres().length" [taille]="taille" [(page)]="page" />
     }
   </main>
 

@@ -1,6 +1,7 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 import { ProduitResponse, ProduitService } from 'src/app/theme/shared/service/boutique.service';
 import { PanierService } from 'src/app/theme/shared/service/panier.service';
@@ -10,7 +11,7 @@ import { SiteHeaderComponent } from '../site-header/site-header.component';
 
 @Component({
   selector: 'app-boutique',
-  imports: [CommonModule, RouterModule, SiteHeaderComponent, TranslatePipe],
+  imports: [CommonModule, RouterModule, SiteHeaderComponent, TranslatePipe, PaginationComponent],
   templateUrl: './boutique.component.html',
   styleUrl: './boutique.component.scss'
 })
@@ -51,6 +52,10 @@ export class BoutiqueComponent implements OnInit {
     }
   });
 
+  page = signal(1);
+  readonly taille = 12;
+  pagees = computed(() => this.filtres().slice((this.page() - 1) * this.taille, this.page() * this.taille));
+
   ngOnInit(): void {
     this.produits.list().subscribe({
       next: (page) => {
@@ -90,13 +95,16 @@ export class BoutiqueComponent implements OnInit {
 
   onTri(event: Event): void {
     this.tri.set((event.target as HTMLSelectElement).value as 'defaut' | 'prixAsc' | 'prixDesc' | 'nom');
+    this.page.set(1);
   }
 
   onRayon(event: Event): void {
     this.rayonActif.set((event.target as HTMLSelectElement).value || null);
+    this.page.set(1);
   }
 
   onRecherche(event: Event): void {
     this.recherche.set((event.target as HTMLInputElement).value);
+    this.page.set(1);
   }
 }

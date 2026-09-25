@@ -30,7 +30,7 @@ export interface ProduitForm {
   imageUrl: string;
 }
 
-export type StatutCommande = 'EN_ATTENTE_PAIEMENT' | 'PAYEE' | 'REMISE' | 'ANNULEE';
+export type StatutCommande = 'EN_ATTENTE_PAIEMENT' | 'PAYEE' | 'PRETE' | 'REMISE' | 'ANNULEE';
 
 export interface LigneCommande {
   produitCode: string;
@@ -51,6 +51,7 @@ export interface Commande {
   // Lien de paiement Square ; null si Square n'est pas configuré (paiement à régler avec l'institut).
   lienPaiement: string | null;
   note: string | null;
+  telephone: string | null;
   clientNom: string;
   clientEmail: string;
   lignes: LigneCommande[];
@@ -59,6 +60,7 @@ export interface Commande {
 export const STATUT_COMMANDE_CLASSES: Record<StatutCommande, string> = {
   EN_ATTENTE_PAIEMENT: 'text-bg-warning',
   PAYEE: 'text-bg-success',
+  PRETE: 'text-bg-info',
   REMISE: 'text-bg-dark',
   ANNULEE: 'text-bg-secondary'
 };
@@ -102,8 +104,8 @@ export class CommandeService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
 
-  creer(lignes: { produitCode: string; quantite: number }[], note?: string): Observable<Commande> {
-    return this.http.post<ApiResponse<Commande>>(`${this.base}/commandes`, { lignes, note: note || null }).pipe(map((r) => r.data));
+  creer(lignes: { produitCode: string; quantite: number }[], telephone: string, note?: string): Observable<Commande> {
+    return this.http.post<ApiResponse<Commande>>(`${this.base}/commandes`, { lignes, telephone, note: note || null }).pipe(map((r) => r.data));
   }
 
   mes(): Observable<Commande[]> {
@@ -120,6 +122,11 @@ export class CommandeService {
 
   marquerPaye(id: number, reference?: string): Observable<Commande> {
     return this.action(id, 'marquer-paye', { reference: reference ?? null });
+  }
+
+  // Commande préparée : le serveur prévient la cliente par courriel.
+  prete(id: number): Observable<Commande> {
+    return this.action(id, 'prete');
   }
 
   remettre(id: number): Observable<Commande> {

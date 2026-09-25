@@ -45,11 +45,11 @@
             </tr>
           </thead>
           <tbody>
-            @for (c of visibles(); track c.id) {
+            @for (c of pagees(); track c.id) {
               <tr>
                 <td [attr.data-label]="'a.nom' | t" class="d-flex align-items-center gap-2">
-                  @if (c.photoUrl) {
-                    <img [src]="c.photoUrl" alt="" class="client-avatar" referrerpolicy="no-referrer" />
+                  @if (c.photoUrl && !photosKO().includes(c.id)) {
+                    <img [src]="c.photoUrl" alt="" class="client-avatar" referrerpolicy="no-referrer" (error)="photosKO.update(l => [...l, c.id])" />
                   } @else {
                     <span class="client-avatar client-avatar-initial">{{ nomAffiche(c).charAt(0).toUpperCase() }}</span>
                   }
@@ -71,6 +71,7 @@
           </tbody>
         </table>
       </div>
+      <app-pagination [total]="visibles().length" [taille]="taille" [(page)]="page" />
     }
   </div>
 </div>

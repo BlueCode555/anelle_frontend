@@ -31,11 +31,12 @@
               <th style="width: 72px">{{ 'a.image' | t }}</th>
               <th>{{ 'a.libelle' | t }}</th>
               <th>{{ 'a.description' | t }}</th>
+              <th>{{ 'a.statut' | t }}</th>
               <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
           </thead>
           <tbody>
-            @for (cat of categories(); track cat.id) {
+            @for (cat of pagees(); track cat.id) {
               <tr>
                 <td [attr.data-label]="'a.image' | t">
                   @if (imageSrc(cat.imageUrl); as src) {
@@ -46,6 +47,12 @@
                 </td>
                 <td [attr.data-label]="'a.categorie' | t" class="fw-semibold">{{ cat.libelle }}</td>
                 <td [attr.data-label]="'a.description' | t" class="text-muted">{{ cat.description }}</td>
+                <td [attr.data-label]="'a.statut' | t">
+                  <div class="form-check form-switch statut-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" [checked]="cat.actif !== false" (change)="basculer(cat, $event)" [attr.aria-label]="'toggle.accueil' | t" />
+                    <span class="statut-libelle">{{ (cat.actif !== false ? 'a.visible_sur_le_site' : 'a.masque') | t }}</span>
+                  </div>
+                </td>
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
                     <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="openEdit(cat)"><i class="ti ti-pencil"></i></button>
@@ -57,6 +64,7 @@
           </tbody>
         </table>
       </div>
+      <app-pagination [total]="categories().length" [taille]="taille" [(page)]="page" />
     }
   </div>
 </div>

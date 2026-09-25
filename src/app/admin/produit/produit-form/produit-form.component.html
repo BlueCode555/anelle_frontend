@@ -36,6 +36,7 @@
         <label class="form-label" for="prd-prix">{{ 'prd.prix' | t }}</label>
         <input id="prd-prix" type="number" step="0.01" class="form-control" [formField]="produitForm.prix"
           [class.is-invalid]="submitted() && produitForm.prix().invalid()" />
+        <div class="form-text">{{ 'srv.cadAide' | t }}</div>
         @if (submitted() && produitForm.prix().invalid()) {
           <div class="invalid-feedback">
             @for (error of produitForm.prix().errors(); track error.kind) {
@@ -77,6 +78,7 @@
         [value]="produitModel().imageUrl.startsWith('https://') ? produitModel().imageUrl : ''" (change)="onImageUrlInput($event)" />
       <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
       <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
+      <div class="text-warning small mt-1" *ngIf="uploadAvertissement()"><i class="ti ti-alert-triangle me-1"></i>{{ uploadAvertissement() }}</div>
     </div>
   </form>
 </div>

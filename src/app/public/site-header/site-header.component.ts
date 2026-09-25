@@ -25,6 +25,8 @@ export class SiteHeaderComponent {
 
   nom = this.informations.nom;
   menuOpen = signal(false);
+  // La photo Google est parfois refusee (limite de requetes) : on retombe sur l'initiale.
+  photoErreur = signal(false);
 
   constructor() {
     this.informations.ensureLoaded();

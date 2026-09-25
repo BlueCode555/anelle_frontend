@@ -31,6 +31,11 @@
       <textarea id="description" class="form-control" rows="3" [formField]="categorieForm.description"></textarea>
     </div>
 
+    <div class="form-check form-switch mb-3">
+      <input id="cat-actif" type="checkbox" role="switch" class="form-check-input" [formField]="categorieForm.actif" />
+      <label class="form-check-label" for="cat-actif">{{ 'cat.actif' | t }}</label>
+    </div>
+
     <div class="mb-1">
       <label class="form-label" for="image">{{ 'a.image_affichee_dans_le_carrousel_du_site' | t }}</label>
       <div *ngIf="imagePreview() as preview" class="image-preview mb-2">
@@ -49,6 +54,7 @@
       />
       <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
       <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
+      <div class="text-warning small mt-1" *ngIf="uploadAvertissement()"><i class="ti ti-alert-triangle me-1"></i>{{ uploadAvertissement() }}</div>
     </div>
   </form>
 </div>

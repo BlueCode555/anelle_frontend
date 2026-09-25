@@ -210,14 +210,47 @@
   }
 }
 
+// Photo entière (jamais rognée) : elle est centrée en "contain" sur une version floutée d'elle-même qui remplit le cadre.
 .gallery-slide {
   position: relative;
+  overflow: hidden;
+  background: #2a1a0d;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    background: var(--fond) center / cover;
+    filter: blur(28px) brightness(0.85);
+  }
 
   img {
+    position: relative;
     width: 100%;
     height: 460px;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
+  }
+}
+
+.service-photo-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 190px;
+  background: #2a1a0d;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    background: var(--fond) center / cover;
+    filter: blur(18px) brightness(0.9);
+  }
+
+  .service-photo {
+    position: relative;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
@@ -402,7 +435,7 @@
   .service-photo {
     width: 100%;
     height: 190px;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
   }
 

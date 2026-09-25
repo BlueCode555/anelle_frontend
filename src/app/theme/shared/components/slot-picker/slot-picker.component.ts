@@ -7,6 +7,7 @@ import { ServiceResponse } from '../../service/catalogue.model';
 import { InformationService } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
 import { aujourdhui, formatHeure } from '../../_helpers/zoned-time';
+import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
@@ -18,7 +19,7 @@ export interface ChoixCreneau {
 // Choix d'un service, d'un jour, puis d'un creneau libre. Les heures sont celles de l'institut.
 @Component({
   selector: 'app-slot-picker',
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, DureePipe],
   templateUrl: './slot-picker.component.html',
   styleUrl: './slot-picker.component.scss'
 })

@@ -21,8 +21,8 @@
       @if (auth.user(); as user) {
         @if (user.type === 'CLIENT') {
           <a routerLink="/mon-espace" class="header-user">
-            @if (user.photoUrl) {
-              <img [src]="user.photoUrl" alt="" class="header-avatar" referrerpolicy="no-referrer" />
+            @if (user.photoUrl && !photoErreur()) {
+              <img [src]="user.photoUrl" alt="" class="header-avatar" referrerpolicy="no-referrer" (error)="photoErreur.set(true)" />
             } @else {
               <span class="header-avatar header-avatar-initial">{{ auth.displayName().charAt(0).toUpperCase() }}</span>
             }

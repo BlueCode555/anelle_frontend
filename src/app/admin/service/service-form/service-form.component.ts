@@ -7,12 +7,14 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/catalogue.model';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { largeurImage } from 'src/app/theme/shared/_helpers/image-info';
+import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-service-form',
-  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
+  imports: [CommonModule, FormsModule, FormField, TranslatePipe, DureePipe],
   templateUrl: './service-form.component.html',
   styleUrl: './service-form.component.scss'
 })
@@ -34,6 +36,7 @@ export class ServiceFormComponent implements OnInit {
   serverError = signal('');
   uploading = signal(false);
   uploadError = signal('');
+  uploadAvertissement = signal('');
 
   serviceModel = signal<ServiceForm>({
     nomService: '',
@@ -44,6 +47,19 @@ export class ServiceFormComponent implements OnInit {
     actif: true,
     imageUrl: ''
   });
+
+  // La duree se saisit en heures + minutes ; le serveur ne connait que des minutes.
+  dureeHeures = computed(() => (this.serviceModel().dureeMinutes ? Math.floor(this.serviceModel().dureeMinutes! / 60) : ''));
+  dureeMin = computed(() => (this.serviceModel().dureeMinutes ? this.serviceModel().dureeMinutes! % 60 : ''));
+
+  onDuree(event: Event, unite: 'h' | 'm'): void {
+    const saisie = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value) || 0));
+    const actuel = this.serviceModel().dureeMinutes ?? 0;
+    const heures = unite === 'h' ? saisie : Math.floor(actuel / 60);
+    const minutes = unite === 'm' ? saisie : actuel % 60;
+    const total = heures * 60 + minutes;
+    this.serviceModel.update((m) => ({ ...m, dureeMinutes: total > 0 ? total : null }));
+  }
 
   imagePreview = computed(() => this.catalogue.imageSrc(this.serviceModel().imageUrl));
 
@@ -98,6 +114,7 @@ export class ServiceFormComponent implements OnInit {
       return;
     }
 
+    largeurImage(file).then((l) => this.uploadAvertissement.set(l < 800 ? this.i18n.t('ts.form.petiteImage', { n: l }) : ''));
     this.uploading.set(true);
     this.catalogue.uploadImage(file).subscribe({
       next: (res) => {
@@ -117,8 +134,11 @@ export class ServiceFormComponent implements OnInit {
     this.serviceModel.update((m) => ({ ...m, imageUrl: value }));
   }
 
-  removeImage(): void {
-    this.serviceModel.update((m) => ({ ...m, imageUrl: '' }));
+  async removeImage(): Promise<void> {
+    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    if (ok) {
+      this.serviceModel.update((m) => ({ ...m, imageUrl: '' }));
+    }
   }
 
   async onSubmit(event: Event): Promise<void> {

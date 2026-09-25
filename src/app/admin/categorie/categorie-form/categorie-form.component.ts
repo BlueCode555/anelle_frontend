@@ -7,6 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieForm } from 'src/app/theme/shared/service/catalogue.model';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { largeurImage } from 'src/app/theme/shared/_helpers/image-info';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
@@ -33,11 +34,13 @@ export class CategorieFormComponent implements OnInit {
   serverError = signal('');
   uploading = signal(false);
   uploadError = signal('');
+  uploadAvertissement = signal('');
 
   categorieModel = signal<CategorieForm>({
     libelle: '',
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    actif: true
   });
 
   imagePreview = computed(() => this.catalogue.imageSrc(this.categorieModel().imageUrl));
@@ -56,7 +59,8 @@ export class CategorieFormComponent implements OnInit {
         this.categorieModel.set({
           libelle: categorie.libelle,
           description: categorie.description ?? '',
-          imageUrl: categorie.imageUrl ?? ''
+          imageUrl: categorie.imageUrl ?? '',
+          actif: categorie.actif !== false
         });
         this.chargement.set(false);
       },
@@ -84,6 +88,7 @@ export class CategorieFormComponent implements OnInit {
       return;
     }
 
+    largeurImage(file).then((l) => this.uploadAvertissement.set(l < 800 ? this.i18n.t('ts.form.petiteImage', { n: l }) : ''));
     this.uploading.set(true);
     this.catalogue.uploadImage(file).subscribe({
       next: (res) => {
@@ -103,8 +108,11 @@ export class CategorieFormComponent implements OnInit {
     this.categorieModel.update((m) => ({ ...m, imageUrl: value }));
   }
 
-  removeImage(): void {
-    this.categorieModel.update((m) => ({ ...m, imageUrl: '' }));
+  async removeImage(): Promise<void> {
+    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    if (ok) {
+      this.categorieModel.update((m) => ({ ...m, imageUrl: '' }));
+    }
   }
 
   private messageErreur(err: { status?: number; error?: { message?: string } }): string {

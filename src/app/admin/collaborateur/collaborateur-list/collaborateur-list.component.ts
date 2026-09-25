@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -9,14 +9,23 @@ import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.s
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-collaborateur-list',
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, PaginationComponent],
   templateUrl: './collaborateur-list.component.html',
   styleUrl: './collaborateur-list.component.scss'
 })
 export class CollaborateurListComponent implements OnInit {
+  page = signal(1);
+  readonly taille = 10;
+  pagees = computed(() => this.visibles().slice((this.page() - 1) * this.taille, this.page() * this.taille));
+
+  private retourPage1 = effect(() => {
+    this.visibles();
+    this.page.set(1);
+  });
   private i18n = inject(TranslationService);
   private equipe = inject(EquipeService);
   private modals = inject(NgbModal);

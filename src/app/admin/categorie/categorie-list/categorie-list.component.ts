@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -9,14 +9,23 @@ import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.s
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
+import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-categorie-list',
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, PaginationComponent],
   templateUrl: './categorie-list.component.html',
   styleUrl: './categorie-list.component.scss'
 })
 export class CategorieListComponent implements OnInit {
+  page = signal(1);
+  readonly taille = 10;
+  pagees = computed(() => this.categories().slice((this.page() - 1) * this.taille, this.page() * this.taille));
+
+  private retourPage1 = effect(() => {
+    this.categories();
+    this.page.set(1);
+  });
   private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
   private modalService = inject(NgbModal);
@@ -48,6 +57,23 @@ export class CategorieListComponent implements OnInit {
 
   imageSrc(url?: string | null): string | null {
     return this.catalogue.imageSrc(url);
+  }
+
+  // Un clic : affiche ou masque la categorie sur la page d'accueil (sans ouvrir le formulaire).
+  basculer(c: CategorieResponse, event: Event): void {
+    const actif = (event.target as HTMLInputElement).checked;
+    this.catalogue
+      .updateCategorie(c.id, { libelle: c.libelle, description: c.description ?? '', imageUrl: c.imageUrl ?? '', actif })
+      .subscribe({
+        next: () => {
+          this.categories.update((l) => l.map((x) => (x.id === c.id ? { ...x, actif } : x)));
+          this.toast.succes(this.i18n.t(actif ? 'toggle.affiche' : 'toggle.masque'));
+        },
+        error: (err) => {
+          (event.target as HTMLInputElement).checked = !actif;
+          this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.erreurGenerique'));
+        }
+      });
   }
 
   openCreate(): void {
