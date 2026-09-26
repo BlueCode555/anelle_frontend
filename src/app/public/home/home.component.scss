@@ -614,3 +614,45 @@
     color: rgba(236, 220, 192, 0.55);
   }
 }
+
+.hero-logo {
+  display: block;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 0.5rem;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
+  animation: logo-entree 1s ease both;
+}
+
+.footer-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 0.6rem;
+  object-fit: contain;
+}
+
+@keyframes logo-entree {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .hero-logo {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo {
+    animation: none;
+  }
+}

@@ -14,6 +14,7 @@
 
     <div class="hero-content text-center">
       <span class="hero-tag mb-4 d-inline-block">{{ 'home.tag' | t }}</span>
+      <img class="hero-logo" src="assets/images/logo/monogramme-clair.png" alt="" width="96" height="96" />
       <h1 class="hero-title mb-4">{{ nom() }}</h1>
       @if (info()?.slogan; as slogan) {
         <p class="mb-4 hero-subtitle mx-auto">{{ slogan }}</p>
@@ -183,6 +184,7 @@
   <footer id="contact" class="site-footer px-4 px-lg-5 py-5">
     <div class="row g-5">
       <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
+        <img class="footer-logo" src="assets/images/logo/monogramme-clair.png" alt="" width="64" height="64" />
         <h5 class="footer-heading">{{ nom() }}</h5>
         @if (info()?.description; as description) {
           <p class="footer-text">{{ description }}</p>

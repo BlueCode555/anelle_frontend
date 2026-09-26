@@ -10,7 +10,8 @@ import { AuthService } from '../../theme/shared/service/auth.service';
 @Component({
   selector: 'app-auth-callback',
   imports: [TranslatePipe],
-  template: `<p class="text-center text-muted py-5">{{ 'auth.encours' | t }}</p>`
+  template: `<div class="text-center py-5"><img src="assets/images/logo/monogramme.png" alt="" width="72" height="72" style="animation: pouls 1.4s ease-in-out infinite" /><p class="text-muted mt-3">{{ 'auth.encours' | t }}</p></div>`,
+  styles: ['@keyframes pouls { 0%, 100% { opacity: 0.45; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.05); } }']
 })
 export class AuthCallbackComponent implements OnInit {
   private auth = inject(AuthService);

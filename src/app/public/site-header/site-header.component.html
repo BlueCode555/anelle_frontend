@@ -1,6 +1,9 @@
 <header class="site-header">
   <nav class="header-bar" aria-label="Navigation principale">
-    <a class="brand" routerLink="/accueil" fragment="top" (click)="closeMenu()">{{ nom() }}</a>
+    <a class="brand" routerLink="/accueil" fragment="top" (click)="closeMenu()" [attr.aria-label]="nom()">
+      <img class="brand-logo" src="assets/images/logo/monogramme-clair.png" alt="" width="44" height="44" />
+      <span class="brand-nom">{{ nom() }}</span>
+    </a>
 
     <ul class="nav-links">
       <li><a routerLink="/accueil" fragment="top">{{ 'header.nav.accueil' | t }}</a></li>
