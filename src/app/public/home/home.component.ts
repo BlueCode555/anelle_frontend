@@ -115,7 +115,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!jours.some((h) => h.ouvert)) return [];
     return jours.map((h) => ({
       jour: this.i18n.t('jour.' + h.jourSemaine),
-      libelle: h.ouvert && h.heureDebut && h.heureFin ? `${this.heure(h.heureDebut)} – ${this.heure(h.heureFin)}` : this.i18n.t('home.ferme')
+      libelle: h.ouvert
+        ? h.plages.map((p) => `${this.heure(p.heureDebut)} – ${this.heure(p.heureFin)}`).join(', ')
+        : this.i18n.t('home.ferme')
     }));
   });
 

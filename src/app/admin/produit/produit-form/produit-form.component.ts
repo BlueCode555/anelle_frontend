@@ -2,14 +2,18 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FormField, form, min, required } from '@angular/forms/signals';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProduitForm, ProduitService } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { largeurImage } from 'src/app/theme/shared/_helpers/image-info';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { bloquerCaracteresInterdits } from 'src/app/theme/shared/_helpers/nombre-entier';
 
+// Page pleine (et non plus une fenêtre modale) : voir la même remarque sur service-form.component.ts.
+// Créer/Modifier partagent ce composant, selon la présence d'un ":id" dans la route.
 @Component({
   selector: 'app-produit-form',
   imports: [CommonModule, FormsModule, FormField, TranslatePipe],
@@ -17,13 +21,16 @@ import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
   styleUrl: './produit-form.component.scss'
 })
 export class ProduitFormComponent implements OnInit {
+  bloquerCaracteresInterdits = bloquerCaracteresInterdits;
   private i18n = inject(TranslationService);
   private produits = inject(ProduitService);
-  activeModal = inject(NgbActiveModal);
   private confirmation = inject(ConfirmationService);
+  private toast = inject(ToastService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  // Renseigné par la liste (via componentInstance) avant l'affichage ; null = création.
-  produitId: number | null = null;
+  // Lu une seule fois depuis l'URL : présent (/produits/:id/modifier) = modification, absent = création.
+  produitId: number | null = Number(this.route.snapshot.paramMap.get('id')) || null;
 
   chargement = signal(false);
   submitted = signal(false);
@@ -120,6 +127,10 @@ export class ProduitFormComponent implements OnInit {
     }
   }
 
+  retour(): void {
+    this.router.navigate(['/produits']);
+  }
+
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     this.submitted.set(true);
@@ -139,7 +150,10 @@ export class ProduitFormComponent implements OnInit {
     const value = this.produitModel();
     const request = this.produitId ? this.produits.update(this.produitId, value) : this.produits.create(value);
     request.subscribe({
-      next: () => this.activeModal.close('saved'),
+      next: () => {
+        this.toast.succes(this.i18n.t('ts.prd.enregistre'));
+        this.router.navigate(['/produits']);
+      },
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(

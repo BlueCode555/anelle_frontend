@@ -1,6 +1,6 @@
 import { Component, OnInit, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 import { ProduitResponse, ProduitService } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
@@ -8,7 +8,6 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
-import { ProduitFormComponent } from '../produit-form/produit-form.component';
 import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 @Component({
@@ -28,7 +27,7 @@ export class ProduitListComponent implements OnInit {
   });
   private i18n = inject(TranslationService);
   private produits = inject(ProduitService);
-  private modalService = inject(NgbModal);
+  private router = inject(Router);
   private confirmation = inject(ConfirmationService);
   private toast = inject(ToastService);
 
@@ -90,25 +89,11 @@ export class ProduitListComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.ouvrir(null);
+    this.router.navigate(['/produits/nouveau']);
   }
 
   openEdit(p: ProduitResponse): void {
-    this.ouvrir(p.id);
-  }
-
-  private ouvrir(id: number | null): void {
-    const ref = this.modalService.open(ProduitFormComponent, { centered: true, size: 'lg' });
-    ref.componentInstance.produitId = id;
-    ref.result.then(
-      (result) => {
-        if (result === 'saved') {
-          this.toast.succes(this.i18n.t('ts.prd.enregistre'));
-          this.load();
-        }
-      },
-      () => {}
-    );
+    this.router.navigate(['/produits', p.id, 'modifier']);
   }
 
   async remove(p: ProduitResponse): Promise<void> {

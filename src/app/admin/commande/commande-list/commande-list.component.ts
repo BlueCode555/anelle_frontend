@@ -6,6 +6,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 import { Commande, CommandeService, STATUT_COMMANDE_CLASSES } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { AuthService } from 'src/app/theme/shared/service/auth.service';
+import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
@@ -21,6 +22,7 @@ export class CommandeListComponent implements OnInit {
   private commandes = inject(CommandeService);
   private confirmation = inject(ConfirmationService);
   private auth = inject(AuthService);
+  private toast = inject(ToastService);
 
   readonly classes = STATUT_COMMANDE_CLASSES;
 
@@ -83,15 +85,28 @@ export class CommandeListComponent implements OnInit {
     this.executer(this.commandes.prete(c.id));
   }
 
-  // Liens d'contact : appel, SMS et courriel préremplis (ouvrent l'application du téléphone ou de messagerie).
-  lienSms(c: Commande): string {
-    return 'sms:' + c.telephone + '?&body=' + encodeURIComponent(this.i18n.t('cmd.smsTexte', { code: c.code }));
+  // Contact du client : on copie dans le presse-papiers plutôt que d'utiliser des liens tel:/sms:/mailto:,
+  // qui ouvrent une boîte de dialogue « Sélectionner une application » sur un poste sans application par défaut.
+  copierTelephone(c: Commande): void {
+    this.copier(c.telephone ?? '', this.i18n.t('cmd.numeroCopie'));
   }
 
-  lienMail(c: Commande): string {
-    return (
-      'mailto:' + c.clientEmail + '?subject=' + encodeURIComponent(this.i18n.t('cmd.mailSujet', { code: c.code })) +
-      '&body=' + encodeURIComponent(this.i18n.t('cmd.mailTexte', { code: c.code }))
+  copierSms(c: Commande): void {
+    this.copier(this.i18n.t('cmd.smsTexte', { code: c.code }), this.i18n.t('cmd.messageCopie', { tel: c.telephone ?? '' }));
+  }
+
+  copierCourriel(c: Commande): void {
+    const texte =
+      `${this.i18n.t('cmd.destinataire')} : ${c.clientEmail}\n` +
+      `${this.i18n.t('cmd.objet')} : ${this.i18n.t('cmd.mailSujet', { code: c.code })}\n\n` +
+      this.i18n.t('cmd.mailTexte', { code: c.code });
+    this.copier(texte, this.i18n.t('cmd.courrielCopie'));
+  }
+
+  private copier(texte: string, messageSucces: string): void {
+    navigator.clipboard?.writeText(texte).then(
+      () => this.toast.succes(messageSucces),
+      () => this.toast.erreur(this.i18n.t('ts.erreurGenerique'))
     );
   }
 

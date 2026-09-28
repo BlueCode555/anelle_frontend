@@ -41,8 +41,6 @@ export class InformationsComponent implements OnInit {
   saving = signal(false);
   saved = signal(false);
   serverError = signal('');
-  // Vrai si un mot de passe de notification est deja enregistre cote serveur (jamais renvoye lui-meme).
-  courrielDejaConfigure = signal(false);
 
   form: FormGroup = this.fb.group({
     nom: ['', [Validators.required, Validators.maxLength(150)]],
@@ -60,16 +58,12 @@ export class InformationsComponent implements OnInit {
     lienFacebook: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     bannierePromo: ['', Validators.maxLength(255)],
     fuseauHoraire: ['America/Toronto'],
-    courrielNotifExpediteur: ['', [Validators.email, Validators.maxLength(255)]],
-    // Jamais prerempli (le serveur ne renvoie jamais le mot de passe) : laisser vide = garder celui deja enregistre.
-    courrielNotifMotDePasse: ['', Validators.maxLength(255)],
     horaires: this.fb.array(
       this.jours.map((_, i) =>
         this.fb.group({
           jourSemaine: [i + 1],
           ouvert: [false],
-          heureDebut: [{ value: '', disabled: true }],
-          heureFin: [{ value: '', disabled: true }]
+          plages: this.fb.array([])
         })
       )
     )
@@ -79,9 +73,25 @@ export class InformationsComponent implements OnInit {
     return this.form.get('horaires') as FormArray;
   }
 
+  plages(jourIndex: number): FormArray {
+    return this.horaires.at(jourIndex).get('plages') as FormArray;
+  }
+
+  private nouvellePlage(heureDebut = '', heureFin = ''): FormGroup {
+    return this.fb.group({ heureDebut: [heureDebut], heureFin: [heureFin] });
+  }
+
+  ajouterPlage(jourIndex: number): void {
+    this.plages(jourIndex).push(this.nouvellePlage());
+  }
+
+  retirerPlage(jourIndex: number, plageIndex: number): void {
+    this.plages(jourIndex).removeAt(plageIndex);
+  }
+
   ngOnInit(): void {
-    this.horaires.controls.forEach((row) => {
-      row.get('ouvert')?.valueChanges.subscribe((open) => this.toggleTimes(row as FormGroup, !!open));
+    this.horaires.controls.forEach((row, i) => {
+      row.get('ouvert')?.valueChanges.subscribe((open) => this.toggleJour(i, !!open));
     });
 
     this.informations.fetch().subscribe({
@@ -135,7 +145,14 @@ export class InformationsComponent implements OnInit {
 
     const invalidTimes = this.horaires.controls.some((row) => {
       const v = row.getRawValue();
-      return v.ouvert && (!v.heureDebut || !v.heureFin || v.heureDebut >= v.heureFin);
+      if (!v.ouvert) return false;
+      const plages: { heureDebut: string; heureFin: string }[] = v.plages;
+      if (!plages.length) return true;
+      return plages.some((p, i) => {
+        if (!p.heureDebut || !p.heureFin || p.heureDebut >= p.heureFin) return true;
+        // Les plages doivent être dans l'ordre et ne pas se chevaucher (ex. 9h-15h puis 16h-18h).
+        return i > 0 && plages[i - 1].heureFin > p.heureDebut;
+      });
     });
     if (this.form.invalid || invalidTimes) {
       this.accordeon?.expandAll();
@@ -173,8 +190,14 @@ export class InformationsComponent implements OnInit {
     });
   }
 
-  private toggleTimes(row: FormGroup, open: boolean): void {
-    ['heureDebut', 'heureFin'].forEach((name) => (open ? row.get(name)?.enable() : row.get(name)?.disable()));
+  // À l'ouverture d'un jour sans aucune plage, on en propose une vide tout de suite ; à la fermeture, on les retire.
+  private toggleJour(jourIndex: number, open: boolean): void {
+    const plages = this.plages(jourIndex);
+    if (open) {
+      if (!plages.length) plages.push(this.nouvellePlage());
+    } else {
+      plages.clear();
+    }
   }
 
   private patch(info: Information): void {
@@ -194,15 +217,16 @@ export class InformationsComponent implements OnInit {
       lienInstagram: text(info.lienInstagram),
       lienFacebook: text(info.lienFacebook),
       bannierePromo: text(info.bannierePromo),
-      fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto',
-      courrielNotifExpediteur: text(info.courrielNotifExpediteur),
-      courrielNotifMotDePasse: ''
+      fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto'
     });
-    this.courrielDejaConfigure.set(info.courrielNotifConfigure);
     info.horaires.forEach((h) => {
-      const row = this.horaires.at(h.jourSemaine - 1) as FormGroup;
-      row.patchValue({ ouvert: h.ouvert, heureDebut: h.heureDebut ?? '', heureFin: h.heureFin ?? '' });
-      this.toggleTimes(row, h.ouvert);
+      const jourIndex = h.jourSemaine - 1;
+      const row = this.horaires.at(jourIndex) as FormGroup;
+      row.patchValue({ ouvert: h.ouvert });
+      const plages = this.plages(jourIndex);
+      plages.clear();
+      h.plages.forEach((p) => plages.push(this.nouvellePlage(p.heureDebut, p.heureFin)));
+      if (h.ouvert && !plages.length) plages.push(this.nouvellePlage());
     });
     this.form.markAsPristine();
   }
@@ -211,11 +235,11 @@ export class InformationsComponent implements OnInit {
     const v = this.form.getRawValue();
     const horaires: Horaire[] = this.horaires.controls.map((row) => {
       const r = row.getRawValue();
+      const plages = r.ouvert ? (r.plages as { heureDebut: string; heureFin: string }[]) : [];
       return {
         jourSemaine: r.jourSemaine,
-        ouvert: !!r.ouvert,
-        heureDebut: r.ouvert ? r.heureDebut : null,
-        heureFin: r.ouvert ? r.heureFin : null
+        ouvert: !!r.ouvert && plages.length > 0,
+        plages
       };
     });
     return { ...v, horaires } as InformationForm;

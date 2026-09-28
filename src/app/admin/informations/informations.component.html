@@ -120,39 +120,6 @@
       </div>
     </div>
 
-    <div ngbAccordionItem="notifications" [collapsed]="true">
-      <h2 ngbAccordionHeader>
-        <button ngbAccordionButton type="button"><i class="ti ti-mail"></i>{{ 'a.notifications_par_courriel' | t }}</button>
-      </h2>
-      <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
-          <ng-template>
-            <p class="form-text mt-0 mb-3" [innerHTML]="'info.mailIntro' | t"></p>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label" for="courrielNotifExpediteur">{{ 'a.adresse_gmail' | t }}</label>
-                <input id="courrielNotifExpediteur" type="email" class="form-control" formControlName="courrielNotifExpediteur"
-                  placeholder="votreadresse@gmail.com" [class.is-invalid]="hasError('courrielNotifExpediteur', 'email')" />
-                <div class="invalid-feedback">{{ 'a.adresse_e_mail_invalide' | t }}</div>
-              </div>
-              <div class="col-md-6 mb-0">
-                <label class="form-label" for="courrielNotifMotDePasse">{{ 'a.mot_de_passe_d_application' | t }}</label>
-                <input id="courrielNotifMotDePasse" type="password" class="form-control" formControlName="courrielNotifMotDePasse"
-                  placeholder="{{ courrielDejaConfigure() ? '••••••••••••••••' : ('info.seize' | t) }}" autocomplete="new-password" />
-                <div class="form-text">
-                  @if (courrielDejaConfigure()) {
-                    {{ 'a.deja_enregistre_laissez_vide_pour_le_garder_ou_r' | t }}
-                  } @else {
-                    {{ 'a.pas_encore_configure_sans_ca_pas_de_courriel_env' | t }}
-                  }
-                </div>
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </div>
-
     <div ngbAccordionItem="promo" [collapsed]="true">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton type="button"><i class="ti ti-gift"></i>{{ 'a.banniere_promotionnelle' | t }}</button>
@@ -182,11 +149,23 @@
                   <input class="form-check-input" type="checkbox" role="switch" [id]="'ouvert' + i" formControlName="ouvert" />
                   <label class="form-check-label" [for]="'ouvert' + i">{{ row.get('ouvert')?.value ? ('a.ouvert' | t) : ('a.ferme' | t) }}</label>
                 </div>
-                <input type="time" class="form-control hours-time" formControlName="heureDebut" [attr.aria-label]="('info.ouverture' | t) + ' ' + ('jour.' + (i + 1) | t)" />
-                <span class="hours-sep">{{ 'a.a' | t }}</span>
-                <input type="time" class="form-control hours-time" formControlName="heureFin" [attr.aria-label]="('info.fermeture' | t) + ' ' + ('jour.' + (i + 1) | t)" />
+                <div class="hours-plages" *ngIf="row.get('ouvert')?.value" formArrayName="plages">
+                  <div *ngFor="let plage of plages(i).controls; let p = index" [formGroupName]="p" class="hours-plage">
+                    <input type="time" class="form-control hours-time" formControlName="heureDebut" [attr.aria-label]="('info.ouverture' | t) + ' ' + ('jour.' + (i + 1) | t)" />
+                    <span class="hours-sep">{{ 'a.a' | t }}</span>
+                    <input type="time" class="form-control hours-time" formControlName="heureFin" [attr.aria-label]="('info.fermeture' | t) + ' ' + ('jour.' + (i + 1) | t)" />
+                    <button type="button" class="btn-icone" *ngIf="plages(i).length > 1" (click)="retirerPlage(i, p)"
+                      [attr.aria-label]="'a.retirer' | t" [title]="'a.retirer' | t">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-link btn-sm hours-ajouter" (click)="ajouterPlage(i)">
+                    <i class="ti ti-plus"></i> {{ 'info.ajouterPlage' | t }}
+                  </button>
+                </div>
               </div>
               <div class="form-text mt-2">{{ 'a.si_tous_les_jours_sont_fermes_la_rubrique_horair' | t }}</div>
+              <div class="form-text">{{ 'info.plagesAide' | t }}</div>
             </div>
           </ng-template>
         </div>

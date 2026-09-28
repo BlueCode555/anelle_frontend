@@ -80,6 +80,28 @@ export class CollaborateurListComponent implements OnInit {
     this.ouvrir(collaborateur, false);
   }
 
+  // Bascule rapide, sans ouvrir la fiche : un compte désactivé perd tous ses droits et ne peut plus se connecter
+  // (message expliqué à la personne côté Keycloak).
+  async basculerActif(c: Collaborateur): Promise<void> {
+    const actif = !c.actif;
+    const ok = await this.confirmation.demander({
+      titre: this.i18n.t(actif ? 'collab.reactiverTitre' : 'collab.desactiverTitre', { nom: `${c.prenom} ${c.nom}` }),
+      message: actif ? this.i18n.t('collab.reactiverMsg') : this.i18n.t('collab.desactiverMsg'),
+      texteConfirmer: this.i18n.t(actif ? 'collab.reactiver' : 'collab.desactiver'),
+      danger: !actif
+    });
+    if (!ok) return;
+    this.equipe
+      .modifierCollaborateur(c.id, { nom: c.nom, prenom: c.prenom, profilCodes: c.profils.map((p) => p.code), actif })
+      .subscribe({
+        next: () => {
+          this.toast.succes(this.i18n.t(actif ? 'collab.reactive' : 'collab.desactive'));
+          this.charger();
+        },
+        error: (err) => this.toast.erreur(err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
+      });
+  }
+
   async supprimer(c: Collaborateur): Promise<void> {
     const ok = await this.confirmation.demander({
       titre: this.i18n.t('ts.collab.supprimer', { nom: `${c.prenom} ${c.nom}` }),

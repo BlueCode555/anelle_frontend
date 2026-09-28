@@ -1,8 +1,8 @@
 .hours-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
-  padding: 0.5rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid #f0e7d6;
 
   &:last-of-type {
@@ -13,11 +13,28 @@
 .hours-day {
   width: 110px;
   font-weight: 600;
+  padding-top: 0.35rem;
 }
 
 .hours-open {
   width: 110px;
   margin-bottom: 0;
+  padding-top: 0.3rem;
+  flex-shrink: 0;
+}
+
+.hours-plages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.hours-plage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .hours-time {
@@ -28,9 +45,19 @@
   color: #8a7660;
 }
 
+.hours-ajouter {
+  align-self: flex-start;
+  padding: 0.15rem 0;
+  text-decoration: none;
+}
+
 @media (max-width: 767.98px) {
   .hours-row {
     flex-wrap: wrap;
+  }
+
+  .hours-plages {
+    width: 100%;
   }
 }
 

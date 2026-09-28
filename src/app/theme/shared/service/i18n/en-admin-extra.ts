@@ -16,12 +16,20 @@ export const EN_ADMIN_EXTRA: Record<string, string> = {
   'collab.creerCompte': 'Create account',
   'collab.generation': 'Generating...',
   'collab.nouveauMdp': 'New password',
+  'collab.desactiver': 'Deactivate',
+  'collab.reactiver': 'Reactivate',
+  'collab.desactiverTitre': 'Deactivate {nom}?',
+  'collab.reactiverTitre': 'Reactivate {nom}?',
+  'collab.desactiverMsg': 'This person will no longer be able to log in until the account is reactivated.',
+  'collab.reactiverMsg': 'This person will be able to log in again.',
+  'collab.desactive': 'Team member deactivated',
+  'collab.reactive': 'Team member reactivated',
   'profil.note': 'Managing team members and profiles remains reserved for the owner. Uploading an image requires the right to create or edit on at least one catalogue or details screen.',
   'profil.accesDe': 'Profile access',
   'profil.modifier': 'Edit profile',
-  'info.mailIntro': 'When a client books online, an email alerts you here — handy if you are not logged in to the management area at that moment. Enter your Gmail address and its <strong>app password</strong> (not the usual password of your Google account: it is created in your Google account security settings, "App passwords" section).',
   'info.fiche': 'Profile {n}% complete',
-  'info.seize': '16 characters',
   'info.ouverture': 'Opening',
-  'info.fermeture': 'Closing'
+  'info.fermeture': 'Closing',
+  'info.ajouterPlage': 'Add a time range',
+  'info.plagesAide': 'A day can have several time ranges (e.g. 9 am – 3 pm then 4 pm – 6 pm, for a break).'
 };

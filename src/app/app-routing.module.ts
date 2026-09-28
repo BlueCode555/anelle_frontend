@@ -63,10 +63,34 @@ const appRoutes: Routes = [
         loadComponent: () => import('./admin/service/service-list/service-list.component').then((c) => c.ServiceListComponent)
       },
       {
+        path: 'services/nouveau',
+        canActivate: [droitGuard],
+        data: { ecran: 'SERVICES' },
+        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
+      },
+      {
+        path: 'services/:id/modifier',
+        canActivate: [droitGuard],
+        data: { ecran: 'SERVICES' },
+        loadComponent: () => import('./admin/service/service-form/service-form.component').then((c) => c.ServiceFormComponent)
+      },
+      {
         path: 'produits',
         canActivate: [droitGuard],
         data: { ecran: 'PRODUITS' },
         loadComponent: () => import('./admin/produit/produit-list/produit-list.component').then((c) => c.ProduitListComponent)
+      },
+      {
+        path: 'produits/nouveau',
+        canActivate: [droitGuard],
+        data: { ecran: 'PRODUITS' },
+        loadComponent: () => import('./admin/produit/produit-form/produit-form.component').then((c) => c.ProduitFormComponent)
+      },
+      {
+        path: 'produits/:id/modifier',
+        canActivate: [droitGuard],
+        data: { ecran: 'PRODUITS' },
+        loadComponent: () => import('./admin/produit/produit-form/produit-form.component').then((c) => c.ProduitFormComponent)
       },
       {
         path: 'commandes',

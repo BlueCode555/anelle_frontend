@@ -63,6 +63,7 @@ export const FR_ADMIN_TS: Record<string, string> = {
   'ts.srv.categorie': 'La catégorie est obligatoire',
   'ts.srv.duree': 'La durée est obligatoire',
   'ts.srv.tarif': 'Le tarif est obligatoire',
+  'ts.srv.tarifMin': 'Le tarif ne peut pas être négatif',
   'ts.srv.charger': 'Impossible de charger ce service.',
   'ts.srv.enregistrer': 'Enregistrer ce service ?',
   'ts.srv.enregistre': 'Service enregistré',

@@ -16,12 +16,20 @@ export const FR_ADMIN_EXTRA: Record<string, string> = {
   'collab.creerCompte': 'Créer le compte',
   'collab.generation': 'Génération...',
   'collab.nouveauMdp': 'Nouveau mot de passe',
+  'collab.desactiver': 'Désactiver',
+  'collab.reactiver': 'Réactiver',
+  'collab.desactiverTitre': 'Désactiver {nom} ?',
+  'collab.reactiverTitre': 'Réactiver {nom} ?',
+  'collab.desactiverMsg': 'La personne ne pourra plus se connecter tant que le compte n\'est pas réactivé.',
+  'collab.reactiverMsg': 'La personne pourra de nouveau se connecter.',
+  'collab.desactive': 'Collaborateur désactivé',
+  'collab.reactive': 'Collaborateur réactivé',
   'profil.note': 'La gestion des collaborateurs et des profils reste réservée à l\'esthéticienne. Le téléversement d\'une image demande le droit de créer ou de modifier sur au moins un écran du catalogue ou des informations.',
   'profil.accesDe': 'Accès du profil',
   'profil.modifier': 'Modifier le profil',
-  'info.mailIntro': 'Quand une cliente prend rendez-vous en ligne, un courriel vous prévient ici — pratique si vous n\'êtes pas connectée à l\'espace de gestion à ce moment-là. Renseignez votre adresse Gmail et son <strong>mot de passe d\'application</strong> (pas le mot de passe habituel de votre compte Google : il se crée dans les réglages de sécurité de votre compte Google, section « Mots de passe des applications »).',
   'info.fiche': 'Fiche complétée à {n} %',
-  'info.seize': '16 caractères',
   'info.ouverture': 'Ouverture',
-  'info.fermeture': 'Fermeture'
+  'info.fermeture': 'Fermeture',
+  'info.ajouterPlage': 'Ajouter une plage',
+  'info.plagesAide': 'Une journée peut avoir plusieurs plages (ex. 9 h – 15 h puis 16 h – 18 h, pour une pause).'
 };

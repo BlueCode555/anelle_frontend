@@ -1,11 +1,10 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router } from '@angular/router';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { ServiceResponse } from 'src/app/theme/shared/service/catalogue.model';
-import { ServiceFormComponent } from '../service-form/service-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
@@ -30,7 +29,7 @@ export class ServiceListComponent implements OnInit {
   });
   private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
-  private modalService = inject(NgbModal);
+  private router = inject(Router);
   private confirmation = inject(ConfirmationService);
   private toast = inject(ToastService);
 
@@ -91,30 +90,11 @@ export class ServiceListComponent implements OnInit {
   }
 
   openCreate(): void {
-    const ref = this.modalService.open(ServiceFormComponent, { centered: true });
-    ref.result.then(
-      (result) => {
-        if (result === 'saved') {
-          this.toast.succes(this.i18n.t('ts.srv.enregistre'));
-          this.load();
-        }
-      },
-      () => {}
-    );
+    this.router.navigate(['/services/nouveau']);
   }
 
   openEdit(service: ServiceResponse): void {
-    const ref = this.modalService.open(ServiceFormComponent, { centered: true });
-    ref.componentInstance.serviceId = service.id;
-    ref.result.then(
-      (result) => {
-        if (result === 'saved') {
-          this.toast.succes(this.i18n.t('ts.srv.enregistre'));
-          this.load();
-        }
-      },
-      () => {}
-    );
+    this.router.navigate(['/services', service.id, 'modifier']);
   }
 
   async remove(service: ServiceResponse): Promise<void> {

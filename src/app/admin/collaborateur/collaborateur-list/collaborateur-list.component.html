@@ -86,6 +86,9 @@
                 <td class="cellule-actions text-end">
                   <div class="actions actions-icones">
                     <button type="button" class="btn-icone" [attr.aria-label]="'a.voir' | t" [title]="'a.voir' | t" (click)="voir(c)"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn-icone" [class.est-danger]="c.actif" [attr.aria-label]="(c.actif ? 'collab.desactiver' : 'collab.reactiver') | t" [title]="(c.actif ? 'collab.desactiver' : 'collab.reactiver') | t" (click)="basculerActif(c)">
+                      <i class="ti" [class.ti-lock]="c.actif" [class.ti-lock-open]="!c.actif"></i>
+                    </button>
                     <button type="button" class="btn-icone" [attr.aria-label]="'a.modifier' | t" [title]="'a.modifier' | t" (click)="modifier(c)"><i class="ti ti-pencil"></i></button>
                     <button type="button" class="btn-icone est-danger" [attr.aria-label]="'a.supprimer' | t" [title]="'a.supprimer' | t" (click)="supprimer(c)"><i class="ti ti-trash"></i></button>
                   </div>

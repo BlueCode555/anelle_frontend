@@ -5,12 +5,18 @@ import { Observable, map, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from './api.model';
 
+// Mirrors bj.anelle.anelle_backend.dto.{request.PlageHoraireForm,response.PlageHoraireResponse}.
+export interface PlageHoraire {
+  heureDebut: string; // "HH:mm"
+  heureFin: string;
+}
+
 // Mirrors bj.anelle.anelle_backend.dto.response.{InformationResponse,HoraireResponse}.
 export interface Horaire {
   jourSemaine: number; // 1 = lundi ... 7 = dimanche
   ouvert: boolean;
-  heureDebut: string | null; // "HH:mm"
-  heureFin: string | null;
+  // Une ou plusieurs plages dans la journée (ex. 9h-15h et 16h-18h, pour une pause) ; vide si fermé.
+  plages: PlageHoraire[];
 }
 
 export interface Information {
@@ -29,15 +35,12 @@ export interface Information {
   lienFacebook: string | null;
   bannierePromo: string | null;
   fuseauHoraire: string | null;
-  // Compte Gmail des notifications de nouvelle demande de rendez-vous (le mot de passe n'est jamais renvoyé
-  // par le serveur : `courrielNotifConfigure` dit seulement s'il y en a un d'enregistré).
-  courrielNotifExpediteur: string | null;
-  courrielNotifConfigure: boolean;
   horaires: Horaire[];
 }
 
-// Champs du formulaire "Mon institut" : comme Information, mais avec un mot de passe en écriture (jamais lu).
-export type InformationForm = Omit<Information, 'courrielNotifConfigure'> & { courrielNotifMotDePasse: string };
+// Champs du formulaire "Mon institut" : identiques à Information (le compte courriel de notification est
+// désormais configuré côté serveur, voir application.properties / anelle.courriel.*).
+export type InformationForm = Information;
 
 export const JOURS_SEMAINE = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
 

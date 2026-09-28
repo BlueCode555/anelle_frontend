@@ -37,6 +37,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private i18n = inject(TranslationService);
   private informations = inject(InformationService);
+  nom = this.informations.nom;
   private rendezVous = inject(RendezVousService);
   auth = inject(AuthService);
   private confirmation = inject(ConfirmationService);

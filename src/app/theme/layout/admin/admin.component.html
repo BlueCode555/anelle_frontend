@@ -6,7 +6,7 @@
     <a class="ad-brand" routerLink="/default">
       <img class="ad-brand-logo" src="assets/images/logo/monogramme-clair.png" alt="" width="46" height="46" />
       <span class="ad-brand-text">
-        <span class="ad-brand-name">Arnelle Institut</span>
+        <span class="ad-brand-name">{{ nom() }}</span>
         <span class="ad-brand-sub">{{ 'admin.espaceGestion' | t }}</span>
       </span>
     </a>
@@ -143,7 +143,7 @@
     <div class="ad-band">
       <span class="ad-band-role">{{ role() }}</span>
       <span class="ad-band-sep"></span>
-      <span class="ad-band-text">Arnelle Institut</span>
+      <span class="ad-band-text">{{ nom() }}</span>
       <span class="ad-band-date text-capitalize">{{ aujourdhuiTexte() }}</span>
     </div>
 
@@ -152,7 +152,7 @@
     </main>
 
     <footer class="ad-footer">
-      <span>Arnelle Institut &middot; {{ 'admin.espaceGestion' | t }}</span>
+      <span>{{ nom() }} &middot; {{ 'admin.espaceGestion' | t }}</span>
       <a routerLink="/accueil">{{ 'admin.voirSite' | t }}</a>
     </footer>
   </div>

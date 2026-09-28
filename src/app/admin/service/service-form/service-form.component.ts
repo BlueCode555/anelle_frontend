@@ -1,17 +1,22 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FormField, form, required } from '@angular/forms/signals';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormField, form, min, required } from '@angular/forms/signals';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { CategorieResponse, ServiceForm } from 'src/app/theme/shared/service/catalogue.model';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
+import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { largeurImage } from 'src/app/theme/shared/_helpers/image-info';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
+import { bloquerCaracteresInterdits } from 'src/app/theme/shared/_helpers/nombre-entier';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
+// Page pleine (et non plus une fenêtre modale) : un formulaire avec autant de champs (catégorie, durée, tarif,
+// image...) débordait d'une modale sur les petits écrans. Créer/Modifier partagent ce même composant, selon
+// la présence d'un ":id" dans la route (/services/nouveau ou /services/:id/modifier).
 @Component({
   selector: 'app-service-form',
   imports: [CommonModule, FormsModule, FormField, TranslatePipe, DureePipe],
@@ -19,13 +24,16 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
   styleUrl: './service-form.component.scss'
 })
 export class ServiceFormComponent implements OnInit {
+  bloquerCaracteresInterdits = bloquerCaracteresInterdits;
   private i18n = inject(TranslationService);
   private catalogue = inject(CatalogueService);
-  activeModal = inject(NgbActiveModal);
   private confirmation = inject(ConfirmationService);
+  private toast = inject(ToastService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  // Set by the opener (list component) via modalRef.componentInstance.serviceId before the modal renders.
-  serviceId: number | null = null;
+  // Lu une seule fois depuis l'URL : présent (/services/:id/modifier) = modification, absent = création.
+  serviceId: number | null = Number(this.route.snapshot.paramMap.get('id')) || null;
 
   categories = signal<CategorieResponse[]>([]);
   // Vrai pendant la recuperation du service existant : le formulaire reste cache pour ne jamais
@@ -68,6 +76,7 @@ export class ServiceFormComponent implements OnInit {
     required(schemaPath.categorieCode, { message: this.i18n.t('ts.srv.categorie') });
     required(schemaPath.dureeMinutes, { message: this.i18n.t('ts.srv.duree') });
     required(schemaPath.tarif, { message: this.i18n.t('ts.srv.tarif') });
+    min(schemaPath.tarif, 0, { message: this.i18n.t('ts.srv.tarifMin') });
   });
 
   ngOnInit(): void {
@@ -141,6 +150,10 @@ export class ServiceFormComponent implements OnInit {
     }
   }
 
+  retour(): void {
+    this.router.navigate(['/services']);
+  }
+
   async onSubmit(event: Event): Promise<void> {
     event.preventDefault();
     this.submitted.set(true);
@@ -164,7 +177,10 @@ export class ServiceFormComponent implements OnInit {
     const request = this.serviceId ? this.catalogue.updateService(this.serviceId, value) : this.catalogue.createService(value);
 
     request.subscribe({
-      next: () => this.activeModal.close('saved'),
+      next: () => {
+        this.toast.succes(this.i18n.t('ts.srv.enregistre'));
+        this.router.navigate(['/services']);
+      },
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.form.actionRefusee') : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique')));
