@@ -1,12 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { firstValueFrom, map } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { chaineAleatoire, defiPkce } from '../_helpers/pkce';
 import { ID_TOKEN_KEY, LOGIN_FLOW_KEY, PROFIL_KEY, REFRESH_KEY, TOKEN_KEY, isTokenExpired, millisAvantExpiration } from '../_helpers/token-storage';
 import { ApiResponse } from './api.model';
+import { SessionExpireeModalComponent } from '../components/session-expiree/session-expiree-modal.component';
 
 const PKCE_KEY = 'anelle_pkce';
 
@@ -60,6 +62,7 @@ export interface Permission {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private modals = inject(NgbModal);
 
   user = signal<CurrentUser | null>(null);
   // Profil avec lequel le collaborateur travaille (memorise dans le navigateur ; le premier par defaut)
@@ -181,9 +184,18 @@ export class AuthService {
     this.inactiviteMinuteur = setTimeout(() => this.deconnexionPourInactivite(), AuthService.INACTIVITE_LIMITE_MS);
   }
 
-  private deconnexionPourInactivite(): void {
-    const estClient = this.user()?.type === 'CLIENT';
+  // N'efface la session et ne renvoie vers la connexion qu'une fois la fenêtre acquittée : pas de retour en
+  // arrière silencieux, la personne doit explicitement cliquer "Déconnecter" avant de quitter l'écran en cours.
+  private async deconnexionPourInactivite(): Promise<void> {
     this.arreterSurveillanceInactivite();
+    const ref = this.modals.open(SessionExpireeModalComponent, { backdrop: 'static', keyboard: false, centered: true, size: 'sm' });
+    try {
+      await ref.result;
+    } catch {
+      // Aucun autre moyen de fermer cette fenêtre (ni Échap, ni clic en dehors) : on continue quand même.
+    }
+
+    const estClient = this.user()?.type === 'CLIENT';
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_KEY);
     localStorage.removeItem(ID_TOKEN_KEY);

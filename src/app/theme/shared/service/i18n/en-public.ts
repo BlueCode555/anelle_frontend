@@ -13,6 +13,8 @@ export const EN_PUBLIC: Record<string, string> = {
   'connexion.intro': 'Log in to book your treatments and find your appointment history.',
   'connexion.echec': 'Login did not complete. Please try again.',
   'connexion.sessionExpiree': 'Your session expired after a period of inactivity. Please log in again.',
+  'connexion.sessionExpireeTitre': 'Session expired',
+  'connexion.deconnecter': 'Log out',
   'connexion.redirection': 'Redirecting...',
   'connexion.google': 'Continue with Google',
   'connexion.sansMotDePasse': 'No password to create: your Google account is enough.',

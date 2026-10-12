@@ -15,6 +15,8 @@ export const FR_PUBLIC: Record<string, string> = {
   'connexion.intro': "Connectez-vous pour réserver vos soins et retrouver l'historique de vos rendez-vous.",
   'connexion.echec': "La connexion n'a pas abouti. Réessayez.",
   'connexion.sessionExpiree': 'Votre session a expiré après une période d\'inactivité. Veuillez vous reconnecter.',
+  'connexion.sessionExpireeTitre': 'Session expirée',
+  'connexion.deconnecter': 'Déconnecter',
   'connexion.redirection': 'Redirection...',
   'connexion.google': 'Continuer avec Google',
   'connexion.sansMotDePasse': 'Aucun mot de passe à créer : votre compte Google suffit.',
