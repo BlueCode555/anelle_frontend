@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h5 class="modal-title">{{ (rayonId ? 'ray.modifier' : 'ray.nouveau') | t }}</h5>
+  <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div *ngIf="chargement()" class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
+  <form id="rayonForm" *ngIf="!chargement()" (ngSubmit)="onSubmit($event)">
+    <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
+
+    <div class="mb-3">
+      <label class="form-label" for="ray-libelle">{{ 'ray.libelle' | t }}</label>
+      <input id="ray-libelle" type="text" class="form-control" [placeholder]="'ray.libelleEx' | t" [formField]="rayonForm.libelle"
+        [class.is-invalid]="submitted() && rayonForm.libelle().invalid()" />
+      @if (submitted() && rayonForm.libelle().invalid()) {
+        <div class="invalid-feedback">
+          @for (error of rayonForm.libelle().errors(); track error.kind) {
+            <div>{{ error.message }}</div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="form-check">
+      <input id="ray-actif" type="checkbox" class="form-check-input" [formField]="rayonForm.actif" />
+      <label class="form-check-label" for="ray-actif">{{ 'ray.actif' | t }}</label>
+    </div>
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss()">{{ 'a.annuler' | t }}</button>
+  <button type="submit" form="rayonForm" class="btn btn-primary" [disabled]="saving() || chargement()">
+    {{ saving() ? ('a.enregistrement' | t) : ('a.enregistrer' | t) }}
+  </button>
+</div>

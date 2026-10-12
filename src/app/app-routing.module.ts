@@ -51,6 +51,18 @@ const appRoutes: Routes = [
         loadComponent: () => import('./admin/informations/informations.component').then((c) => c.InformationsComponent)
       },
       {
+        path: 'audit',
+        canActivate: [droitGuard],
+        data: { proprietaire: true },
+        loadComponent: () => import('./admin/audit/audit-list/audit-list.component').then((c) => c.AuditListComponent)
+      },
+      {
+        path: 'statistiques',
+        canActivate: [droitGuard],
+        data: { proprietaire: true },
+        loadComponent: () => import('./admin/statistiques/statistiques.component').then((c) => c.StatistiquesComponent)
+      },
+      {
         path: 'categories',
         canActivate: [droitGuard],
         data: { ecran: 'CATEGORIES' },
@@ -79,6 +91,12 @@ const appRoutes: Routes = [
         canActivate: [droitGuard],
         data: { ecran: 'PRODUITS' },
         loadComponent: () => import('./admin/produit/produit-list/produit-list.component').then((c) => c.ProduitListComponent)
+      },
+      {
+        path: 'rayons',
+        canActivate: [droitGuard],
+        data: { ecran: 'PRODUITS' },
+        loadComponent: () => import('./admin/rayon/rayon-list/rayon-list.component').then((c) => c.RayonListComponent)
       },
       {
         path: 'produits/nouveau',
@@ -128,6 +146,21 @@ const appRoutes: Routes = [
       {
         path: 'personnel',
         loadComponent: () => import('./public/personnel/personnel.component').then((c) => c.PersonnelComponent)
+      },
+      {
+        path: 'choisir-profil',
+        canActivate: [staffGuard],
+        loadComponent: () => import('./public/choisir-profil/choisir-profil.component').then((c) => c.ChoisirProfilComponent)
+      },
+      {
+        path: 'politique-de-confidentialite',
+        loadComponent: () =>
+          import('./public/politique-confidentialite/politique-confidentialite.component').then((c) => c.PolitiqueConfidentialiteComponent)
+      },
+      {
+        path: 'conditions-utilisation',
+        loadComponent: () =>
+          import('./public/conditions-utilisation/conditions-utilisation.component').then((c) => c.ConditionsUtilisationComponent)
       },
       {
         path: 'auth/callback',

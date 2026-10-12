@@ -1,0 +1,42 @@
+.page-legale {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 3rem 1.25rem 5rem;
+  color: var(--ar-texte);
+  font-family: var(--ar-corps);
+  line-height: 1.7;
+
+  h1 {
+    font-family: var(--ar-titres);
+    color: var(--ar-chocolat-fonce);
+    font-size: 2.2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .maj {
+    color: var(--ar-texte-doux);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    font-family: var(--ar-titres);
+    color: var(--ar-chocolat-fonce);
+    font-size: 1.4rem;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p,
+  li {
+    color: var(--ar-texte);
+  }
+
+  ul {
+    padding-left: 1.25rem;
+  }
+
+  a {
+    color: var(--ar-dore);
+  }
+}

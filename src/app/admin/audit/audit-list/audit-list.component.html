@@ -1,0 +1,52 @@
+<div class="card">
+  <div class="card-header entete-liste">
+    <h5 class="mb-0">{{ 'audit.titre' | t }}</h5>
+    <span class="text-muted small">{{ 'audit.purgeAide' | t }}</span>
+  </div>
+  <div class="card-body">
+    @if (loading()) {
+      <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-danger">{{ 'audit.erreurCharger' | t }}</div>
+    }
+
+    @if (!loading() && !error() && entrees().length === 0) {
+      <div class="etat-vide">
+        <i class="ti ti-history"></i>
+        <h6>{{ 'audit.aucunePourLeMoment' | t }}</h6>
+      </div>
+    }
+
+    @if (!loading() && entrees().length) {
+      <div class="table-responsive">
+        <table class="table table-hover align-middle table-cartes">
+          <thead>
+            <tr>
+              <th>{{ 'audit.date' | t }}</th>
+              <th>{{ 'audit.auteur' | t }}</th>
+              <th>{{ 'audit.action' | t }}</th>
+              <th>{{ 'audit.type' | t }}</th>
+              <th>{{ 'audit.element' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of entrees(); track e.revision + e.typeElement) {
+              <tr>
+                <td [attr.data-label]="'audit.date' | t" class="text-muted">{{ formatDate(e.date) }}</td>
+                <td [attr.data-label]="'audit.auteur' | t">{{ e.auteurNom || ('audit.inconnu' | t) }}</td>
+                <td [attr.data-label]="'audit.action' | t">
+                  <span class="badge" [ngClass]="actionClasses[e.action]">{{ libelleAction(e.action) }}</span>
+                </td>
+                <td [attr.data-label]="'audit.type' | t" class="text-muted">{{ e.typeElement }}</td>
+                <td [attr.data-label]="'audit.element' | t" class="fw-semibold">{{ e.libelle }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <app-pagination [total]="totalElements()" [taille]="taille" [(page)]="page" />
+    }
+  </div>
+</div>

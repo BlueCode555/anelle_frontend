@@ -56,19 +56,10 @@
 
       <div class="row">
         <div class="col-md-7 mb-3">
-          <span class="form-label d-block">{{ 'srv.duree' | t }}</span>
-          <div class="duree-champs">
-            <div>
-              <input id="dureeHeures" type="number" step="1" min="0" class="form-control" placeholder="0" [value]="dureeHeures()" (input)="onDuree($event, 'h')" (keydown)="bloquerCaracteresInterdits($event)"
-                [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()" />
-              <label class="form-text" for="dureeHeures">{{ 'srv.heures' | t }}</label>
-            </div>
-            <div>
-              <input id="dureeMin" type="number" step="5" min="0" class="form-control" placeholder="0" [value]="dureeMin()" (input)="onDuree($event, 'm')" (keydown)="bloquerCaracteresInterdits($event)"
-                [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()" />
-              <label class="form-text" for="dureeMin">{{ 'srv.minutes' | t }}</label>
-            </div>
-          </div>
+          <label class="form-label" for="dureeMinutes">{{ 'srv.duree' | t }}</label>
+          <input id="dureeMinutes" type="number" step="5" min="0" class="form-control" [placeholder]="'srv.dureeEx' | t" [value]="serviceModel().dureeMinutes ?? ''"
+            (input)="onDuree($event)" (keydown)="bloquerCaracteresInterdits($event)"
+            [class.is-invalid]="submitted() && serviceForm.dureeMinutes().invalid()" />
           @if (serviceModel().dureeMinutes) {
             <div class="form-text">{{ 'srv.dureeResume' | t: { d: (serviceModel().dureeMinutes | duree) } }}</div>
           } @else {

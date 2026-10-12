@@ -3,8 +3,7 @@ import packageInfo from '../../package.json';
 export const environment = {
   appVersion: packageInfo.version,
   production: true,
-  // TODO: replace with the deployed anelle backend URL
+  // Le backend est servi sous le meme domaine, chemin /app (reverse proxy Nginx) : voir scripts/nginx.
   apiUrl: '/app',
-  // TODO: URL du Keycloak deploye
-  keycloak: { url: '', realm: 'anelle', clientId: 'anelle-front' }
+  keycloak: { url: 'https://auth.arnelle-institut.com', realm: 'anelle', clientId: 'anelle-front' }
 };

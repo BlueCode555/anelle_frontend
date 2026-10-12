@@ -53,7 +53,7 @@
                   }
                 </td>
                 <td [attr.data-label]="'a.nom' | t" class="fw-semibold">{{ p.nom }}</td>
-                <td [attr.data-label]="'prd.rayon' | t" class="text-muted">{{ p.rayon || '—' }}</td>
+                <td [attr.data-label]="'prd.rayon' | t" class="text-muted">{{ p.rayonLibelle || '—' }}</td>
                 <td [attr.data-label]="'a.tarif' | t" class="fw-bold text-primary">{{ formatPrix(p.prix) }}</td>
                 <td [attr.data-label]="'prd.stock' | t">
                   <span class="badge" [class.text-bg-success]="p.stock > 3" [class.text-bg-warning]="p.stock > 0 && p.stock <= 3" [class.text-bg-danger]="p.stock === 0">

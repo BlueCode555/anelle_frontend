@@ -164,43 +164,91 @@ $or-fonce: #c9a227;
   line-height: 1;
 }
 
-.mobile-menu {
-  color: $creme;
-  display: none;
-  margin: 0;
-  padding: 0.5rem 1.5rem 1rem;
-  list-style: none;
-  border-top: 1px solid rgba($creme, 0.12);
+// Panneau qui glisse depuis la droite, par-dessus le contenu (et non plus repoussant la page vers le bas) :
+// reste bien ancré à l'écran même quand le clavier d'un champ de saisie apparaît sur téléphone.
+.mobile-menu-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 18, 9, 0.55);
+  z-index: 1040;
+  animation: fondu-menu 0.2s ease;
+}
 
-  a {
-    display: block;
-    padding: 0.75rem 0;
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1041;
+  display: none;
+  flex-direction: column;
+  width: min(300px, 82vw);
+  height: 100vh; // repli pour les navigateurs qui ignorent dvh (jamais de hauteur nulle)
+  height: 100dvh;
+  margin: 0;
+  padding: 1.25rem 1rem;
+  list-style: none;
+  background: $brun;
+  box-shadow: -8px 0 28px rgba(30, 18, 9, 0.35);
+  overflow-y: auto;
+  animation: glisse-menu 0.22s ease;
+
+  a,
+  .mobile-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.7rem 0.5rem;
+    border: 0;
+    border-radius: 8px;
+    background: none;
     color: $creme;
     text-decoration: none;
-    border-bottom: 1px solid rgba($creme, 0.08);
+    text-align: left;
+    font-size: 0.98rem;
 
-    &:hover {
+    .ti {
+      font-size: 1.15rem;
+      color: $or;
+      flex-shrink: 0;
+    }
+
+    &:hover,
+    &:active {
+      background: rgba($creme, 0.08);
       color: $or;
     }
   }
 }
 
-.mobile-logout {
-  width: 100%;
-  padding: 0.75rem 0;
-  border: 0;
-  background: none;
-  color: rgba($creme, 0.75);
-  text-align: left;
+.mobile-lang {
+  flex-shrink: 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba($creme, 0.12);
 
-  &:hover {
-    color: $or;
+  .lang-switcher {
+    color: $creme;
   }
 }
 
-.mobile-lang {
-  padding-top: 0.75rem;
-  border-bottom: none;
+@keyframes glisse-menu {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fondu-menu {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // Le menu se replie dans le bouton burger avant que les liens ne se chevauchent avec le nom et les boutons (surtout
@@ -220,7 +268,7 @@ $or-fonce: #c9a227;
   }
 
   .mobile-menu {
-    display: block;
+    display: flex;
   }
 
   .header-user-label,

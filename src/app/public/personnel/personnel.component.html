@@ -21,8 +21,13 @@
         }
 
         @if (auth.keycloakConfigure) {
-          <button type="button" class="btn btn-primary btn-lg px-4" (click)="connexion()">
-            <i class="ti ti-login-2 me-2"></i>{{ 'personnel.seConnecter' | t }}
+          <button type="button" class="btn btn-primary btn-lg px-4" [disabled]="connexionEnCours()" (click)="connexion()">
+            @if (connexionEnCours()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            } @else {
+              <i class="ti ti-login-2 me-2"></i>
+            }
+            {{ connexionEnCours() ? ('connexion.redirection' | t) : ('personnel.seConnecter' | t) }}
           </button>
           <p class="small text-muted mt-3 mb-0">{{ 'personnel.indice' | t }}</p>
         } @else {

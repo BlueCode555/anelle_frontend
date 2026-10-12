@@ -1,22 +1,111 @@
 #http-loader {
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
   position: fixed;
+  inset: 0;
   z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(74, 46, 23, 0.55); // chocolat, semi-transparent : bloque les clics sans masquer totalement la page
+  backdrop-filter: blur(1px);
+  animation: loader-fondu 0.15s ease;
 }
 
-.loader-bg {
-  height: 100%;
-  width: 100%;
+.loader-contenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+}
+
+// Rond de reference pour centrer l'icone sur l'anneau, quelle que soit la taille d'ecran.
+.loader-rond {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Anneau "degrade conique" : un trait qui s'estompe au lieu d'un simple trait plein (border-top-color),
+// pour un rendu plus moderne et fluide qu'un spinner Bootstrap classique.
+.loader-anneau {
   position: absolute;
-  filter: alpha(opacity=70);
-  opacity: 0.7;
-  background-color: #f1f1f1;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, var(--ar-dore, #c9a227) 85%, var(--ar-dore, #c9a227) 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  animation: loader-rotation 1s linear infinite;
 }
 
-.colored-parent,
-.colored > div {
-  background-color: #333;
+// Icone de la marque au centre, qui respire doucement : donne un cote "vivant", illustre, plutot qu'un
+// simple cercle qui tourne.
+.loader-icone {
+  position: relative;
+  color: var(--ar-dore, #c9a227);
+  font-size: 1.25rem;
+  animation: loader-respiration 1.6s ease-in-out infinite;
+}
+
+.loader-texte {
+  margin: 0;
+  color: var(--ar-creme, #fbf6ec);
+  font-family: var(--ar-corps, 'Jost', system-ui, sans-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+@keyframes loader-rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-respiration {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes loader-fondu {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .loader-rond {
+    width: 48px;
+    height: 48px;
+  }
+
+  .loader-icone {
+    font-size: 1.1rem;
+  }
+
+  .loader-texte {
+    font-size: 0.88rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-anneau {
+    animation-duration: 2s;
+  }
+
+  .loader-icone {
+    animation: none;
+  }
 }

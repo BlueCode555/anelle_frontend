@@ -1,16 +1,17 @@
 import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
-import { Horaire, Information, InformationForm, InformationService, JOURS_SEMAINE } from 'src/app/theme/shared/service/information.service';
+import { Information, InformationForm, InformationService } from 'src/app/theme/shared/service/information.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 
 @Component({
   selector: 'app-informations',
-  imports: [CommonModule, ReactiveFormsModule, NgbAccordionModule, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgbAccordionModule, TranslatePipe],
   templateUrl: './informations.component.html',
   styleUrl: './informations.component.scss'
 })
@@ -23,7 +24,9 @@ export class InformationsComponent implements OnInit {
   // Deplie toutes les sections si l'enregistrement echoue, pour qu'un champ en erreur ne reste jamais caché.
   @ViewChild('accordeon') private accordeon?: NgbAccordionDirective;
 
-  readonly jours = JOURS_SEMAINE;
+  // Les horaires d'ouverture hebdomadaires sont geres depuis l'ecran Agenda (voir HorairesOuvertureComponent),
+  // pas ici : cette fiche garde l'identite et les coordonnees de l'institut, pas son planning.
+  private horairesActuels: Information['horaires'] = [];
 
   // Fuseaux du Canada : les horaires d'ouverture et les creneaux de rendez-vous sont calcules dans ce fuseau.
   readonly fuseaux = [
@@ -45,7 +48,9 @@ export class InformationsComponent implements OnInit {
   form: FormGroup = this.fb.group({
     nom: ['', [Validators.required, Validators.maxLength(150)]],
     slogan: ['', Validators.maxLength(255)],
+    sloganEn: ['', Validators.maxLength(255)],
     description: ['', Validators.maxLength(1000)],
+    descriptionEn: ['', Validators.maxLength(1000)],
     adresse: ['', Validators.maxLength(255)],
     ville: ['', Validators.maxLength(100)],
     province: ['', Validators.maxLength(100)],
@@ -53,47 +58,27 @@ export class InformationsComponent implements OnInit {
     pays: ['', Validators.maxLength(100)],
     telephone: ['', Validators.pattern(/^$|^[0-9+()\-. ]{6,30}$/)],
     email: ['', [Validators.email, Validators.maxLength(255)]],
+    emailsNotification: this.fb.array([] as string[]),
     siteWeb: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     lienInstagram: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     lienFacebook: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     bannierePromo: ['', Validators.maxLength(255)],
-    fuseauHoraire: ['America/Toronto'],
-    horaires: this.fb.array(
-      this.jours.map((_, i) =>
-        this.fb.group({
-          jourSemaine: [i + 1],
-          ouvert: [false],
-          plages: this.fb.array([])
-        })
-      )
-    )
+    fuseauHoraire: ['America/Toronto']
   });
 
-  get horaires(): FormArray {
-    return this.form.get('horaires') as FormArray;
+  get emailsNotification(): FormArray {
+    return this.form.get('emailsNotification') as FormArray;
   }
 
-  plages(jourIndex: number): FormArray {
-    return this.horaires.at(jourIndex).get('plages') as FormArray;
+  ajouterEmailNotification(): void {
+    this.emailsNotification.push(this.fb.control(''));
   }
 
-  private nouvellePlage(heureDebut = '', heureFin = ''): FormGroup {
-    return this.fb.group({ heureDebut: [heureDebut], heureFin: [heureFin] });
-  }
-
-  ajouterPlage(jourIndex: number): void {
-    this.plages(jourIndex).push(this.nouvellePlage());
-  }
-
-  retirerPlage(jourIndex: number, plageIndex: number): void {
-    this.plages(jourIndex).removeAt(plageIndex);
+  retirerEmailNotification(index: number): void {
+    this.emailsNotification.removeAt(index);
   }
 
   ngOnInit(): void {
-    this.horaires.controls.forEach((row, i) => {
-      row.get('ouvert')?.valueChanges.subscribe((open) => this.toggleJour(i, !!open));
-    });
-
     this.informations.fetch().subscribe({
       next: (info) => {
         this.patch(info);
@@ -133,9 +118,7 @@ export class InformationsComponent implements OnInit {
   tauxRemplissage(): number {
     const v = this.form.getRawValue();
     const remplis = this.champsSuivis.filter((c) => !!(v as Record<string, string>)[c]?.toString().trim()).length;
-    const horaireOuvert = this.horaires.controls.some((row) => row.get('ouvert')?.value) ? 1 : 0;
-    const total = this.champsSuivis.length + 1;
-    return Math.round(((remplis + horaireOuvert) / total) * 100);
+    return Math.round((remplis / this.champsSuivis.length) * 100);
   }
 
   async submit(): Promise<void> {
@@ -143,24 +126,9 @@ export class InformationsComponent implements OnInit {
     this.serverError.set('');
     this.form.markAllAsTouched();
 
-    const invalidTimes = this.horaires.controls.some((row) => {
-      const v = row.getRawValue();
-      if (!v.ouvert) return false;
-      const plages: { heureDebut: string; heureFin: string }[] = v.plages;
-      if (!plages.length) return true;
-      return plages.some((p, i) => {
-        if (!p.heureDebut || !p.heureFin || p.heureDebut >= p.heureFin) return true;
-        // Les plages doivent être dans l'ordre et ne pas se chevaucher (ex. 9h-15h puis 16h-18h).
-        return i > 0 && plages[i - 1].heureFin > p.heureDebut;
-      });
-    });
-    if (this.form.invalid || invalidTimes) {
+    if (this.form.invalid) {
       this.accordeon?.expandAll();
-      this.serverError.set(
-        invalidTimes
-          ? this.i18n.t('ts.info.horaires')
-          : 'Certains champs sont invalides.'
-      );
+      this.serverError.set('Certains champs sont invalides.');
       return;
     }
 
@@ -190,22 +158,14 @@ export class InformationsComponent implements OnInit {
     });
   }
 
-  // À l'ouverture d'un jour sans aucune plage, on en propose une vide tout de suite ; à la fermeture, on les retire.
-  private toggleJour(jourIndex: number, open: boolean): void {
-    const plages = this.plages(jourIndex);
-    if (open) {
-      if (!plages.length) plages.push(this.nouvellePlage());
-    } else {
-      plages.clear();
-    }
-  }
-
   private patch(info: Information): void {
     const text = (v: string | null) => v ?? '';
     this.form.patchValue({
       nom: info.nom,
       slogan: text(info.slogan),
+      sloganEn: text(info.sloganEn),
       description: text(info.description),
+      descriptionEn: text(info.descriptionEn),
       adresse: text(info.adresse),
       ville: text(info.ville),
       province: text(info.province),
@@ -219,29 +179,16 @@ export class InformationsComponent implements OnInit {
       bannierePromo: text(info.bannierePromo),
       fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto'
     });
-    info.horaires.forEach((h) => {
-      const jourIndex = h.jourSemaine - 1;
-      const row = this.horaires.at(jourIndex) as FormGroup;
-      row.patchValue({ ouvert: h.ouvert });
-      const plages = this.plages(jourIndex);
-      plages.clear();
-      h.plages.forEach((p) => plages.push(this.nouvellePlage(p.heureDebut, p.heureFin)));
-      if (h.ouvert && !plages.length) plages.push(this.nouvellePlage());
-    });
+    this.emailsNotification.clear();
+    info.emailsNotification.forEach((e) => this.emailsNotification.push(this.fb.control(e)));
+    // Conserves tels quels (geres depuis l'ecran Agenda) et renvoyes inchanges avec le reste de la fiche.
+    this.horairesActuels = info.horaires;
     this.form.markAsPristine();
   }
 
   private payload(): InformationForm {
     const v = this.form.getRawValue();
-    const horaires: Horaire[] = this.horaires.controls.map((row) => {
-      const r = row.getRawValue();
-      const plages = r.ouvert ? (r.plages as { heureDebut: string; heureFin: string }[]) : [];
-      return {
-        jourSemaine: r.jourSemaine,
-        ouvert: !!r.ouvert && plages.length > 0,
-        plages
-      };
-    });
-    return { ...v, horaires } as InformationForm;
+    const emailsNotification = (v.emailsNotification as string[]).map((e) => e.trim()).filter((e) => e);
+    return { ...v, emailsNotification, horaires: this.horairesActuels } as InformationForm;
   }
 }

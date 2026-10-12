@@ -22,7 +22,11 @@
 
         @if (auth.keycloakConfigure) {
           <button type="button" class="btn-google" [disabled]="connexionEnCours()" (click)="connecter()">
-            <i class="ti ti-brand-google-filled"></i>
+            @if (connexionEnCours()) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            } @else {
+              <i class="ti ti-brand-google-filled"></i>
+            }
             {{ connexionEnCours() ? ('connexion.redirection' | t) : ('connexion.google' | t) }}
           </button>
           <p class="small text-muted mt-3 mb-0">{{ 'connexion.sansMotDePasse' | t }}</p>

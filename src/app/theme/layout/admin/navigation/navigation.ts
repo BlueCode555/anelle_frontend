@@ -38,7 +38,8 @@ export const NavigationItems: NavigationItem[] = [
       { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', proprietaire: true },
       { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', proprietaire: true },
       { id: 'clients', title: 'Clientèle', type: 'item', url: '/clients', icon: 'ti ti-users', proprietaire: true },
-      { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' }
+      { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' },
+      { id: 'audit', title: 'Journal d\'audit', type: 'item', url: '/audit', icon: 'ti ti-history', proprietaire: true }
     ]
   },
   {
@@ -48,6 +49,14 @@ export const NavigationItems: NavigationItem[] = [
     url: '/agenda',
     icon: 'ti ti-calendar-event',
     ecran: 'AGENDA'
+  },
+  {
+    id: 'statistiques',
+    title: 'Statistiques',
+    type: 'item',
+    url: '/statistiques',
+    icon: 'ti ti-chart-bar',
+    proprietaire: true
   },
   {
     id: 'catalogue',
@@ -66,6 +75,7 @@ export const NavigationItems: NavigationItem[] = [
     icon: 'ti ti-shopping-bag',
     children: [
       { id: 'produits', title: 'Produits', type: 'item', url: '/produits', icon: 'ti ti-package', ecran: 'PRODUITS' },
+      { id: 'rayons', title: 'Rayons', type: 'item', url: '/rayons', icon: 'ti ti-tag', ecran: 'PRODUITS' },
       { id: 'commandes', title: 'Commandes', type: 'item', url: '/commandes', icon: 'ti ti-receipt-2', ecran: 'COMMANDES' }
     ]
   }

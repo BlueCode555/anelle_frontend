@@ -31,13 +31,13 @@ export class BoutiqueComponent implements OnInit {
   zoom = signal<ProduitResponse | null>(null);
 
   visibles = computed(() => this.liste().filter((p) => p.actif));
-  rayons = computed(() => [...new Set(this.visibles().map((p) => p.rayon).filter((r): r is string => !!r))].sort((a, b) => a.localeCompare(b)));
+  rayons = computed(() => [...new Set(this.visibles().map((p) => p.rayonLibelle).filter((r): r is string => !!r))].sort((a, b) => a.localeCompare(b)));
   filtres = computed(() => {
     const q = this.recherche().trim().toLowerCase();
     const rayon = this.rayonActif();
     const liste = this.visibles().filter(
       (p) =>
-        (!rayon || p.rayon === rayon) &&
+        (!rayon || p.rayonLibelle === rayon) &&
         (!q || p.nom.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q))
     );
     switch (this.tri()) {

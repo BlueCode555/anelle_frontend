@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { FormField, form, min, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ProduitForm, ProduitService } from 'src/app/theme/shared/service/boutique.service';
+import { ProduitForm, ProduitService, RayonResponse, RayonService } from 'src/app/theme/shared/service/boutique.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -24,6 +24,7 @@ export class ProduitFormComponent implements OnInit {
   bloquerCaracteresInterdits = bloquerCaracteresInterdits;
   private i18n = inject(TranslationService);
   private produits = inject(ProduitService);
+  private rayonService = inject(RayonService);
   private confirmation = inject(ConfirmationService);
   private toast = inject(ToastService);
   private route = inject(ActivatedRoute);
@@ -42,13 +43,15 @@ export class ProduitFormComponent implements OnInit {
 
   produitModel = signal<ProduitForm>({
     nom: '',
-    rayon: '',
+    rayonCode: '',
     description: '',
     prix: null,
     stock: 0,
     actif: true,
     imageUrl: ''
   });
+
+  rayons = signal<RayonResponse[]>([]);
 
   imagePreview = computed(() => this.produits.imageSrc(this.produitModel().imageUrl));
 
@@ -61,6 +64,8 @@ export class ProduitFormComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.rayonService.list().subscribe((page) => this.rayons.set(page.content.filter((r) => r.actif)));
+
     if (!this.produitId) {
       return;
     }
@@ -69,7 +74,7 @@ export class ProduitFormComponent implements OnInit {
       next: (p) => {
         this.produitModel.set({
           nom: p.nom,
-          rayon: p.rayon ?? '',
+          rayonCode: p.rayonCode ?? '',
           description: p.description ?? '',
           prix: p.prix,
           stock: p.stock,

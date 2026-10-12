@@ -1,0 +1,42 @@
+<div class="connexion-page">
+  <app-site-header />
+
+  <main class="connexion-main">
+    <div class="connexion-split est-personnel">
+      <div class="connexion-visual" aria-hidden="true">
+        <div class="connexion-visual-overlay"></div>
+        <blockquote class="connexion-visual-quote">
+          <p>{{ 'profil.citation' | t }}</p>
+          <cite>{{ nom() }}</cite>
+        </blockquote>
+      </div>
+
+      <div class="connexion-card choix-profil-card text-center">
+        <img class="connexion-logo" src="assets/images/logo/monogramme.png" alt="" width="84" height="84" />
+        <h1 class="h3 mb-2">{{ 'profil.choisirTitre' | t }}</h1>
+        <p class="text-muted mb-4">{{ 'profil.choisirIntro' | t }}</p>
+
+        <div class="profils">
+          @for (p of auth.user()?.profils ?? []; track p.code) {
+            <button type="button" class="profil-carte" (click)="choisir(p)">
+              <span class="profil-texte">
+                <span class="profil-nom">{{ p.libelle }}</span>
+                @if (p.description) {
+                  <span class="profil-desc">{{ p.description }}</span>
+                }
+                <span class="profil-ecrans">
+                  @for (e of ecrans(p); track e) {
+                    <span class="pastille">{{ ('ecran.' + e) | t }}</span>
+                  } @empty {
+                    <span class="text-muted small">{{ 'a.aucun_ecran' | t }}</span>
+                  }
+                </span>
+              </span>
+              <i class="ti ti-chevron-right profil-fleche" aria-hidden="true"></i>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

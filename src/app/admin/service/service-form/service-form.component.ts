@@ -56,17 +56,11 @@ export class ServiceFormComponent implements OnInit {
     imageUrl: ''
   });
 
-  // La duree se saisit en heures + minutes ; le serveur ne connait que des minutes.
-  dureeHeures = computed(() => (this.serviceModel().dureeMinutes ? Math.floor(this.serviceModel().dureeMinutes! / 60) : ''));
-  dureeMin = computed(() => (this.serviceModel().dureeMinutes ? this.serviceModel().dureeMinutes! % 60 : ''));
-
-  onDuree(event: Event, unite: 'h' | 'm'): void {
+  // Un seul champ, en minutes : deux champs séparés (heures + minutes qui s'additionnent) prêtaient à confusion
+  // (ex. taper "10" dans "heures" en pensant saisir des minutes donnait 10 h au lieu de 10 min).
+  onDuree(event: Event): void {
     const saisie = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value) || 0));
-    const actuel = this.serviceModel().dureeMinutes ?? 0;
-    const heures = unite === 'h' ? saisie : Math.floor(actuel / 60);
-    const minutes = unite === 'm' ? saisie : actuel % 60;
-    const total = heures * 60 + minutes;
-    this.serviceModel.update((m) => ({ ...m, dureeMinutes: total > 0 ? total : null }));
+    this.serviceModel.update((m) => ({ ...m, dureeMinutes: saisie > 0 ? saisie : null }));
   }
 
   imagePreview = computed(() => this.catalogue.imageSrc(this.serviceModel().imageUrl));

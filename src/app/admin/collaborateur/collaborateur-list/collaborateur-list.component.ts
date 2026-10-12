@@ -140,7 +140,7 @@ export class CollaborateurListComponent implements OnInit {
   private ouvrir(collaborateur: Collaborateur | null, lectureSeule = false): void {
     this.info.set('');
     this.identifiants.set(null);
-    const ref = this.modals.open(CollaborateurFormComponent, { centered: true });
+    const ref = this.modals.open(CollaborateurFormComponent, { scrollable: true });
     ref.componentInstance.collaborateur = collaborateur;
     ref.componentInstance.lectureSeule = lectureSeule;
     ref.result.then(

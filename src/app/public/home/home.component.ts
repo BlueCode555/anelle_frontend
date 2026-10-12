@@ -57,6 +57,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   info = this.informations.info;
   nom = this.informations.nom;
+  // Retombe sur le texte francais si aucune traduction anglaise n'a ete saisie dans "Mon institut".
+  slogan = computed(() => (this.i18n.langue() === 'en' ? this.info()?.sloganEn : null) || this.info()?.slogan);
+  description = computed(() => (this.i18n.langue() === 'en' ? this.info()?.descriptionEn : null) || this.info()?.description);
 
   categories = signal<CategorieResponse[]>([]);
   services = signal<ServiceResponse[]>([]);
@@ -69,9 +72,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private ecouteurEcran = (e: MediaQueryListEvent) => this.itemsParPage.set(e.matches ? 3 : 6);
   itemsParPage = signal(this.ecranEtroit.matches ? 3 : 6);
 
-  // Vidéo du hero seulement sur grand écran (poids de la vidéo, data mobile) et si la personne n'a pas
-  // demandé moins de mouvement à l'écran ; sinon la photo statique suffit comme fond.
-  videoActif = !window.matchMedia('(max-width: 767.98px)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Vidéo du hero sur tous les écrans (cohérent partout), sauf si la personne a demandé moins de mouvement
+  // à l'écran (réglage d'accessibilité du système) ; sinon la photo statique suffit comme fond.
+  videoActif = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   categorieSlides = computed(() => {
     const parPage = this.itemsParPage();

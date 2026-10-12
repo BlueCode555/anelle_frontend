@@ -6,13 +6,14 @@ import { environment } from 'src/environments/environment';
 import { ApiService } from './api.service';
 import { ApiResponse, PaginationCriteria } from './api.model';
 
-// Mirrors bj.anelle.anelle_backend.dto.response.{ProduitResponse,CommandeResponse}.
+// Mirrors bj.anelle.anelle_backend.dto.response.{ProduitResponse,CommandeResponse,RayonResponse}.
 
 export interface ProduitResponse {
   id: number;
   code: string;
   nom: string;
-  rayon: string | null;
+  rayonCode: string | null;
+  rayonLibelle: string | null;
   description: string | null;
   prix: number;
   stock: number;
@@ -22,12 +23,25 @@ export interface ProduitResponse {
 
 export interface ProduitForm {
   nom: string;
-  rayon: string;
+  // Code d'un rayon du référentiel ('' = aucun rayon).
+  rayonCode: string;
   description: string;
   prix: number | null;
   stock: number | null;
   actif: boolean;
   imageUrl: string;
+}
+
+export interface RayonResponse {
+  id: number;
+  code: string;
+  libelle: string;
+  actif: boolean;
+}
+
+export interface RayonForm {
+  libelle: string;
+  actif: boolean;
 }
 
 export type StatutCommande = 'EN_ATTENTE_PAIEMENT' | 'PAYEE' | 'PRETE' | 'REMISE' | 'ANNULEE';
@@ -96,6 +110,28 @@ export class ProduitService {
 
   imageSrc(url?: string | null): string | null {
     return url ? this.api.absoluteUrl(url) : null;
+  }
+}
+
+// Référentiel des rayons de la boutique (lecture publique ; écriture réservée à l'écran Produits).
+@Injectable({ providedIn: 'root' })
+export class RayonService {
+  private api = inject(ApiService);
+
+  list(criteria: PaginationCriteria = { size: 200 }) {
+    return this.api.list<RayonResponse>('rayons', criteria);
+  }
+
+  create(form: RayonForm) {
+    return this.api.create<RayonResponse>('rayons', form);
+  }
+
+  update(id: number, form: RayonForm) {
+    return this.api.update<RayonResponse>('rayons', id, form);
+  }
+
+  delete(id: number) {
+    return this.api.delete('rayons', id);
   }
 }
 

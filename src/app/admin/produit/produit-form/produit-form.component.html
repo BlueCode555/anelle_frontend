@@ -23,7 +23,10 @@
 
       <div class="mb-3">
         <label class="form-label" for="prd-rayon">{{ 'prd.rayon' | t }}</label>
-        <input id="prd-rayon" type="text" class="form-control" [placeholder]="'prd.rayonEx' | t" [formField]="produitForm.rayon" />
+        <select id="prd-rayon" class="form-select" [formField]="produitForm.rayonCode">
+          <option value="">{{ 'prd.aucunRayon' | t }}</option>
+          <option *ngFor="let r of rayons()" [value]="r.code">{{ r.libelle }}</option>
+        </select>
         <div class="form-text">{{ 'prd.rayonAide' | t }}</div>
       </div>
 

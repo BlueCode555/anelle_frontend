@@ -25,6 +25,7 @@ import {
   versIsoAvecDecalage
 } from 'src/app/theme/shared/_helpers/zoned-time';
 import { NouveauRendezVousComponent } from './nouveau-rendez-vous/nouveau-rendez-vous.component';
+import { HorairesOuvertureComponent } from './horaires-ouverture/horaires-ouverture.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -37,7 +38,7 @@ interface Groupe {
 
 @Component({
   selector: 'app-agenda',
-  imports: [CommonModule, TranslatePipe],
+  imports: [CommonModule, TranslatePipe, HorairesOuvertureComponent],
   templateUrl: './agenda.component.html',
   styleUrl: './agenda.component.scss'
 })
@@ -160,7 +161,7 @@ export class AgendaComponent implements OnInit {
   }
 
   nouveau(): void {
-    const ref = this.modals.open(NouveauRendezVousComponent, { centered: true, size: 'lg' });
+    const ref = this.modals.open(NouveauRendezVousComponent, { scrollable: true, size: 'lg' });
     ref.result.then(
       (r) => {
         if (r === 'saved') this.charger();

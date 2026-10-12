@@ -44,9 +44,19 @@ export class AuthCallbackComponent implements OnInit {
     // Personnel : uniquement la destination demandee par le PERSONNEL (staffGuard) : jamais celle d'une cliente,
     // meme si elle a ete enregistree juste avant sur cet appareil (ex. clic sur "Prendre rendez-vous" sans etre connectee).
     const retour = sessionStorage.getItem(RETOUR_STAFF_KEY);
-    sessionStorage.removeItem(RETOUR_STAFF_KEY);
     const staffRoutes = ['/default', '/agenda', '/collaborateurs', '/profils', '/informations', '/categories', '/services'];
     const versEspaceDeGestion = !!retour && staffRoutes.some((r) => retour === r || retour.startsWith(r + '/'));
-    this.router.navigateByUrl(versEspaceDeGestion ? retour! : '/default', { replaceUrl: true });
+    const destination = versEspaceDeGestion ? retour! : '/default';
+
+    if (this.auth.peutChangerProfil()) {
+      // Plusieurs profils : on demande lequel avant d'entrer ; la destination est reprise juste apres (voir
+      // choisir-profil.component.ts), au lieu de prendre le premier profil en silence.
+      sessionStorage.setItem(RETOUR_STAFF_KEY, destination);
+      this.router.navigateByUrl('/choisir-profil', { replaceUrl: true });
+      return;
+    }
+
+    sessionStorage.removeItem(RETOUR_STAFF_KEY);
+    this.router.navigateByUrl(destination, { replaceUrl: true });
   }
 }

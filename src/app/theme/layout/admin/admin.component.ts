@@ -165,7 +165,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   // « Changer de profil » : ouvre le choix parmi les profils du collaborateur, puis revient au tableau de bord.
   changerProfil(): void {
     this.profilOuvert.set(false);
-    const ref = this.modals.open(ChangerProfilComponent, { centered: true });
+    const ref = this.modals.open(ChangerProfilComponent, { scrollable: true });
     ref.result.then(
       () => this.router.navigate(['/default']),
       () => {}

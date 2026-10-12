@@ -1,0 +1,120 @@
+<section class="dash-hero">
+  <div>
+    <span class="ar-eyebrow">{{ 'nav.statistiques' | t }}</span>
+    <h2 class="dash-title">{{ 'stats.titre' | t }}</h2>
+    <p class="dash-date">{{ 'stats.intro' | t }}</p>
+  </div>
+</section>
+
+<div class="card mb-4">
+  <div class="card-body stats-periode">
+    <div class="stats-dates">
+      <div>
+        <label class="form-label" for="statsDu">{{ 'stats.du' | t }}</label>
+        <input id="statsDu" type="date" class="form-control" [(ngModel)]="du" />
+      </div>
+      <div>
+        <label class="form-label" for="statsAu">{{ 'stats.au' | t }}</label>
+        <input id="statsAu" type="date" class="form-control" [(ngModel)]="au" />
+      </div>
+      <button type="button" class="btn btn-primary" (click)="charger()">{{ 'stats.appliquer' | t }}</button>
+    </div>
+    <div class="stats-presets">
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="preset(7)">{{ 'stats.preset7' | t }}</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="preset(30)">{{ 'stats.preset30' | t }}</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" (click)="presetMoisCourant()">{{ 'stats.presetMois' | t }}</button>
+    </div>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="text-center text-muted py-5">{{ 'a.chargement' | t }}</div>
+}
+@if (error() && !loading()) {
+  <div class="alert alert-danger">{{ 'stats.erreur' | t }}</div>
+}
+
+@if (!loading() && !error() && stats(); as s) {
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-xl-3">
+      <div class="kpi">
+        <span class="kpi-icon"><i class="ti ti-coin"></i></span>
+        <span class="kpi-value">{{ formatMontant(s.chiffreAffairesTotal) }}</span>
+        <span class="kpi-label">{{ 'stats.caTotal' | t }}</span>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="kpi">
+        <span class="kpi-icon"><i class="ti ti-sparkles"></i></span>
+        <span class="kpi-value">{{ formatMontant(s.chiffreAffairesServices) }}</span>
+        <span class="kpi-label">{{ 'stats.caServices' | t }}</span>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="kpi">
+        <span class="kpi-icon"><i class="ti ti-shopping-bag"></i></span>
+        <span class="kpi-value">{{ formatMontant(s.chiffreAffairesProduits) }}</span>
+        <span class="kpi-label">{{ 'stats.caProduits' | t }}</span>
+      </div>
+    </div>
+    <div class="col-6 col-xl-3">
+      <div class="kpi">
+        <span class="kpi-icon"><i class="ti ti-receipt-2"></i></span>
+        <span class="kpi-value">{{ s.nombreRendezVous + s.nombreCommandes }}</span>
+        <span class="kpi-label">{{ 'stats.ventes' | t: { rdv: s.nombreRendezVous, cmd: s.nombreCommandes } }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">{{ 'stats.topServices' | t }}</h5></div>
+        <div class="card-body">
+          @if (!s.servicesLesPlusDemandes.length) {
+            <div class="empty">
+              <i class="ti ti-sparkles"></i>
+              <p>{{ 'stats.aucunService' | t }}</p>
+            </div>
+          }
+          @for (item of s.servicesLesPlusDemandes; track item.code) {
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>{{ item.libelle }}</span>
+                <strong>{{ 'stats.foisVendu' | t: { n: item.nombre } }}</strong>
+              </div>
+              <div class="progress dash-progress">
+                <div class="progress-bar" role="progressbar" [style.width.%]="(item.nombre / maxNombre(s.servicesLesPlusDemandes)) * 100"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="card h-100">
+        <div class="card-header"><h5 class="mb-0">{{ 'stats.topProduits' | t }}</h5></div>
+        <div class="card-body">
+          @if (!s.produitsLesPlusVendus.length) {
+            <div class="empty">
+              <i class="ti ti-shopping-bag"></i>
+              <p>{{ 'stats.aucunProduit' | t }}</p>
+            </div>
+          }
+          @for (item of s.produitsLesPlusVendus; track item.code) {
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span>{{ item.libelle }}</span>
+                <strong>{{ 'stats.uniteVendue' | t: { n: item.nombre } }}</strong>
+              </div>
+              <div class="progress dash-progress">
+                <div class="progress-bar" role="progressbar" [style.width.%]="(item.nombre / maxNombre(s.produitsLesPlusVendus)) * 100"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

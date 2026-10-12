@@ -22,7 +22,10 @@ export interface Horaire {
 export interface Information {
   nom: string;
   slogan: string | null;
+  // Version anglaise ; vide = on retombe sur `slogan` meme en anglais (voir home.component.ts).
+  sloganEn: string | null;
   description: string | null;
+  descriptionEn: string | null;
   adresse: string | null;
   ville: string | null;
   province: string | null;
@@ -30,6 +33,9 @@ export interface Information {
   pays: string | null;
   telephone: string | null;
   email: string | null;
+  // Adresses qui reçoivent les notifications internes (nouvelle demande de rendez-vous...), distinctes du
+  // champ email ci-dessus (contact public affiché sur le site).
+  emailsNotification: string[];
   siteWeb: string | null;
   lienInstagram: string | null;
   lienFacebook: string | null;

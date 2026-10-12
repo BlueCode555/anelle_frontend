@@ -8,11 +8,14 @@ export const FR_ADMIN: Record<string, string> = {
   'nav.clients': 'Clientèle',
   'nav.informations': 'Mon institut',
   'nav.agenda': 'Agenda',
+  'nav.statistiques': 'Statistiques',
   'nav.catalogue': 'Catalogue',
   'nav.categories': 'Catégories',
   'nav.services': 'Services',
   'nav.boutique': 'Boutique',
   'nav.produits': 'Produits',
+  'nav.rayons': 'Rayons',
+  'nav.audit': 'Journal d\'audit',
   'nav.commandes': 'Commandes',
 
   // ── Coque ─────────────────────────────────────────────────────────────────

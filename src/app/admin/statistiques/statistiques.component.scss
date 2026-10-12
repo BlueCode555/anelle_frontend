@@ -1,0 +1,37 @@
+.stats-periode {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.stats-dates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+
+  .form-label {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.stats-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--ar-texte-doux, #8a7660);
+  padding: 1.5rem 0;
+
+  i {
+    font-size: 1.8rem;
+    color: var(--ar-dore, #c9a227);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+}

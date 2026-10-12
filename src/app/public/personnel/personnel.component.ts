@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '../../theme/shared/service/auth.service';
@@ -18,6 +18,7 @@ export class PersonnelComponent implements OnInit {
   nom = inject(InformationService).nom;
   private router = inject(Router);
   erreur = inject(ActivatedRoute).snapshot.queryParamMap.get('erreur');
+  connexionEnCours = signal(false);
 
   async ngOnInit(): Promise<void> {
     await this.auth.pret();
@@ -27,6 +28,7 @@ export class PersonnelComponent implements OnInit {
   }
 
   connexion(): void {
+    this.connexionEnCours.set(true);
     this.auth.loginPersonnel();
   }
 }

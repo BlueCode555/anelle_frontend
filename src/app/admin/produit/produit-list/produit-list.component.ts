@@ -69,7 +69,7 @@ export class ProduitListComponent implements OnInit {
     this.produits
       .update(p.id, {
         nom: p.nom,
-        rayon: p.rayon ?? '',
+        rayonCode: p.rayonCode ?? '',
         description: p.description ?? '',
         prix: p.prix,
         stock: p.stock,

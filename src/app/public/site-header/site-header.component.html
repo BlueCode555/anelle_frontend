@@ -46,21 +46,23 @@
   </nav>
 
   @if (menuOpen()) {
+    <div class="mobile-menu-backdrop" (click)="closeMenu()"></div>
     <ul class="mobile-menu">
-      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()">{{ 'header.nav.accueil' | t }}</a></li>
-      <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()">{{ 'header.nav.services' | t }}</a></li>
-      <li><a routerLink="/boutique" (click)="closeMenu()">{{ 'header.nav.boutique' | t }}</a></li>
-      <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()">{{ 'header.nav.apropos' | t }}</a></li>
-      <li><a routerLink="/accueil" fragment="contact" (click)="closeMenu()">{{ 'header.nav.contact' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()"><i class="ti ti-home"></i>{{ 'header.nav.accueil' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()"><i class="ti ti-sparkles"></i>{{ 'header.nav.services' | t }}</a></li>
+      <li><a routerLink="/boutique" (click)="closeMenu()"><i class="ti ti-shopping-bag"></i>{{ 'header.nav.boutique' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()"><i class="ti ti-info-circle"></i>{{ 'header.nav.apropos' | t }}</a></li>
+      <li><a routerLink="/accueil" fragment="contact" (click)="closeMenu()"><i class="ti ti-mail"></i>{{ 'header.nav.contact' | t }}</a></li>
       @if (auth.user(); as user) {
         <li>
           <a [routerLink]="user.type === 'CLIENT' ? '/mon-espace' : '/default'" (click)="closeMenu()">
+            <i class="ti" [class.ti-user-circle]="user.type === 'CLIENT'" [class.ti-layout-dashboard]="user.type !== 'CLIENT'"></i>
             {{ user.type === 'CLIENT' ? ('header.monEspace' | t) : ('header.espaceGestion' | t) }}
           </a>
         </li>
-        <li><button type="button" class="mobile-logout" (click)="logout()">{{ 'header.deconnexion' | t }}</button></li>
+        <li><button type="button" class="mobile-logout" (click)="logout()"><i class="ti ti-logout"></i>{{ 'header.deconnexion' | t }}</button></li>
       } @else {
-        <li><a routerLink="/connexion" (click)="closeMenu()">{{ 'header.seConnecter' | t }}</a></li>
+        <li><a routerLink="/connexion" (click)="closeMenu()"><i class="ti ti-login-2"></i>{{ 'header.seConnecter' | t }}</a></li>
       }
       <li class="mobile-lang"><app-lang-switcher /></li>
     </ul>
