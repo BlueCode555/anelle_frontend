@@ -59,11 +59,16 @@ export class CategorieListComponent implements OnInit {
     return this.catalogue.imageSrc(url);
   }
 
+  // Repli sur le francais si aucune traduction anglaise n'a ete saisie (donnee saisie par l'institut).
+  libelleCategorie(c: CategorieResponse): string {
+    return (this.i18n.langue() === 'en' ? c.libelleEn : null) || c.libelle;
+  }
+
   // Un clic : affiche ou masque la categorie sur la page d'accueil (sans ouvrir le formulaire).
   basculer(c: CategorieResponse, event: Event): void {
     const actif = (event.target as HTMLInputElement).checked;
     this.catalogue
-      .updateCategorie(c.id, { libelle: c.libelle, description: c.description ?? '', imageUrl: c.imageUrl ?? '', actif })
+      .updateCategorie(c.id, { libelle: c.libelle, libelleEn: c.libelleEn ?? '', description: c.description ?? '', imageUrl: c.imageUrl ?? '', actif })
       .subscribe({
         next: () => {
           this.categories.update((l) => l.map((x) => (x.id === c.id ? { ...x, actif } : x)));

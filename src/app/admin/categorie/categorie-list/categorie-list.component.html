@@ -45,7 +45,7 @@
                     <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
                   }
                 </td>
-                <td [attr.data-label]="'a.categorie' | t" class="fw-semibold">{{ cat.libelle }}</td>
+                <td [attr.data-label]="'a.categorie' | t" class="fw-semibold">{{ libelleCategorie(cat) }}</td>
                 <td [attr.data-label]="'a.description' | t" class="text-muted">{{ cat.description }}</td>
                 <td [attr.data-label]="'a.statut' | t">
                   <div class="form-check form-switch statut-switch">

@@ -12,6 +12,11 @@ export interface Classement {
   montant: number;
 }
 
+export interface PointEvolution {
+  date: string;
+  montant: number;
+}
+
 export interface Statistiques {
   chiffreAffairesTotal: number;
   chiffreAffairesServices: number;
@@ -20,6 +25,7 @@ export interface Statistiques {
   nombreCommandes: number;
   servicesLesPlusDemandes: Classement[];
   produitsLesPlusVendus: Classement[];
+  evolution: PointEvolution[];
 }
 
 // Statistiques de vente (chiffre d'affaires, services/produits les plus demandes) sur une periode donnee.

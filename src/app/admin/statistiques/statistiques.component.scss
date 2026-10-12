@@ -23,6 +23,50 @@
   gap: 0.5rem;
 }
 
+// Pendant un rafraichissement silencieux (sondage automatique), le dernier rendu reste affiche, juste
+// legerement estompe le temps que les nouvelles donnees arrivent — jamais de saut ni d'ecran vide.
+.stats-rafraichissement {
+  opacity: 0.55;
+  transition: opacity 0.2s ease;
+}
+
+.stats-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ar-texte-doux, #8a7660);
+}
+
+.stats-live-point {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0ca30c;
+  animation: stats-pouls 1.8s ease-in-out infinite;
+}
+
+@keyframes stats-pouls {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-live-point {
+    animation: none;
+  }
+}
+
 .empty {
   text-align: center;
   color: var(--ar-texte-doux, #8a7660);

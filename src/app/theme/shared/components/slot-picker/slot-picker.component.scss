@@ -6,6 +6,123 @@
   max-width: 260px;
 }
 
+// ── Recherche du soin (combobox avec filtrage) ───────────
+.soin-recherche {
+  position: relative;
+}
+
+.soin-recherche-icone {
+  position: absolute;
+  top: 50%;
+  left: 0.85rem;
+  transform: translateY(-50%);
+  color: var(--ar-texte-doux, #8a7660);
+  pointer-events: none;
+}
+
+#sp-service {
+  padding-left: 2.1rem;
+}
+
+.soin-liste {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0.3rem;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--ar-nude);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 28px rgba(74, 46, 23, 0.16);
+
+  li {
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.55rem;
+    cursor: pointer;
+    font-size: 0.92rem;
+
+    &:hover,
+    &.est-active {
+      background: var(--ar-creme-fonce);
+    }
+
+    &[aria-selected='true'] {
+      color: var(--ar-chocolat-fonce);
+      font-weight: 600;
+    }
+  }
+}
+
+.soin-liste-vide {
+  color: var(--ar-texte-doux, #8a7660);
+  cursor: default;
+
+  &:hover {
+    background: transparent !important;
+  }
+}
+
+.soin-case {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  border: 1.5px solid var(--ar-nude, #d8c7a6);
+  border-radius: 0.3rem;
+  font-size: 0.75rem;
+  color: #fff;
+  vertical-align: middle;
+
+  &.est-cochee {
+    background: var(--ar-dore, #c9a227);
+    border-color: var(--ar-dore, #c9a227);
+  }
+}
+
+// ── Soins choisis (plusieurs, enchaines) ─────────────────
+.soins-choisis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.soin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.4rem 0.3rem 0.75rem;
+  border-radius: 50rem;
+  background: var(--ar-creme-fonce, #f3eadb);
+  color: var(--ar-chocolat-fonce, #4a2e17);
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ar-chocolat-fonce, #4a2e17);
+
+    &:hover {
+      background: rgba(74, 46, 23, 0.12);
+    }
+  }
+}
+
 // ── Aperçu du soin choisi ────────────────────────────────
 .soin-apercu {
   display: flex;

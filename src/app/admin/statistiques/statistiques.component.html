@@ -35,7 +35,7 @@
 }
 
 @if (!loading() && !error() && stats(); as s) {
-  <div class="row g-3 mb-4">
+  <div class="row g-3 mb-4" [class.stats-rafraichissement]="rafraichissement()">
     <div class="col-6 col-xl-3">
       <div class="kpi">
         <span class="kpi-icon"><i class="ti ti-coin"></i></span>
@@ -66,7 +66,19 @@
     </div>
   </div>
 
-  <div class="row g-3">
+  <div class="card mb-4" [class.stats-rafraichissement]="rafraichissement()">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">{{ 'stats.evolution' | t }}</h5>
+      @if (au === aujourdhuiStr) {
+        <span class="stats-live" [title]="'stats.miseAJourAuto' | t"><span class="stats-live-point"></span>{{ 'stats.enDirect' | t }}</span>
+      }
+    </div>
+    <div class="card-body">
+      <app-evolution-chart [points]="s.evolution" />
+    </div>
+  </div>
+
+  <div class="row g-3" [class.stats-rafraichissement]="rafraichissement()">
     <div class="col-12 col-xl-6">
       <div class="card h-100">
         <div class="card-header"><h5 class="mb-0">{{ 'stats.topServices' | t }}</h5></div>

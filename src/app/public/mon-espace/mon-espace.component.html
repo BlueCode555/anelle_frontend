@@ -61,7 +61,7 @@
                 <span class="hero-date text-capitalize">{{ aujourdhuiTexte() }}</span>
                 <h1 class="hero-titre">{{ 'espace.bonjour' | t: { nom: auth.displayName() } }}</h1>
                 @if (prochain(); as p) {
-                  <p class="hero-texte"><i class="ti ti-calendar-star"></i>{{ 'espace.prochainDans' | t: { quand: dans(p.debut), soin: p.serviceNom } }}</p>
+                  <p class="hero-texte"><i class="ti ti-calendar-star"></i>{{ 'espace.prochainDans' | t: { quand: dans(p.debut), soin: p.libelleServices } }}</p>
                 } @else {
                   <p class="hero-texte"><i class="ti ti-sparkles"></i>{{ 'espace.accroche' | t }}</p>
                 }
@@ -124,7 +124,7 @@
                       <span>{{ moisCourt(p.debut) }}</span>
                     </div>
                     <div class="carte-rdv-texte">
-                      <strong>{{ p.serviceNom }}</strong>
+                      <strong>{{ p.libelleServices }}</strong>
                       <span class="text-capitalize">{{ jour(p.debut) }}</span>
                       <span>{{ heure(p.debut) }} – {{ heure(p.fin) }} · {{ formatTarif(p.prix) }}</span>
                       <span class="dans-pastille">{{ dans(p.debut) }}</span>
@@ -314,7 +314,7 @@
                   @for (rdv of paiements(); track rdv.id) {
                     <li class="rdv-item">
                       <div class="rdv-when">
-                        <strong>{{ rdv.serviceNom }}</strong>
+                        <strong>{{ rdv.libelleServices }}</strong>
                         <span class="text-capitalize">{{ jour(rdv.debut) }}</span>
                       </div>
                       <div class="rdv-what">
@@ -351,7 +351,7 @@
       </div>
     </div>
     <div class="rdv-what">
-      <strong>{{ rdv.serviceNom }}</strong>
+      <strong>{{ rdv.libelleServices }}</strong>
       <span class="text-muted">{{ formatTarif(rdv.prix) }}</span>
       @if (rdv.statut === 'REFUSE' && rdv.motifRefus) {
         <span class="text-muted small">{{ 'espace.motif' | t: { motif: rdv.motifRefus } }}</span>

@@ -19,6 +19,8 @@ export interface RendezVous {
   prix: number;
   serviceCode: string;
   serviceNom: string;
+  // "Gommage corporel + Manucure classique" pour un rendez-vous enchaîné ; identique à serviceNom sinon.
+  libelleServices: string;
   clientNom: string | null;
   clientEmail: string | null;
   clientTelephone: string | null;
@@ -47,6 +49,8 @@ export interface Creneaux {
 
 export interface RendezVousForm {
   serviceCode: string;
+  // Soins supplémentaires enchaînés après le premier (même créneau, un seul rendez-vous).
+  serviceCodesSupplementaires?: string[];
   debut: string;
   note?: string;
   contactNom?: string;
@@ -87,8 +91,11 @@ export class RendezVousService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
 
-  creneaux(service: string, date: string): Observable<Creneaux> {
-    const params = new HttpParams().set('service', service).set('date', date);
+  creneaux(services: string | string[], date: string): Observable<Creneaux> {
+    let params = new HttpParams().set('date', date);
+    for (const code of Array.isArray(services) ? services : [services]) {
+      params = params.append('service', code);
+    }
     return this.http.get<ApiResponse<Creneaux>>(`${this.base}/disponibilites/creneaux`, { params }).pipe(map((r) => r.data));
   }
 

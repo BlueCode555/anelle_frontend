@@ -41,7 +41,7 @@ const appRoutes: Routes = [
       {
         path: 'clients',
         canActivate: [droitGuard],
-        data: { proprietaire: true },
+        data: { ecran: 'CLIENTS' },
         loadComponent: () => import('./admin/client/client-list/client-list.component').then((c) => c.ClientListComponent)
       },
       {
@@ -53,13 +53,13 @@ const appRoutes: Routes = [
       {
         path: 'audit',
         canActivate: [droitGuard],
-        data: { proprietaire: true },
+        data: { ecran: 'AUDIT' },
         loadComponent: () => import('./admin/audit/audit-list/audit-list.component').then((c) => c.AuditListComponent)
       },
       {
         path: 'statistiques',
         canActivate: [droitGuard],
-        data: { proprietaire: true },
+        data: { ecran: 'STATISTIQUES' },
         loadComponent: () => import('./admin/statistiques/statistiques.component').then((c) => c.StatistiquesComponent)
       },
       {

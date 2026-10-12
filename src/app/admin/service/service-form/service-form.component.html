@@ -30,23 +30,30 @@
         </div>
       </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="nomService">{{ 'a.nom_du_service' | t }}</label>
-        <input
-          id="nomService"
-          type="text"
-          class="form-control"
-          [placeholder]="'a.ex_pedicure_classique' | t"
-          [formField]="serviceForm.nomService"
-          [class.is-invalid]="submitted() && serviceForm.nomService().invalid()"
-        />
-        @if (submitted() && serviceForm.nomService().invalid()) {
-          <div class="invalid-feedback">
-            @for (error of serviceForm.nomService().errors(); track error.kind) {
-              <div>{{ error.message }}</div>
-            }
-          </div>
-        }
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="nomService">{{ 'a.nom_du_service' | t }} (FR)</label>
+          <input
+            id="nomService"
+            type="text"
+            class="form-control"
+            [placeholder]="'a.ex_pedicure_classique' | t"
+            [formField]="serviceForm.nomService"
+            [class.is-invalid]="submitted() && serviceForm.nomService().invalid()"
+          />
+          @if (submitted() && serviceForm.nomService().invalid()) {
+            <div class="invalid-feedback">
+              @for (error of serviceForm.nomService().errors(); track error.kind) {
+                <div>{{ error.message }}</div>
+              }
+            </div>
+          }
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label" for="nomServiceEn">{{ 'a.nom_du_service' | t }} (EN)</label>
+          <input id="nomServiceEn" type="text" class="form-control" [formField]="serviceForm.nomServiceEn" />
+          <div class="form-text">{{ 'info.traductionAide' | t }}</div>
+        </div>
       </div>
 
       <div class="mb-3">

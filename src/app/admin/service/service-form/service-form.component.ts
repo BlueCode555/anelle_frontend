@@ -48,6 +48,7 @@ export class ServiceFormComponent implements OnInit {
 
   serviceModel = signal<ServiceForm>({
     nomService: '',
+    nomServiceEn: '',
     categorieCode: '',
     description: '',
     dureeMinutes: null,
@@ -84,6 +85,7 @@ export class ServiceFormComponent implements OnInit {
       next: (service) => {
         this.serviceModel.set({
           nomService: service.nomService,
+          nomServiceEn: service.nomServiceEn ?? '',
           categorieCode: service.categorieCode,
           description: service.description ?? '',
           dureeMinutes: service.dureeMinutes,

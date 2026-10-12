@@ -1,0 +1,79 @@
+<div class="evo-entete">
+  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="vueTableau.set(!vueTableau())">
+    <i class="ti" [class.ti-table]="!vueTableau()" [class.ti-chart-line]="vueTableau()"></i>
+    {{ (vueTableau() ? 'stats.voirGraphe' : 'stats.voirTableau') | t }}
+  </button>
+</div>
+
+@if (!points().length) {
+  <div class="empty">
+    <i class="ti ti-chart-line"></i>
+    <p>{{ 'stats.aucuneVente' | t }}</p>
+  </div>
+} @else if (vueTableau()) {
+  <div class="table-responsive evo-tableau">
+    <table class="table table-sm">
+      <thead>
+        <tr>
+          <th>{{ 'stats.date' | t }}</th>
+          <th class="text-end">{{ 'stats.montant' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of points(); track p.date) {
+          <tr>
+            <td>{{ formatDateLongue(p.date) }}</td>
+            <td class="text-end">{{ formatMontant(p.montant) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <div class="evo-graphe">
+    <svg
+      [attr.viewBox]="'0 0 ' + largeur + ' ' + hauteur"
+      preserveAspectRatio="none"
+      (pointermove)="onPointerMove($event)"
+      (pointerleave)="arreterSurvol()"
+      role="img"
+      [attr.aria-label]="'stats.graphAria' | t"
+    >
+      <!-- Grille horizontale, discrete -->
+      @for (t of ticksY(); track t.valeur) {
+        <line class="evo-grille" [attr.x1]="0" [attr.x2]="largeur" [attr.y1]="t.y" [attr.y2]="t.y" />
+        <text class="evo-tick" [attr.x]="2" [attr.y]="t.y - 4">{{ formatMontant(t.valeur) }}</text>
+      }
+
+      <!-- Aire puis ligne -->
+      <path class="evo-aire" [attr.d]="airePath()" />
+      <path class="evo-ligne" [attr.d]="lignePath()" />
+
+      <!-- Reticule au survol -->
+      @if (pointSurvole(); as p) {
+        <line class="evo-reticule" [attr.x1]="p.x" [attr.x2]="p.x" [attr.y1]="16" [attr.y2]="hauteur - 28" />
+        <circle class="evo-point-survol" [attr.cx]="p.x" [attr.cy]="p.y" r="4" />
+      }
+
+      <!-- Point et etiquette de fin -->
+      @if (dernierPoint(); as d) {
+        <circle class="evo-point-fin" [attr.cx]="d.x" [attr.cy]="d.y" r="4" />
+        <text class="evo-etiquette-fin" [attr.x]="d.x" [attr.y]="d.y - 10" text-anchor="end">{{ formatMontant(d.montant) }}</text>
+      }
+
+      <!-- Dates sous l'axe -->
+      @for (p of positions(); track p.date; let i = $index, total = $count) {
+        @if (afficherEtiquette(i, total)) {
+          <text class="evo-tick evo-tick-x" [attr.x]="p.x" [attr.y]="hauteur - 8" text-anchor="middle">{{ formatDateCourte(p.date) }}</text>
+        }
+      }
+    </svg>
+
+    @if (pointSurvole(); as p) {
+      <div class="evo-infobulle" [style.left.%]="(p.x / largeur) * 100">
+        <strong>{{ formatMontant(p.montant) }}</strong>
+        <span>{{ formatDateLongue(p.date) }}</span>
+      </div>
+    }
+  </div>
+}

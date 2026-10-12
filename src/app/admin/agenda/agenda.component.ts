@@ -198,7 +198,7 @@ export class AgendaComponent implements OnInit {
   async annuler(rdv: RendezVous): Promise<void> {
     const ok = await this.confirmation.demander({
       titre: this.i18n.t('ts.agenda.annulerTitre', { nom: rdv.clientNom ?? this.i18n.t('ts.agenda.ceClient') }),
-      message: rdv.serviceNom,
+      message: rdv.libelleServices,
       texteConfirmer: this.i18n.t('espace.annulerConfirmer'),
       texteAnnuler: this.i18n.t('espace.garder'),
       danger: true

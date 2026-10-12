@@ -7,23 +7,30 @@
   <form id="categorieForm" *ngIf="!chargement()" (ngSubmit)="onSubmit($event)">
     <div *ngIf="serverError()" class="alert alert-danger">{{ serverError() }}</div>
 
-    <div class="mb-3">
-      <label class="form-label" for="libelle">{{ 'a.libelle' | t }}</label>
-      <input
-        id="libelle"
-        type="text"
-        class="form-control"
-        [placeholder]="'a.ex_pedicure' | t"
-        [formField]="categorieForm.libelle"
-        [class.is-invalid]="submitted() && categorieForm.libelle().invalid()"
-      />
-      @if (submitted() && categorieForm.libelle().invalid()) {
-        <div class="invalid-feedback">
-          @for (error of categorieForm.libelle().errors(); track error.kind) {
-            <div>{{ error.message }}</div>
-          }
-        </div>
-      }
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="libelle">{{ 'a.libelle' | t }} (FR)</label>
+        <input
+          id="libelle"
+          type="text"
+          class="form-control"
+          [placeholder]="'a.ex_pedicure' | t"
+          [formField]="categorieForm.libelle"
+          [class.is-invalid]="submitted() && categorieForm.libelle().invalid()"
+        />
+        @if (submitted() && categorieForm.libelle().invalid()) {
+          <div class="invalid-feedback">
+            @for (error of categorieForm.libelle().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label" for="libelleEn">{{ 'a.libelle' | t }} (EN)</label>
+        <input id="libelleEn" type="text" class="form-control" [formField]="categorieForm.libelleEn" />
+        <div class="form-text">{{ 'info.traductionAide' | t }}</div>
+      </div>
     </div>
 
     <div class="mb-3">

@@ -115,12 +115,27 @@
 
 // ── Carte de connexion ───────────────────────────────────
 .connexion-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
   padding: 2.75rem 2.25rem;
   background: #fff;
+}
+
+.connexion-retour {
+  position: absolute;
+  top: 1rem;
+  left: 1.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ar-chocolat-fonce, #4a2e17);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ar-dore, #c9a227);
+  }
 }
 
 .connexion-icon {

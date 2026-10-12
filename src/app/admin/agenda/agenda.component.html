@@ -49,7 +49,7 @@
                   <span class="text-muted"> – {{ heure(rdv.fin) }}</span>
                 </div>
                 <div>
-                  <strong>{{ rdv.serviceNom }}</strong>
+                  <strong>{{ rdv.libelleServices }}</strong>
                   <span class="text-muted"> · {{ formatTarif(rdv.prix) }}</span>
                   <div class="small text-muted">
                     {{ rdv.clientNom ?? ('a.client' | t) }}

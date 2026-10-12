@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom, map } from 'rxjs';
 
@@ -36,7 +36,16 @@ export interface ProfilAcces {
   permissions: Permission[];
 }
 
-export type EcranCode = 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES';
+export type EcranCode =
+  | 'AGENDA'
+  | 'INFORMATIONS'
+  | 'CATEGORIES'
+  | 'SERVICES'
+  | 'PRODUITS'
+  | 'COMMANDES'
+  | 'CLIENTS'
+  | 'AUDIT'
+  | 'STATISTIQUES';
 export type ActionCode = 'lire' | 'creer' | 'modifier' | 'supprimer';
 
 export interface Permission {
@@ -122,8 +131,66 @@ export class AuthService {
   private rafraichissement: Promise<string | null> | null = null;
   private minuteur: ReturnType<typeof setTimeout> | null = null;
 
+  // ── Déconnexion après inactivité (personnel et clientes) ──────────────────
+  // 10 min sans la moindre interaction (souris, clavier, défilement, toucher) : le renouvellement silencieux
+  // du jeton (planifierRenouvellement) maintenait sinon la session ouverte indéfiniment tant que l'onglet
+  // restait ouvert, même abandonné sur un poste partagé.
+  private static readonly INACTIVITE_LIMITE_MS = 10 * 60 * 1000;
+  private static readonly EVENEMENTS_ACTIVITE = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'] as const;
+  private inactiviteMinuteur: ReturnType<typeof setTimeout> | null = null;
+  private derniereActivite = 0;
+  private surveillanceActive = false;
+  private readonly surActivite = () => this.reinitialiserInactivite();
+
   constructor() {
     this.restoreSession();
+    effect(() => {
+      if (this.isLoggedIn()) {
+        untracked(() => this.demarrerSurveillanceInactivite());
+      } else {
+        untracked(() => this.arreterSurveillanceInactivite());
+      }
+    });
+  }
+
+  private demarrerSurveillanceInactivite(): void {
+    if (this.surveillanceActive) return;
+    this.surveillanceActive = true;
+    AuthService.EVENEMENTS_ACTIVITE.forEach((evt) => window.addEventListener(evt, this.surActivite, { passive: true }));
+    this.planifierDeconnexionInactivite();
+  }
+
+  private arreterSurveillanceInactivite(): void {
+    if (!this.surveillanceActive) return;
+    this.surveillanceActive = false;
+    AuthService.EVENEMENTS_ACTIVITE.forEach((evt) => window.removeEventListener(evt, this.surActivite));
+    if (this.inactiviteMinuteur) clearTimeout(this.inactiviteMinuteur);
+  }
+
+  // Les événements de souris/défilement peuvent déclencher des centaines d'appels par seconde : on ne
+  // relance le minuteur qu'une fois par seconde au plus, jamais à chaque événement individuel.
+  private reinitialiserInactivite(): void {
+    const maintenant = Date.now();
+    if (maintenant - this.derniereActivite < 1000) return;
+    this.derniereActivite = maintenant;
+    this.planifierDeconnexionInactivite();
+  }
+
+  private planifierDeconnexionInactivite(): void {
+    if (this.inactiviteMinuteur) clearTimeout(this.inactiviteMinuteur);
+    this.inactiviteMinuteur = setTimeout(() => this.deconnexionPourInactivite(), AuthService.INACTIVITE_LIMITE_MS);
+  }
+
+  private deconnexionPourInactivite(): void {
+    const estClient = this.user()?.type === 'CLIENT';
+    this.arreterSurveillanceInactivite();
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_KEY);
+    localStorage.removeItem(ID_TOKEN_KEY);
+    localStorage.removeItem(PROFIL_KEY);
+    if (this.minuteur) clearTimeout(this.minuteur);
+    this.user.set(null);
+    this.router.navigate([estClient ? '/connexion' : '/personnel'], { queryParams: { inactivite: '1' } });
   }
 
   // Se resout quand la restauration de la session (lecture du profil) est terminee : les gardes de routes l'attendent.

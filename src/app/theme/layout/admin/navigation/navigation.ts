@@ -14,7 +14,7 @@ export interface NavigationItem {
   role?: string[];
   isMainParent?: boolean;
   // Droit de lecture exigé sur cet écran pour voir l'entrée du menu
-  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES';
+  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES' | 'CLIENTS' | 'AUDIT' | 'STATISTIQUES';
   // Entrée réservée à l'esthéticienne
   proprietaire?: boolean;
 }
@@ -37,9 +37,9 @@ export const NavigationItems: NavigationItem[] = [
     children: [
       { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', proprietaire: true },
       { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', proprietaire: true },
-      { id: 'clients', title: 'Clientèle', type: 'item', url: '/clients', icon: 'ti ti-users', proprietaire: true },
+      { id: 'clients', title: 'Clientèle', type: 'item', url: '/clients', icon: 'ti ti-users', ecran: 'CLIENTS' },
       { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' },
-      { id: 'audit', title: 'Journal d\'audit', type: 'item', url: '/audit', icon: 'ti ti-history', proprietaire: true }
+      { id: 'audit', title: 'Journal d\'audit', type: 'item', url: '/audit', icon: 'ti ti-history', ecran: 'AUDIT' }
     ]
   },
   {
@@ -56,7 +56,7 @@ export const NavigationItems: NavigationItem[] = [
     type: 'item',
     url: '/statistiques',
     icon: 'ti ti-chart-bar',
-    proprietaire: true
+    ecran: 'STATISTIQUES'
   },
   {
     id: 'catalogue',

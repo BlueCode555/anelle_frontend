@@ -87,7 +87,7 @@
                   <span class="rdv-time">{{ heure(rdv.debut) }}</span>
                 </div>
                 <div class="rdv-info">
-                  <strong>{{ rdv.serviceNom }}</strong>
+                  <strong>{{ rdv.libelleServices }}</strong>
                   <span class="text-muted">{{ rdv.clientNom ?? ('a.client' | t) }}</span>
                 </div>
                 <span class="badge" [ngClass]="classes[rdv.statut]">{{ ('statut.' + rdv.statut) | t }}</span>

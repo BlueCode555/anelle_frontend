@@ -74,7 +74,7 @@ export class MonEspaceComponent implements OnInit {
   aPayer = computed(() => [
     ...this.rdvs()
       .filter((r) => r.statut === 'ACCEPTE' && !!r.lienPaiement)
-      .map((r) => ({ type: 'rdv' as const, titre: r.serviceNom, sous: this.jour(r.debut) + ' · ' + this.heure(r.debut), montant: r.prix, lien: r.lienPaiement! })),
+      .map((r) => ({ type: 'rdv' as const, titre: r.libelleServices, sous: this.jour(r.debut) + ' · ' + this.heure(r.debut), montant: r.prix, lien: r.lienPaiement! })),
     ...this.commandes()
       .filter((c) => c.statut === 'EN_ATTENTE_PAIEMENT' && !!c.lienPaiement)
       .map((c) => ({ type: 'commande' as const, titre: c.code, sous: c.lignes.map((l) => l.quantite + ' × ' + l.nom).join(', '), montant: c.total, lien: c.lienPaiement! }))
@@ -147,7 +147,7 @@ export class MonEspaceComponent implements OnInit {
   // Les dernières choses qui se sont passées (rendez-vous et commandes mélangés, plus récent d'abord).
   activite = computed(() => {
     const evenements = [
-      ...this.rdvs().map((r) => ({ type: 'rdv' as const, date: r.debut, titre: r.serviceNom, statut: 'statut.' + r.statut })),
+      ...this.rdvs().map((r) => ({ type: 'rdv' as const, date: r.debut, titre: r.libelleServices, statut: 'statut.' + r.statut })),
       ...this.commandes().map((c) => ({ type: 'commande' as const, date: c.creeLe, titre: c.code, statut: 'cmd.statut.' + c.statut }))
     ];
     return evenements.sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
@@ -224,7 +224,7 @@ export class MonEspaceComponent implements OnInit {
   async annuler(rdv: RendezVous): Promise<void> {
     const ok = await this.confirmation.demander({
       titre: this.i18n.t('espace.annulerTitre'),
-      message: rdv.serviceNom,
+      message: rdv.libelleServices,
       texteConfirmer: this.i18n.t('espace.annulerConfirmer'),
       texteAnnuler: this.i18n.t('espace.garder'),
       danger: true

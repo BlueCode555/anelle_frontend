@@ -99,11 +99,11 @@
           <div class="categorie-grid">
             <button type="button" class="categorie-card" *ngFor="let cat of page" (click)="choisirCategorie(cat.code)">
               @if (categorieImage(cat); as src) {
-                <img [src]="src" [alt]="cat.libelle" loading="lazy" />
+                <img [src]="src" [alt]="libelleCategorie(cat)" loading="lazy" />
               } @else {
                 <span class="categorie-icon"><i class="ti {{ categoryIcon(cat.code) }}"></i></span>
               }
-              <span class="categorie-nom">{{ cat.libelle }}</span>
+              <span class="categorie-nom">{{ libelleCategorie(cat) }}</span>
             </button>
           </div>
         </ng-template>
@@ -134,7 +134,7 @@
         [class.btn-outline-secondary]="activeCategory() !== cat.code"
         (click)="selectCategory(cat.code)"
       >
-        {{ cat.libelle }}
+        {{ libelleCategorie(cat) }}
       </button>
     </div>
 
@@ -153,14 +153,14 @@
         <div class="card h-100 service-card">
           @if (serviceImage(service); as photo) {
             <div class="service-photo-wrap" [style.--fond]="'url(' + photo + ')'">
-              <img [src]="photo" [alt]="service.nomService" class="service-photo" loading="lazy" />
+              <img [src]="photo" [alt]="nomService(service)" class="service-photo" loading="lazy" />
             </div>
           } @else {
             <div class="service-photo-empty"><i class="ti {{ categoryIcon(service.categorieCode) }}"></i></div>
           }
           <div class="card-body d-flex flex-column">
-            <span class="service-category">{{ service.categorieLibelle }}</span>
-            <h3 class="service-name">{{ service.nomService }}</h3>
+            <span class="service-category">{{ libelleCategorieDuService(service) }}</span>
+            <h3 class="service-name">{{ nomService(service) }}</h3>
             <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
             <div class="d-flex justify-content-between align-items-end mt-3">
               <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes | duree }}</span>
@@ -171,7 +171,7 @@
         </div>
       </div>
     </div>
-    <app-pagination [total]="filteredServices().length" [taille]="tailleServices" [(page)]="pageServices" />
+    <app-pagination [total]="filteredServices().length" [taille]="tailleServices()" [(page)]="pageServices" />
   </section>
 
   <section class="cta text-center px-3 py-5">

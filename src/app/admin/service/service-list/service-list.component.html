@@ -38,7 +38,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (service of pagees(); track service.id) {
+            @for (service of (vueComplete() ? pagees() : apercu()); track service.id) {
               <tr>
                 <td [attr.data-label]="'a.image' | t">
                   @if (imageSrc(service.imageUrl); as src) {
@@ -47,8 +47,8 @@
                     <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
                   }
                 </td>
-                <td data-label="Service" class="fw-semibold">{{ service.nomService }}</td>
-                <td [attr.data-label]="'a.categorie' | t" class="text-muted">{{ service.categorieLibelle }}</td>
+                <td data-label="Service" class="fw-semibold">{{ nomService(service) }}</td>
+                <td [attr.data-label]="'a.categorie' | t" class="text-muted">{{ libelleCategorie(service) }}</td>
                 <td [attr.data-label]="'a.duree' | t">{{ service.dureeMinutes | duree }}</td>
                 <td [attr.data-label]="'a.tarif' | t" class="fw-bold text-primary">{{ formatTarif(service.tarif) }}</td>
                 <td [attr.data-label]="'a.statut' | t">
@@ -68,7 +68,15 @@
           </tbody>
         </table>
       </div>
-      <app-pagination [total]="services().length" [taille]="taille" [(page)]="page" />
+      @if (vueComplete()) {
+        <app-pagination [total]="services().length" [taille]="taille" [(page)]="page" />
+      } @else if (services().length > tailleApercu) {
+        <div class="text-center mt-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="vueComplete.set(true)">
+            {{ 'a.voir_toute_la_liste' | t }}
+          </button>
+        </div>
+      }
     }
   </div>
 </div>

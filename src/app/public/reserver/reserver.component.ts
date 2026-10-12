@@ -55,25 +55,32 @@ export class ReserverComponent {
     this.envoi.set(true);
     this.erreur.set('');
     this.sessionExpiree.set(false);
-    this.rendezVous.creer({ serviceCode: choix.serviceCode, debut: choix.debut, note: this.note().trim() || undefined }).subscribe({
-      next: (rdv) => {
-        this.confirmation.set(rdv);
-        this.envoi.set(false);
-      },
-      error: (err) => {
-        this.envoi.set(false);
-        this.choix.set(null);
-        // 401 = jeton absent/invalide (vraie expiration) ; un 403 est un refus métier du serveur (message a
-        // afficher tel quel), pas forcement une session expirée — sinon on induit la cliente en erreur.
-        const expiree = err?.status === 401;
-        this.sessionExpiree.set(expiree);
-        this.erreur.set(
-          expiree
-            ? this.i18n.t('reserver.sessionExpiree')
-            : (err?.error?.message ?? "Impossible d'enregistrer votre demande. Choisissez un autre créneau.")
-        );
-      }
-    });
+    this.rendezVous
+      .creer({
+        serviceCode: choix.serviceCode,
+        serviceCodesSupplementaires: choix.serviceCodesSupplementaires,
+        debut: choix.debut,
+        note: this.note().trim() || undefined
+      })
+      .subscribe({
+        next: (rdv) => {
+          this.confirmation.set(rdv);
+          this.envoi.set(false);
+        },
+        error: (err) => {
+          this.envoi.set(false);
+          this.choix.set(null);
+          // 401 = jeton absent/invalide (vraie expiration) ; un 403 est un refus métier du serveur (message a
+          // afficher tel quel), pas forcement une session expirée — sinon on induit la cliente en erreur.
+          const expiree = err?.status === 401;
+          this.sessionExpiree.set(expiree);
+          this.erreur.set(
+            expiree
+              ? this.i18n.t('reserver.sessionExpiree')
+              : (err?.error?.message ?? "Impossible d'enregistrer votre demande. Choisissez un autre créneau.")
+          );
+        }
+      });
   }
 
   // Renvoie vers la connexion Google puis, une fois reconnectée, directement sur cette page — il ne restera

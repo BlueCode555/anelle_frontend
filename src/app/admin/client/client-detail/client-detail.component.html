@@ -35,7 +35,7 @@
             <span class="text-muted small">{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</span>
           </div>
           <div class="rdv-what">
-            <strong>{{ rdv.serviceNom }}</strong>
+            <strong>{{ rdv.libelleServices }}</strong>
             <span class="text-muted small">{{ formatTarif(rdv.prix) }}</span>
           </div>
           <span class="badge" [ngClass]="classes[rdv.statut]">{{ ('statut.' + rdv.statut) | t }}</span>

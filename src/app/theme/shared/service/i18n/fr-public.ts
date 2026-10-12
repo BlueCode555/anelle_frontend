@@ -14,11 +14,11 @@ export const FR_PUBLIC: Record<string, string> = {
   'connexion.titre': 'Bienvenue chez {nom}',
   'connexion.intro': "Connectez-vous pour réserver vos soins et retrouver l'historique de vos rendez-vous.",
   'connexion.echec': "La connexion n'a pas abouti. Réessayez.",
+  'connexion.sessionExpiree': 'Votre session a expiré après une période d\'inactivité. Veuillez vous reconnecter.',
   'connexion.redirection': 'Redirection...',
   'connexion.google': 'Continuer avec Google',
   'connexion.sansMotDePasse': 'Aucun mot de passe à créer : votre compte Google suffit.',
   'connexion.nonConfiguree': "La connexion n'est pas encore configurée.",
-  'connexion.lienEquipe': "Espace réservé à l'équipe",
 
   // ── Connexion du personnel ────────────────────────────────────────────────
   'personnel.citation': '« Chaque rendez-vous compte. »',
@@ -51,7 +51,10 @@ export const FR_PUBLIC: Record<string, string> = {
 
   // ── Choix du creneau ──────────────────────────────────────────────────────
   'slots.soin': 'Votre soin',
-  'slots.choisirSoin': 'Choisir un soin',
+  'slots.choisirSoin': 'Rechercher un soin',
+  'slots.aucunResultat': 'Aucun soin ne correspond à votre recherche.',
+  'slots.plusieursSoins': 'Vous pouvez choisir plusieurs soins : ils seront enchaînés sur le même rendez-vous.',
+  'slots.total': 'Total',
   'slots.min': 'min',
   'slots.dateHeure': 'Date et heure',
   'slots.recherche': 'Recherche des créneaux...',

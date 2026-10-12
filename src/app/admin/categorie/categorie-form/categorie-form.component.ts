@@ -38,6 +38,7 @@ export class CategorieFormComponent implements OnInit {
 
   categorieModel = signal<CategorieForm>({
     libelle: '',
+    libelleEn: '',
     description: '',
     imageUrl: '',
     actif: true
@@ -58,6 +59,7 @@ export class CategorieFormComponent implements OnInit {
       next: (categorie) => {
         this.categorieModel.set({
           libelle: categorie.libelle,
+          libelleEn: categorie.libelleEn ?? '',
           description: categorie.description ?? '',
           imageUrl: categorie.imageUrl ?? '',
           actif: categorie.actif !== false

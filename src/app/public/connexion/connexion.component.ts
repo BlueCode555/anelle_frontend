@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { AuthService } from '../../theme/shared/service/auth.service';
@@ -17,10 +18,13 @@ export class ConnexionComponent implements OnInit {
   auth = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private location = inject(Location);
   nom = inject(InformationService).nom;
 
   // Vrai si on revient d'une tentative de connexion qui a echoue (voir auth-callback.component).
   echec = signal(false);
+  // Vrai si on revient d'une deconnexion automatique apres une periode d'inactivite (voir auth.service.ts).
+  inactivite = signal(false);
   connexionEnCours = signal(false);
 
   ngOnInit(): void {
@@ -28,11 +32,22 @@ export class ConnexionComponent implements OnInit {
       this.router.navigate(['/mon-espace']);
       return;
     }
-    this.echec.set(this.route.snapshot.queryParamMap.get('erreur') === '1');
+    const params = this.route.snapshot.queryParamMap;
+    this.inactivite.set(params.get('inactivite') === '1');
+    this.echec.set(!this.inactivite() && params.get('erreur') === '1');
   }
 
   connecter(): void {
     this.connexionEnCours.set(true);
     this.auth.loginClient();
+  }
+
+  // Revient a la page precedente (ex. la reservation en cours) ; a defaut (arrivee directe sur /connexion), l'accueil.
+  retour(): void {
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      this.router.navigate(['/accueil']);
+    }
   }
 }

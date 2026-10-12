@@ -119,6 +119,7 @@ export const EN_ADMIN_FORMS: Record<string, string> = {
   'a.province': 'Province',
   'a.site_web': 'Website',
   'a.en_cours': 'Current',
+  'a.voir_toute_la_liste': 'View full list',
   'a.annuler': 'Cancel',
   'a.retour': 'Back',
   'a.actions': 'Actions',

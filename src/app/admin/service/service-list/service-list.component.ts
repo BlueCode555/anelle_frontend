@@ -23,6 +23,13 @@ export class ServiceListComponent implements OnInit {
   readonly taille = 10;
   pagees = computed(() => this.services().slice((this.page() - 1) * this.taille, this.page() * this.taille));
 
+  // Sur mobile, la liste commence repliee a 3 soins (pour ne pas noyer l'ecran) avec un bouton pour deplier
+  // la liste complete, paginee normalement ; sur bureau elle est deja complete d'office.
+  private readonly ecranEtroit = window.matchMedia('(max-width: 767.98px)');
+  vueComplete = signal(!this.ecranEtroit.matches);
+  readonly tailleApercu = 3;
+  apercu = computed(() => this.services().slice(0, this.tailleApercu));
+
   private retourPage1 = effect(() => {
     this.services();
     this.page.set(1);
@@ -60,6 +67,16 @@ export class ServiceListComponent implements OnInit {
     return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
+  // Repli sur le francais si aucune traduction anglaise n'a ete saisie : le nom d'un soin/d'une categorie est
+  // une donnee saisie par l'institut, pas un texte d'interface (qui lui se traduit deja automatiquement).
+  nomService(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.nomServiceEn : null) || s.nomService;
+  }
+
+  libelleCategorie(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.categorieLibelleEn : null) || s.categorieLibelle;
+  }
+
   imageSrc(url?: string | null): string | null {
     return this.catalogue.imageSrc(url);
   }
@@ -70,6 +87,7 @@ export class ServiceListComponent implements OnInit {
     this.catalogue
       .updateService(s.id, {
         nomService: s.nomService,
+        nomServiceEn: s.nomServiceEn ?? '',
         categorieCode: s.categorieCode,
         description: s.description ?? '',
         dureeMinutes: s.dureeMinutes,

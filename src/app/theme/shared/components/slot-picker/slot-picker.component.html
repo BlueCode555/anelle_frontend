@@ -2,38 +2,74 @@
   <span class="etape-numero">1</span>
   <div class="etape-contenu">
     <h2 class="etape-titre">{{ 'slots.soin' | t }}</h2>
-    <select id="sp-service" class="form-select" [value]="serviceCode()" (change)="onService($event)">
-      <option value="" disabled>{{ 'slots.choisirSoin' | t }}</option>
-      <option *ngFor="let s of services()" [value]="s.code" [selected]="s.code === serviceCode()">
-        {{ s.nomService }} · {{ s.dureeMinutes | duree }} · {{ formatTarif(s.tarif) }}
-      </option>
-    </select>
+    <p class="text-muted small mb-2">{{ 'slots.plusieursSoins' | t }}</p>
+    <div class="soin-recherche">
+      <i class="ti ti-search soin-recherche-icone" aria-hidden="true"></i>
+      <input
+        id="sp-service"
+        type="text"
+        class="form-control"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-controls="sp-service-liste"
+        [attr.aria-expanded]="menuSoinOuvert()"
+        [placeholder]="'slots.choisirSoin' | t"
+        [value]="rechercheSoin()"
+        (input)="onRechercheInput($event)"
+        (focus)="ouvrirMenuSoin()"
+        (blur)="fermerMenuSoinDifere()"
+        (keydown)="onKeydownRecherche($event)"
+        autocomplete="off"
+      />
+      @if (menuSoinOuvert()) {
+        <ul id="sp-service-liste" class="soin-liste" role="listbox" aria-multiselectable="true">
+          @for (s of servicesFiltres(); track s.code; let i = $index) {
+            <li role="option" [attr.aria-selected]="estChoisi(s)" [class.est-active]="i === indexActif()" (mousedown)="basculerSelection(s)">
+              <span class="form-check-input soin-case" [class.est-cochee]="estChoisi(s)" aria-hidden="true">
+                @if (estChoisi(s)) {
+                  <i class="ti ti-check"></i>
+                }
+              </span>
+              {{ libelleSoin(s) }}
+            </li>
+          } @empty {
+            <li class="soin-liste-vide">{{ 'slots.aucunResultat' | t }}</li>
+          }
+        </ul>
+      }
+    </div>
 
-    @if (serviceCourant(); as soin) {
-      <div class="soin-apercu">
-        @if (imageSoin(); as photo) {
-          <img [src]="photo" [alt]="soin.nomService" />
-        } @else {
-          <span class="soin-apercu-icone"><i class="ti ti-sparkles"></i></span>
+    @if (soinsChoisis().length) {
+      <div class="soins-choisis">
+        @for (s of soinsChoisis(); track s.code) {
+          <span class="soin-chip">
+            {{ nomService(s) }}
+            <button type="button" [attr.aria-label]="('a.retirer' | t) + ' ' + nomService(s)" (mousedown)="retirerSoin(s)">
+              <i class="ti ti-x"></i>
+            </button>
+          </span>
         }
+      </div>
+      <div class="soin-apercu">
+        <span class="soin-apercu-icone"><i class="ti ti-sparkles"></i></span>
         <div>
-          <strong>{{ soin.nomService }}</strong>
-          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ soin.dureeMinutes | duree }} · {{ formatTarif(soin.tarif) }}</span>
+          <strong>{{ 'slots.total' | t }}</strong>
+          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ dureeTotale() | duree }} · {{ formatTarif(prixTotal()) }}</span>
         </div>
       </div>
     }
   </div>
 </div>
 
-<div class="etape" [class.est-desactivee]="!serviceCode()">
+<div class="etape" [class.est-desactivee]="!soinsChoisis().length">
   <span class="etape-numero">2</span>
   <div class="etape-contenu">
     <h2 class="etape-titre">{{ 'slots.dateHeure' | t }}</h2>
-    <input id="sp-date" type="date" class="form-control etape-date" [value]="date()" [min]="minDate()" (change)="onDate($event)" [disabled]="!serviceCode()" />
+    <input id="sp-date" type="date" class="form-control etape-date" [value]="date()" [min]="minDate()" (change)="onDate($event)" [disabled]="!soinsChoisis().length" />
 
     <div *ngIf="error()" class="alert alert-warning mt-3">{{ error() }}</div>
 
-    <ng-container *ngIf="serviceCode(); else pickService">
+    <ng-container *ngIf="soinsChoisis().length; else pickService">
       <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>{{ 'slots.recherche' | t }}</div>
 
       <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted mt-3">

@@ -61,6 +61,19 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   slogan = computed(() => (this.i18n.langue() === 'en' ? this.info()?.sloganEn : null) || this.info()?.slogan);
   description = computed(() => (this.i18n.langue() === 'en' ? this.info()?.descriptionEn : null) || this.info()?.description);
 
+  // Meme logique de repli pour les noms de services/categories (saisis par l'institut, pas des textes d'interface).
+  nomService(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.nomServiceEn : null) || s.nomService;
+  }
+
+  libelleCategorie(c: CategorieResponse): string {
+    return (this.i18n.langue() === 'en' ? c.libelleEn : null) || c.libelle;
+  }
+
+  libelleCategorieDuService(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.categorieLibelleEn : null) || s.categorieLibelle;
+  }
+
   categories = signal<CategorieResponse[]>([]);
   services = signal<ServiceResponse[]>([]);
   loading = signal(true);
@@ -68,8 +81,12 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   activeCategory = signal<string | null>(null);
 
   // Carrousel des catégories : 3 cartes par page sur mobile, 6 sur bureau (2 rangées de 3).
+  // Soins : 4 par page sur mobile (liste plus courte et plus rapide à parcourir au doigt), 9 sur bureau.
   private ecranEtroit = window.matchMedia('(max-width: 767.98px)');
-  private ecouteurEcran = (e: MediaQueryListEvent) => this.itemsParPage.set(e.matches ? 3 : 6);
+  private ecouteurEcran = (e: MediaQueryListEvent) => {
+    this.itemsParPage.set(e.matches ? 3 : 6);
+    this.tailleServices.set(e.matches ? 4 : 9);
+  };
   itemsParPage = signal(this.ecranEtroit.matches ? 3 : 6);
 
   // Vidéo du hero sur tous les écrans (cohérent partout), sauf si la personne a demandé moins de mouvement
@@ -86,11 +103,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return pages;
   });
 
-  // Les soins s'affichent 9 par page : au-delà, une pagination apparaît.
+  // Les soins s'affichent 9 par page (4 sur mobile) : au-delà, une pagination apparaît.
   pageServices = signal(1);
-  readonly tailleServices = 9;
+  tailleServices = signal(this.ecranEtroit.matches ? 4 : 9);
   servicesPagees = computed(() =>
-    this.filteredServices().slice((this.pageServices() - 1) * this.tailleServices, this.pageServices() * this.tailleServices)
+    this.filteredServices().slice((this.pageServices() - 1) * this.tailleServices(), this.pageServices() * this.tailleServices())
   );
 
   filteredServices = computed(() => {

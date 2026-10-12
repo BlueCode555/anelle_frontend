@@ -17,7 +17,10 @@ export class PersonnelComponent implements OnInit {
   auth = inject(AuthService);
   nom = inject(InformationService).nom;
   private router = inject(Router);
-  erreur = inject(ActivatedRoute).snapshot.queryParamMap.get('erreur');
+  private params = inject(ActivatedRoute).snapshot.queryParamMap;
+  // Vrai si on revient d'une deconnexion automatique apres une periode d'inactivite (voir auth.service.ts).
+  inactivite = this.params.get('inactivite') === '1';
+  erreur = !this.inactivite && this.params.get('erreur');
   connexionEnCours = signal(false);
 
   async ngOnInit(): Promise<void> {

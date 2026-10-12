@@ -11,7 +11,7 @@
           {{ 'reserver.enRouteTexte' | t }}
         </p>
         <dl class="recap mx-auto">
-          <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>{{ 'reserver.soin' | t }}</dt><dd>{{ rdv.serviceNom }}</dd></div>
+          <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>{{ 'reserver.soin' | t }}</dt><dd>{{ rdv.libelleServices }}</dd></div>
           <div class="recap-ligne"><i class="ti ti-calendar-event"></i><dt>{{ 'reserver.date' | t }}</dt><dd class="text-capitalize">{{ jour(rdv.debut) }}</dd></div>
           <div class="recap-ligne"><i class="ti ti-clock"></i><dt>{{ 'reserver.heure' | t }}</dt><dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd></div>
           <div class="recap-ligne"><i class="ti ti-coin"></i><dt>{{ 'reserver.prix' | t }}</dt><dd>{{ formatTarif(rdv.prix) }}</dd></div>
