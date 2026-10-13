@@ -139,6 +139,13 @@ export class SlotPickerComponent implements OnInit {
     );
   }
 
+  // Empeche le mousedown sur une option de faire perdre le focus au champ de recherche :
+  // sans ca, le menu se referme (via fermerMenuSoinDifere) avant qu'on puisse cocher un autre soin.
+  onOptionMousedown(event: MouseEvent, s: ServiceResponse): void {
+    event.preventDefault();
+    this.basculerSelection(s);
+  }
+
   retirerSoin(s: ServiceResponse): void {
     this.soinsChoisis.update((liste) => liste.filter((x) => x.code !== s.code));
   }

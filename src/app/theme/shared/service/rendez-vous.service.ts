@@ -58,12 +58,24 @@ export interface RendezVousForm {
   contactTelephone?: string;
 }
 
+export interface PlageHoraire {
+  heureDebut: string; // "HH:mm"
+  heureFin: string;
+}
+
+export interface ExceptionJour {
+  date: string; // "yyyy-MM-dd"
+  plages: PlageHoraire[];
+}
+
 export interface Indisponibilite {
   id: number;
   code: string;
   debut: string;
   fin: string;
   motif: string | null;
+  // Jours, a l'interieur de la periode, ou des plages restent ouvertes en exception de la fermeture complete.
+  exceptions: ExceptionJour[];
 }
 
 export const STATUT_LIBELLES: Record<StatutRendezVous, string> = {
@@ -141,7 +153,7 @@ export class RendezVousService {
     return this.http.get<ApiResponse<Indisponibilite[]>>(`${this.base}/indisponibilites`).pipe(map((r) => r.data));
   }
 
-  creerIndisponibilite(form: { debut: string; fin: string; motif?: string }): Observable<Indisponibilite> {
+  creerIndisponibilite(form: { debut: string; fin: string; motif?: string; exceptions?: ExceptionJour[] }): Observable<Indisponibilite> {
     return this.http.post<ApiResponse<Indisponibilite>>(`${this.base}/indisponibilites`, form).pipe(map((r) => r.data));
   }
 

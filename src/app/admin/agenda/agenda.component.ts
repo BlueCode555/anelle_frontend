@@ -67,6 +67,9 @@ export class AgendaComponent implements OnInit {
   congeFin = signal('');
   congeMotif = signal('');
   congeErreur = signal('');
+  // Jours ouverts en exception a l'interieur du conge (ex. "du 20 au 24 octobre fermee, sauf le mardi 21
+  // de 8h a 10h") : chaque jour peut avoir plusieurs plages, comme les horaires d'ouverture habituels.
+  congeExceptions = signal<{ date: string; plages: { heureDebut: string; heureFin: string }[] }[]>([]);
 
   zone = computed(() => this.informations.info()?.fuseauHoraire ?? 'America/Toronto');
   finSemaine = computed(() => (this.debutSemaine() ? ajouterJours(this.debutSemaine(), 6) : ''));
@@ -229,23 +232,66 @@ export class AgendaComponent implements OnInit {
     cible.set((event.target as HTMLInputElement).value);
   }
 
+  // ── Jours d'exception (plages ouvertes malgre le conge) ────────────────────
+
+  ajouterExceptionJour(): void {
+    this.congeExceptions.update((liste) => [...liste, { date: '', plages: [{ heureDebut: '', heureFin: '' }] }]);
+  }
+
+  retirerExceptionJour(index: number): void {
+    this.congeExceptions.update((liste) => liste.filter((_, i) => i !== index));
+  }
+
+  changerDateException(index: number, event: Event): void {
+    const date = (event.target as HTMLInputElement).value;
+    this.congeExceptions.update((liste) => liste.map((e, i) => (i === index ? { ...e, date } : e)));
+  }
+
+  ajouterPlageException(index: number): void {
+    this.congeExceptions.update((liste) =>
+      liste.map((e, i) => (i === index ? { ...e, plages: [...e.plages, { heureDebut: '', heureFin: '' }] } : e))
+    );
+  }
+
+  retirerPlageException(index: number, plageIndex: number): void {
+    this.congeExceptions.update((liste) =>
+      liste.map((e, i) => (i === index ? { ...e, plages: e.plages.filter((_, p) => p !== plageIndex) } : e))
+    );
+  }
+
+  changerPlageException(index: number, plageIndex: number, champ: 'heureDebut' | 'heureFin', event: Event): void {
+    const valeur = (event.target as HTMLInputElement).value;
+    this.congeExceptions.update((liste) =>
+      liste.map((e, i) =>
+        i === index ? { ...e, plages: e.plages.map((p, pi) => (pi === plageIndex ? { ...p, [champ]: valeur } : p)) } : e
+      )
+    );
+  }
+
   ajouterConge(): void {
     this.congeErreur.set('');
     if (!this.congeDebut() || !this.congeFin()) {
       this.congeErreur.set(this.i18n.t('ts.agenda.debutFin'));
       return;
     }
+    const exceptions = this.congeExceptions()
+      .filter((e) => e.date)
+      .map((e) => ({ date: e.date, plages: e.plages.filter((p) => p.heureDebut && p.heureFin) }))
+      .filter((e) => e.plages.length > 0);
+
     this.rendezVous
       .creerIndisponibilite({
         debut: versIsoAvecDecalage(this.congeDebut(), this.zone()),
         fin: versIsoAvecDecalage(this.congeFin(), this.zone()),
-        motif: this.congeMotif().trim() || undefined
+        motif: this.congeMotif().trim() || undefined,
+        exceptions
       })
       .subscribe({
         next: () => {
           this.congeDebut.set('');
           this.congeFin.set('');
           this.congeMotif.set('');
+          this.congeExceptions.set([]);
           this.chargerConges();
         },
         error: (err) => this.congeErreur.set(this.messageErreur(err, this.i18n.t('ts.agenda.periode')))
@@ -272,6 +318,12 @@ export class AgendaComponent implements OnInit {
 
   periode(conge: Indisponibilite): string {
     return `${formatJourCourt(conge.debut, this.zone())} ${this.heure(conge.debut)} → ${formatJourCourt(conge.fin, this.zone())} ${this.heure(conge.fin)}`;
+  }
+
+  libelleException(e: { date: string; plages: { heureDebut: string; heureFin: string }[] }): string {
+    const jour = new Intl.DateTimeFormat(localeCourante(), { day: 'numeric', month: 'short' }).format(new Date(e.date + 'T00:00:00'));
+    const plages = e.plages.map((p) => `${p.heureDebut}–${p.heureFin}`).join(', ');
+    return `${jour} : ${plages}`;
   }
 
   formatTarif(tarif: number): string {

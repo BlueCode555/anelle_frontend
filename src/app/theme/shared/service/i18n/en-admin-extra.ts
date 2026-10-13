@@ -2,6 +2,8 @@
 export const EN_ADMIN_EXTRA: Record<string, string> = {
   'agenda.intro': 'The list of this week\'s appointments shown above. A request received online must first be <strong>accepted or declined</strong>; once accepted and <strong>payment received</strong>, it becomes <strong>confirmed</strong>; once past, mark it <strong>done</strong>. "New appointment" is for entering an appointment taken by phone or on site yourself.',
   'agenda.conges.intro': 'Block a period (holidays, exceptional closure...) so it disappears from the slots offered to clients on the booking site.',
+  'agenda.exceptions.intro': 'Optional: keep some days within this period open, with their own hours (e.g. closed from the 20th to the 24th, except Tuesday the 21st from 8am to 10am).',
+  'agenda.exceptions.ajouterJour': 'Add a day open as an exception',
   'agenda.aTraiter': '{n} to handle',
   'clients.aucunMatch': 'No result for "{q}".',
   'clients.derniereConnexion': 'Last login: {date}',

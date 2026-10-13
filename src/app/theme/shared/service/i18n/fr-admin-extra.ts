@@ -2,6 +2,8 @@
 export const FR_ADMIN_EXTRA: Record<string, string> = {
   'agenda.intro': 'La liste des rendez-vous de la semaine affichée ci-dessus. Une demande reçue en ligne doit d\'abord être <strong>acceptée ou refusée</strong> ; une fois acceptée et le <strong>paiement reçu</strong>, elle devient <strong>confirmée</strong> ; une fois passée, marquez-la <strong>terminée</strong>. « Nouveau rendez-vous » sert à inscrire vous-même un rendez-vous pris par téléphone ou sur place.',
   'agenda.conges.intro': 'Bloquez une période (vacances, fermeture exceptionnelle...) pour qu\'elle disparaisse des créneaux proposés aux clientes sur le site de réservation.',
+  'agenda.exceptions.intro': 'Facultatif : gardez certains jours de cette période ouverts, avec leurs propres horaires (ex. fermée du 20 au 24, sauf le mardi 21 de 8h à 10h).',
+  'agenda.exceptions.ajouterJour': 'Ajouter un jour ouvert en exception',
   'agenda.aTraiter': '{n} à traiter',
   'clients.aucunMatch': 'Aucun résultat pour « {q} ».',
   'clients.derniereConnexion': 'Dernière connexion : {date}',

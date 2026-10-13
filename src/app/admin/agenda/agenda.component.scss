@@ -42,6 +42,61 @@
   border-top: 1px solid #f0e7d6;
 }
 
+.conge-exceptions-liste {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+
+// ── Jours d'exception a l'interieur d'un conge ───────────
+.conge-exceptions {
+  padding: 0.85rem;
+  border: 1px dashed var(--ar-nude);
+  border-radius: 0.65rem;
+  background: var(--ar-creme-fonce, #f3eadb);
+}
+
+.exception-jour {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #e6d9c3;
+
+  &:first-of-type {
+    padding-top: 0;
+  }
+}
+
+.exception-jour-entete {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.exception-date {
+  max-width: 200px;
+}
+
+.exception-plage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+
+  input {
+    max-width: 130px;
+  }
+}
+
+.hours-sep {
+  color: #8a7660;
+}
+
+.hours-ajouter {
+  padding: 0.15rem 0;
+  text-decoration: none;
+}
+
 @media (max-width: 991.98px) {
   .agenda-item {
     grid-template-columns: 1fr;

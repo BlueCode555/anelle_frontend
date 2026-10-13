@@ -130,6 +130,39 @@
             <button type="button" class="btn btn-primary w-100" (click)="ajouterConge()">{{ 'a.ajouter' | t }}</button>
           </div>
         </div>
+
+        <div class="conge-exceptions mb-3">
+          <p class="text-muted small mb-2">{{ 'agenda.exceptions.intro' | t }}</p>
+          @for (exception of congeExceptions(); track $index; let i = $index) {
+            <div class="exception-jour">
+              <div class="exception-jour-entete">
+                <input type="date" class="form-control exception-date" [value]="exception.date" (change)="changerDateException(i, $event)" />
+                <button type="button" class="btn-icone est-danger" (click)="retirerExceptionJour(i)" [attr.aria-label]="'a.retirer' | t" [title]="'a.retirer' | t">
+                  <i class="ti ti-trash"></i>
+                </button>
+              </div>
+              @for (plage of exception.plages; track $index; let p = $index) {
+                <div class="exception-plage">
+                  <input type="time" class="form-control" [value]="plage.heureDebut" (change)="changerPlageException(i, p, 'heureDebut', $event)" />
+                  <span class="hours-sep">{{ 'a.a' | t }}</span>
+                  <input type="time" class="form-control" [value]="plage.heureFin" (change)="changerPlageException(i, p, 'heureFin', $event)" />
+                  @if (exception.plages.length > 1) {
+                    <button type="button" class="btn-icone" (click)="retirerPlageException(i, p)" [attr.aria-label]="'a.retirer' | t" [title]="'a.retirer' | t">
+                      <i class="ti ti-trash"></i>
+                    </button>
+                  }
+                </div>
+              }
+              <button type="button" class="btn btn-link btn-sm hours-ajouter" (click)="ajouterPlageException(i)">
+                <i class="ti ti-plus"></i> {{ 'info.ajouterPlage' | t }}
+              </button>
+            </div>
+          }
+          <button type="button" class="btn btn-outline-secondary btn-sm" (click)="ajouterExceptionJour()">
+            <i class="ti ti-plus"></i> {{ 'agenda.exceptions.ajouterJour' | t }}
+          </button>
+        </div>
+
         @if (congeErreur()) {
           <div class="alert alert-danger">{{ congeErreur() }}</div>
         }
@@ -138,6 +171,13 @@
             <div>
               {{ periode(conge) }}
               @if (conge.motif) { <span class="text-muted"> · {{ conge.motif }}</span> }
+              @if (conge.exceptions?.length) {
+                <div class="conge-exceptions-liste">
+                  @for (e of conge.exceptions; track e.date) {
+                    <span class="badge text-bg-light">{{ libelleException(e) }}</span>
+                  }
+                </div>
+              }
             </div>
             <button type="button" class="btn btn-sm btn-outline-danger" (click)="supprimerConge(conge)">{{ 'a.supprimer' | t }}</button>
           </div>

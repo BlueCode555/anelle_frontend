@@ -24,7 +24,7 @@
       @if (menuSoinOuvert()) {
         <ul id="sp-service-liste" class="soin-liste" role="listbox" aria-multiselectable="true">
           @for (s of servicesFiltres(); track s.code; let i = $index) {
-            <li role="option" [attr.aria-selected]="estChoisi(s)" [class.est-active]="i === indexActif()" (mousedown)="basculerSelection(s)">
+            <li role="option" [attr.aria-selected]="estChoisi(s)" [class.est-active]="i === indexActif()" (mousedown)="onOptionMousedown($event, s)">
               <span class="form-check-input soin-case" [class.est-cochee]="estChoisi(s)" aria-hidden="true">
                 @if (estChoisi(s)) {
                   <i class="ti ti-check"></i>
