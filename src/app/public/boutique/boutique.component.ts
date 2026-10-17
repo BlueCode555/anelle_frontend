@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
@@ -11,7 +11,7 @@ import { SiteHeaderComponent } from '../site-header/site-header.component';
 
 @Component({
   selector: 'app-boutique',
-  imports: [CommonModule, RouterModule, SiteHeaderComponent, TranslatePipe, PaginationComponent],
+  imports: [RouterModule, SiteHeaderComponent, TranslatePipe, PaginationComponent],
   templateUrl: './boutique.component.html',
   styleUrl: './boutique.component.scss'
 })
@@ -31,14 +31,21 @@ export class BoutiqueComponent implements OnInit {
   zoom = signal<ProduitResponse | null>(null);
 
   visibles = computed(() => this.liste().filter((p) => p.actif));
-  rayons = computed(() => [...new Set(this.visibles().map((p) => p.rayonLibelle).filter((r): r is string => !!r))].sort((a, b) => a.localeCompare(b)));
+  rayons = computed(() =>
+    [
+      ...new Set(
+        this.visibles()
+          .map((p) => p.rayonLibelle)
+          .filter((r): r is string => !!r)
+      )
+    ].sort((a, b) => a.localeCompare(b))
+  );
   filtres = computed(() => {
     const q = this.recherche().trim().toLowerCase();
     const rayon = this.rayonActif();
     const liste = this.visibles().filter(
       (p) =>
-        (!rayon || p.rayonLibelle === rayon) &&
-        (!q || p.nom.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q))
+        (!rayon || p.rayonLibelle === rayon) && (!q || p.nom.toLowerCase().includes(q) || (p.description ?? '').toLowerCase().includes(q))
     );
     switch (this.tri()) {
       case 'prixAsc':

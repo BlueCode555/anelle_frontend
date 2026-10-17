@@ -1,12 +1,12 @@
 <header class="site-header">
   <nav class="header-bar" aria-label="Navigation principale">
-    <a class="brand" routerLink="/accueil" fragment="top" (click)="closeMenu()" [attr.aria-label]="nom()">
+    <a class="brand" routerLink="/accueil" (click)="accueil($event)" [attr.aria-label]="nom()">
       <img class="brand-logo" src="assets/images/logo/monogramme-clair.png" alt="" width="44" height="44" />
       <span class="brand-nom">{{ nom() }}</span>
     </a>
 
     <ul class="nav-links">
-      <li><a routerLink="/accueil" fragment="top">{{ 'header.nav.accueil' | t }}</a></li>
+      <li><a routerLink="/accueil" (click)="accueil($event)">{{ 'header.nav.accueil' | t }}</a></li>
       <li><a routerLink="/accueil" fragment="services">{{ 'header.nav.services' | t }}</a></li>
       <li><a routerLink="/boutique" routerLinkActive="is-active">{{ 'header.nav.boutique' | t }}</a></li>
       <li><a routerLink="/accueil" fragment="apropos">{{ 'header.nav.apropos' | t }}</a></li>
@@ -48,7 +48,7 @@
   @if (menuOpen()) {
     <div class="mobile-menu-backdrop" (click)="closeMenu()"></div>
     <ul class="mobile-menu">
-      <li><a routerLink="/accueil" fragment="top" (click)="closeMenu()"><i class="ti ti-home"></i>{{ 'header.nav.accueil' | t }}</a></li>
+      <li><a routerLink="/accueil" (click)="accueil($event)"><i class="ti ti-home"></i>{{ 'header.nav.accueil' | t }}</a></li>
       <li><a routerLink="/accueil" fragment="services" (click)="closeMenu()"><i class="ti ti-sparkles"></i>{{ 'header.nav.services' | t }}</a></li>
       <li><a routerLink="/boutique" (click)="closeMenu()"><i class="ti ti-shopping-bag"></i>{{ 'header.nav.boutique' | t }}</a></li>
       <li><a routerLink="/accueil" fragment="apropos" (click)="closeMenu()"><i class="ti ti-info-circle"></i>{{ 'header.nav.apropos' | t }}</a></li>

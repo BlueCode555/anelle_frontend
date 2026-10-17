@@ -170,6 +170,11 @@ const appRoutes: Routes = [
         path: 'mon-espace',
         canActivate: [loggedInGuard],
         loadComponent: () => import('./public/mon-espace/mon-espace.component').then((c) => c.MonEspaceComponent)
+      },
+      {
+        // Adresse inconnue : retour a l'accueil au lieu d'une page vide et d'une erreur "Cannot match any routes".
+        path: '**',
+        redirectTo: '/accueil'
       }
     ]
   }

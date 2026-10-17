@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
@@ -13,7 +13,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 
 @Component({
   selector: 'app-categorie-list',
-  imports: [CommonModule, TranslatePipe, PaginationComponent],
+  imports: [TranslatePipe, PaginationComponent],
   templateUrl: './categorie-list.component.html',
   styleUrl: './categorie-list.component.scss'
 })

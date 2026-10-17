@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
@@ -11,7 +11,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 
 @Component({
   selector: 'app-informations',
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, NgbAccordionModule, TranslatePipe],
+  imports: [ReactiveFormsModule, RouterModule, NgbAccordionModule, TranslatePipe],
   templateUrl: './informations.component.html',
   styleUrl: './informations.component.scss'
 })

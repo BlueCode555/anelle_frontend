@@ -44,7 +44,21 @@ export class AuthCallbackComponent implements OnInit {
     // Personnel : uniquement la destination demandee par le PERSONNEL (staffGuard) : jamais celle d'une cliente,
     // meme si elle a ete enregistree juste avant sur cet appareil (ex. clic sur "Prendre rendez-vous" sans etre connectee).
     const retour = sessionStorage.getItem(RETOUR_STAFF_KEY);
-    const staffRoutes = ['/default', '/agenda', '/collaborateurs', '/profils', '/informations', '/categories', '/services'];
+    const staffRoutes = [
+      '/default',
+      '/agenda',
+      '/collaborateurs',
+      '/profils',
+      '/clients',
+      '/informations',
+      '/audit',
+      '/statistiques',
+      '/categories',
+      '/services',
+      '/produits',
+      '/rayons',
+      '/commandes'
+    ];
     const versEspaceDeGestion = !!retour && staffRoutes.some((r) => retour === r || retour.startsWith(r + '/'));
     const destination = versEspaceDeGestion ? retour! : '/default';
 

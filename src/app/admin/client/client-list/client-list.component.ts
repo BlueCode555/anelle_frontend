@@ -1,6 +1,6 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, inject, signal, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -13,7 +13,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 // Consultation des clientes (lecture seule) : creees automatiquement a la connexion Google, jamais ici.
 @Component({
   selector: 'app-client-list',
-  imports: [CommonModule, FormsModule, TranslatePipe, PaginationComponent],
+  imports: [FormsModule, TranslatePipe, PaginationComponent],
   templateUrl: './client-list.component.html',
   styleUrl: './client-list.component.scss'
 })
@@ -40,9 +40,7 @@ export class ClientListComponent implements OnInit {
   visibles = computed(() => {
     const q = this.recherche().trim().toLowerCase();
     if (!q) return this.liste();
-    return this.liste().filter(
-      (c) => `${c.prenom ?? ''} ${c.nom ?? ''}`.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)
-    );
+    return this.liste().filter((c) => `${c.prenom ?? ''} ${c.nom ?? ''}`.toLowerCase().includes(q) || c.email.toLowerCase().includes(q));
   });
 
   ngOnInit(): void {

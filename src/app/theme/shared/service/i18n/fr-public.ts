@@ -61,6 +61,13 @@ export const FR_PUBLIC: Record<string, string> = {
   'slots.dateHeure': 'Date et heure',
   'slots.recherche': 'Recherche des créneaux...',
   'slots.aucun': 'Aucun créneau disponible ce jour-là. Essayez un autre jour.',
+  'slots.raison.horairesVides': "Les horaires d'ouverture de l'institut ne sont pas encore renseignés : aucun créneau ne peut être proposé.",
+  'slots.raison.ferme': "L'institut est fermé le {jour}.",
+  'slots.raison.tropLong': "Ce soin dure {duree} : c'est plus long que les plages d'ouverture de ce jour.",
+  'slots.raison.complet': 'Tous les créneaux de ce jour sont déjà pris ou passés.',
+  'slots.prochain': 'Prochain créneau disponible',
+  'slots.rechercheProchain': 'Recherche du prochain créneau disponible...',
+  'slots.aucunProche': 'Aucun créneau disponible dans les 21 prochains jours. Revenez plus tard ou contactez l\'institut.',
   'slots.choisirDabord': "Choisissez d'abord un soin pour voir les créneaux disponibles.",
 
   // ── Mon espace ────────────────────────────────────────────────────────────
@@ -81,6 +88,7 @@ export const FR_PUBLIC: Record<string, string> = {
   'espace.mesPaiements': 'Mes paiements',
   'espace.aucunPaiement': 'Aucun paiement pour le moment',
   'espace.aucunPaiementTexte': "Vos reçus apparaîtront ici après le règlement d'un rendez-vous.",
+  'espace.reference': 'Référence : {ref}',
   'espace.payeLe': 'Payé le {date}',
   'espace.chargementEspace': 'Chargement de votre espace...',
   'espace.erreurChargement': 'Impossible de charger vos rendez-vous pour le moment.',

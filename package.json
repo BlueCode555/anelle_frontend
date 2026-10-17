@@ -1,15 +1,13 @@
 {
-  "name": "berry-free-angular-admin-template",
-  "version": "6.0.0",
-  "author": "CodedThemes",
-  "license": "MIT",
+  "name": "arnelle-institut-frontend",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "build-prod": "ng build --configuration production --base-href /angular/free/",
+    "build-prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "prettier": "prettier --write ./src"

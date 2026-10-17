@@ -56,6 +56,9 @@
                     @if (rdv.clientTelephone) { · {{ rdv.clientTelephone }} }
                     @if (rdv.clientEmail) { · {{ rdv.clientEmail }} }
                   </div>
+                  @if (rdv.referencePaiement) {
+                    <div class="small text-muted">{{ 'espace.reference' | t: { ref: rdv.referencePaiement! } }}</div>
+                  }
                   @if (rdv.note) {
                     <div class="small fst-italic">« {{ rdv.note }} »</div>
                   }

@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 
 import { AuthService } from 'src/app/theme/shared/service/auth.service';
@@ -17,7 +17,7 @@ const TEL_MOTIF = /^[+0-9 ().-]{7,40}$/;
 
 @Component({
   selector: 'app-panier',
-  imports: [CommonModule, RouterModule, SiteHeaderComponent, TranslatePipe],
+  imports: [RouterModule, SiteHeaderComponent, TranslatePipe],
   templateUrl: './panier.component.html',
   styleUrl: './panier.component.scss'
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -14,7 +14,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 // aux clientes. Le reste de la fiche institut (nom, coordonnees...) reste sur l'ecran "Mon institut".
 @Component({
   selector: 'app-horaires-ouverture',
-  imports: [CommonModule, ReactiveFormsModule, NgbAccordionModule, TranslatePipe],
+  imports: [ReactiveFormsModule, NgbAccordionModule, TranslatePipe],
   templateUrl: './horaires-ouverture.component.html',
   styleUrl: './horaires-ouverture.component.scss'
 })

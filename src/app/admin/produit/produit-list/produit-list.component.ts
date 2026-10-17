@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 import { ProduitResponse, ProduitService } from 'src/app/theme/shared/service/boutique.service';
@@ -12,7 +12,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 
 @Component({
   selector: 'app-produit-list',
-  imports: [CommonModule, TranslatePipe, PaginationComponent],
+  imports: [TranslatePipe, PaginationComponent],
   templateUrl: './produit-list.component.html',
   styleUrl: './produit-list.component.scss'
 })

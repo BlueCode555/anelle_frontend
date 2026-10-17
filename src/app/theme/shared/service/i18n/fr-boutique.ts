@@ -184,6 +184,7 @@ export const FR_BOUTIQUE: Record<string, string> = {
   'cmd.courrielCopie': 'Courriel copié — collez-le dans votre messagerie',
   'espace.retraitPret': "Payée : en préparation, on vous prévient dès qu'elle est prête.",
   'espace.commandePrete': "Prête : passez la retirer à l'institut !",
+  'ts.form.imagePublication': "Ajoutez une image avant de publier, ou décochez « visible sur le site ».",
   'ts.form.petiteImage': "Cette image est petite ({n} px de large) : elle risque d'apparaître floue sur le site. Choisissez-en une d'au moins 1 200 px de large.",
   'srv.tarif': 'Prix',
   'srv.cadAide': '$ CAD = dollars canadiens (la monnaie du Canada).',

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { Collaborateur, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
@@ -12,7 +12,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 // rien à voir avec la validation du formulaire.
 @Component({
   selector: 'app-collaborateur-form',
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './collaborateur-form.component.html',
   styleUrl: './collaborateur-form.component.scss'
 })
@@ -72,7 +72,8 @@ export class CollaborateurFormComponent implements OnInit {
 
   async enregistrer(): Promise<void> {
     this.soumis.set(true);
-    const complet = this.prenom().trim() && this.nom().trim() && this.profilCodes().length > 0 && (this.collaborateur || this.emailValide());
+    const complet =
+      this.prenom().trim() && this.nom().trim() && this.profilCodes().length > 0 && (this.collaborateur || this.emailValide());
     if (!complet || this.envoi()) return;
 
     const ok = await this.confirmation.demander({

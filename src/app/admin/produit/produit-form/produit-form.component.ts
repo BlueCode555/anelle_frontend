@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { FormField, form, min, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +16,7 @@ import { bloquerCaracteresInterdits } from 'src/app/theme/shared/_helpers/nombre
 // Créer/Modifier partagent ce composant, selon la présence d'un ":id" dans la route.
 @Component({
   selector: 'app-produit-form',
-  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
+  imports: [FormsModule, FormField, TranslatePipe],
   templateUrl: './produit-form.component.html',
   styleUrl: './produit-form.component.scss'
 })
@@ -61,6 +61,8 @@ export class ProduitFormComponent implements OnInit {
     min(schemaPath.prix, 0.01, { message: this.i18n.t('ts.prd.prix') });
     required(schemaPath.stock, { message: this.i18n.t('ts.prd.stock') });
     min(schemaPath.stock, 0, { message: this.i18n.t('ts.prd.stock') });
+    // Publier sans image donnerait une carte vide sur le site : l'image n'est obligatoire que si l'élément est visible.
+    required(schemaPath.imageUrl, { when: ({ valueOf }) => valueOf(schemaPath.actif), message: this.i18n.t('ts.form.imagePublication') });
   });
 
   ngOnInit(): void {
@@ -126,7 +128,11 @@ export class ProduitFormComponent implements OnInit {
   }
 
   async removeImage(): Promise<void> {
-    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    const ok = await this.confirmation.demander({
+      titre: this.i18n.t('ts.form.retirerImage'),
+      texteConfirmer: this.i18n.t('a.retirer'),
+      danger: true
+    });
     if (ok) {
       this.produitModel.update((m) => ({ ...m, imageUrl: '' }));
     }
@@ -162,7 +168,9 @@ export class ProduitFormComponent implements OnInit {
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(
-          err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.form.actionRefusee') : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
+          err?.status === 401 || err?.status === 403
+            ? this.i18n.t('ts.form.actionRefusee')
+            : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
         );
       }
     });

@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,7 +13,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 
 @Component({
   selector: 'app-categorie-form',
-  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
+  imports: [FormsModule, FormField, TranslatePipe],
   templateUrl: './categorie-form.component.html',
   styleUrl: './categorie-form.component.scss'
 })
@@ -48,6 +48,8 @@ export class CategorieFormComponent implements OnInit {
 
   categorieForm = form(this.categorieModel, (schemaPath) => {
     required(schemaPath.libelle, { message: this.i18n.t('ts.cat.libelleObligatoire') });
+    // Publier sans image donnerait une carte vide sur le site : l'image n'est obligatoire que si l'élément est visible.
+    required(schemaPath.imageUrl, { when: ({ valueOf }) => valueOf(schemaPath.actif), message: this.i18n.t('ts.form.imagePublication') });
   });
 
   ngOnInit(): void {
@@ -111,7 +113,11 @@ export class CategorieFormComponent implements OnInit {
   }
 
   async removeImage(): Promise<void> {
-    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    const ok = await this.confirmation.demander({
+      titre: this.i18n.t('ts.form.retirerImage'),
+      texteConfirmer: this.i18n.t('a.retirer'),
+      danger: true
+    });
     if (ok) {
       this.categorieModel.update((m) => ({ ...m, imageUrl: '' }));
     }
@@ -144,9 +150,7 @@ export class CategorieFormComponent implements OnInit {
 
     this.saving.set(true);
     const value = this.categorieModel();
-    const request = this.categorieId
-      ? this.catalogue.updateCategorie(this.categorieId, value)
-      : this.catalogue.createCategorie(value);
+    const request = this.categorieId ? this.catalogue.updateCategorie(this.categorieId, value) : this.catalogue.createCategorie(value);
 
     request.subscribe({
       next: () => this.activeModal.close('saved'),

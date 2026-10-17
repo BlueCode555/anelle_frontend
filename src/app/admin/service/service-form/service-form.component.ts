@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { FormField, form, min, required } from '@angular/forms/signals';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,7 +19,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 // la présence d'un ":id" dans la route (/services/nouveau ou /services/:id/modifier).
 @Component({
   selector: 'app-service-form',
-  imports: [CommonModule, FormsModule, FormField, TranslatePipe, DureePipe],
+  imports: [FormsModule, FormField, TranslatePipe, DureePipe],
   templateUrl: './service-form.component.html',
   styleUrl: './service-form.component.scss'
 })
@@ -72,6 +72,8 @@ export class ServiceFormComponent implements OnInit {
     required(schemaPath.dureeMinutes, { message: this.i18n.t('ts.srv.duree') });
     required(schemaPath.tarif, { message: this.i18n.t('ts.srv.tarif') });
     min(schemaPath.tarif, 0, { message: this.i18n.t('ts.srv.tarifMin') });
+    // Publier sans image donnerait une carte vide sur le site : l'image n'est obligatoire que si l'élément est visible.
+    required(schemaPath.imageUrl, { when: ({ valueOf }) => valueOf(schemaPath.actif), message: this.i18n.t('ts.form.imagePublication') });
   });
 
   ngOnInit(): void {
@@ -140,7 +142,11 @@ export class ServiceFormComponent implements OnInit {
   }
 
   async removeImage(): Promise<void> {
-    const ok = await this.confirmation.demander({ titre: this.i18n.t('ts.form.retirerImage'), texteConfirmer: this.i18n.t('a.retirer'), danger: true });
+    const ok = await this.confirmation.demander({
+      titre: this.i18n.t('ts.form.retirerImage'),
+      texteConfirmer: this.i18n.t('a.retirer'),
+      danger: true
+    });
     if (ok) {
       this.serviceModel.update((m) => ({ ...m, imageUrl: '' }));
     }
@@ -179,7 +185,11 @@ export class ServiceFormComponent implements OnInit {
       },
       error: (err) => {
         this.saving.set(false);
-        this.serverError.set(err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.form.actionRefusee') : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique')));
+        this.serverError.set(
+          err?.status === 401 || err?.status === 403
+            ? this.i18n.t('ts.form.actionRefusee')
+            : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
+        );
       }
     });
   }

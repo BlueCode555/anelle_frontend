@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { RayonResponse, RayonService } from 'src/app/theme/shared/service/boutique.service';
@@ -14,7 +14,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 // (« Ongles » vs « Onglerie »...) en imposant de choisir dans une liste gérée ici.
 @Component({
   selector: 'app-rayon-list',
-  imports: [CommonModule, TranslatePipe, PaginationComponent],
+  imports: [TranslatePipe, PaginationComponent],
   templateUrl: './rayon-list.component.html',
   styleUrl: './rayon-list.component.scss'
 })

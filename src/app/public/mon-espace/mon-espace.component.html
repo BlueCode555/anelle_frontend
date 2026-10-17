@@ -319,6 +319,9 @@
                       </div>
                       <div class="rdv-what">
                         <span class="text-muted small">{{ 'espace.payeLe' | t: { date: jour(rdv.payeLe!) } }}</span>
+                        @if (rdv.referencePaiement) {
+                          <span class="text-muted small d-block">{{ 'espace.reference' | t: { ref: rdv.referencePaiement! } }}</span>
+                        }
                       </div>
                       <div class="rdv-status">
                         <strong>{{ formatTarif(rdv.prix) }}</strong>

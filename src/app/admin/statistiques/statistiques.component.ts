@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
@@ -15,7 +14,7 @@ const INTERVALLE_RAFRAICHISSEMENT_MS = 60_000;
 // periode choisie, pour reperer sur quoi faire une promotion. Reserve a la proprietaire (voir PermissionRules).
 @Component({
   selector: 'app-statistiques',
-  imports: [CommonModule, FormsModule, TranslatePipe, EvolutionChartComponent],
+  imports: [FormsModule, TranslatePipe, EvolutionChartComponent],
   templateUrl: './statistiques.component.html',
   styleUrl: './statistiques.component.scss'
 })

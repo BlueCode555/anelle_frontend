@@ -3,8 +3,17 @@
 
   <section id="top" class="hero px-3">
     @if (videoActif && !videoErreur()) {
-      <video #heroVideo class="hero-video" [poster]="heroImage" [muted]="true" autoplay loop playsinline
-        (error)="onVideoErreur()" aria-hidden="true">
+      <video
+        #heroVideo
+        class="hero-video"
+        [poster]="heroImage"
+        [muted]="true"
+        autoplay
+        loop
+        playsinline
+        (error)="onVideoErreur()"
+        aria-hidden="true"
+      >
         <source [src]="heroVideoSrc" type="video/mp4" />
       </video>
     } @else {
@@ -24,16 +33,30 @@
         <a routerLink="/accueil" fragment="services" class="btn btn-outline-light btn-lg px-4">{{ 'home.voirServices' | t }}</a>
       </div>
       <ul class="hero-points">
-        <li><i class="ti ti-calendar-check"></i>{{ 'home.point.reservation' | t }}</li>
-        <li><i class="ti ti-lock"></i>{{ 'home.point.paiement' | t }}</li>
-        <li><i class="ti ti-heart"></i>{{ 'home.point.accueil' | t }}</li>
+        <li>
+          <i class="ti ti-calendar-check"></i>
+          {{ 'home.point.reservation' | t }}
+        </li>
+        <li>
+          <i class="ti ti-lock"></i>
+          {{ 'home.point.paiement' | t }}
+        </li>
+        <li>
+          <i class="ti ti-heart"></i>
+          {{ 'home.point.accueil' | t }}
+        </li>
       </ul>
     </div>
   </section>
 
   @if (info()?.bannierePromo; as promo) {
-    <section class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3">
-      <span><i class="ti ti-gift me-2"></i>{{ promo }}</span>
+    <section
+      class="promo-banner d-flex flex-column flex-md-row align-items-center justify-content-center gap-2 gap-md-4 text-center px-3 py-3"
+    >
+      <span>
+        <i class="ti ti-gift me-2"></i>
+        {{ promo }}
+      </span>
       <a routerLink="/accueil" fragment="services" class="btn btn-sm btn-dark">{{ 'home.promo.cta' | t }}</a>
     </section>
   }
@@ -70,107 +93,151 @@
     <span class="ar-eyebrow text-center">{{ 'home.galerie.eyebrow' | t }}</span>
     <h2 class="ar-section-title px-3">{{ 'home.galerie.titre' | t }}</h2>
     <p class="ar-section-lead px-3">{{ 'home.galerie.intro' | t }}</p>
-    <div class="gallery-carousel-wrap mx-auto" *ngIf="galleryImages().length">
-      <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
-        <ng-template ngbSlide *ngFor="let img of galleryImages()">
-          <div class="gallery-slide" [style.--fond]="'url(' + img.src + ')'">
-            <img [src]="img.src" [alt]="img.alt" />
-            <div class="gallery-caption">{{ img.caption }}</div>
-          </div>
-        </ng-template>
-      </ngb-carousel>
-    </div>
+    @if (galleryImages().length) {
+      <div class="gallery-carousel-wrap mx-auto">
+        <ngb-carousel [interval]="3500" [showNavigationIndicators]="true" [pauseOnHover]="false" [pauseOnFocus]="false" [wrap]="true">
+          @for (img of galleryImages(); track img) {
+            <ng-template ngbSlide>
+              <div class="gallery-slide" [style.--fond]="'url(' + img.src + ')'">
+                <img [src]="img.src" [alt]="img.alt" (error)="marquerImageErreur(img.cle)" />
+                <div class="gallery-caption">{{ img.caption }}</div>
+              </div>
+            </ng-template>
+          }
+        </ngb-carousel>
+      </div>
+    }
   </section>
 
-  <section id="categories" class="categories-carousel py-5" *ngIf="categorieSlides().length">
-    <span class="ar-eyebrow text-center">{{ 'home.categories.eyebrow' | t }}</span>
-    <h2 class="ar-section-title px-3">{{ 'home.categories.titre' | t }}</h2>
-    <p class="ar-section-lead px-3">{{ 'home.categories.intro' | t }}</p>
+  @if (categories().length) {
+    <section id="categories" class="categories-carousel py-5">
+      <span class="ar-eyebrow text-center">{{ 'home.categories.eyebrow' | t }}</span>
+      <h2 class="ar-section-title px-3">{{ 'home.categories.titre' | t }}</h2>
+      <p class="ar-section-lead px-3">{{ 'home.categories.intro' | t }}</p>
 
-    <div class="categories-carousel-wrap mx-auto">
-      <ngb-carousel
-        [interval]="categorieSlides().length > 1 ? 4500 : 0"
-        [showNavigationIndicators]="categorieSlides().length > 1"
-        [pauseOnHover]="true"
-        [pauseOnFocus]="true"
-        [wrap]="true"
-      >
-        <ng-template ngbSlide *ngFor="let page of categorieSlides()">
-          <div class="categorie-grid">
-            <button type="button" class="categorie-card" *ngFor="let cat of page" (click)="choisirCategorie(cat.code)">
+      <div class="categories-rail-wrap mx-auto">
+        @if (defilable()) {
+          <button
+            type="button"
+            class="rail-btn rail-prev"
+            [disabled]="!peutReculer()"
+            (click)="defiler(-1)"
+            [attr.aria-label]="'home.categories.precedent' | t"
+          >
+            <i class="ti ti-chevron-left"></i>
+          </button>
+        }
+        <div #piste class="categories-rail" (scroll)="majDefilement()">
+          @for (cat of categories(); track cat.code) {
+            <button type="button" class="categorie-card" (click)="choisirCategorie(cat.code)">
               @if (categorieImage(cat); as src) {
-                <img [src]="src" [alt]="libelleCategorie(cat)" loading="lazy" />
+                <img [src]="src" [alt]="libelleCategorie(cat)" loading="lazy" (error)="marquerImageErreur('c:' + cat.code)" />
               } @else {
                 <span class="categorie-icon"><i class="ti {{ categoryIcon(cat.code) }}"></i></span>
               }
               <span class="categorie-nom">{{ libelleCategorie(cat) }}</span>
             </button>
-          </div>
-        </ng-template>
-      </ngb-carousel>
-    </div>
-  </section>
+          }
+        </div>
+        @if (defilable()) {
+          <button
+            type="button"
+            class="rail-btn rail-next"
+            [disabled]="!peutAvancer()"
+            (click)="defiler(1)"
+            [attr.aria-label]="'home.categories.suivant' | t"
+          >
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        }
+      </div>
+    </section>
+  }
 
   <section id="services" class="services py-5 px-3">
     <span class="ar-eyebrow text-center">{{ 'home.services.eyebrow' | t }}</span>
     <h2 class="ar-section-title">{{ 'home.services.titre' | t }}</h2>
     <p class="ar-section-lead">{{ 'home.services.intro' | t }}</p>
 
-    <div class="category-pills d-flex flex-wrap justify-content-center gap-2 mb-5" *ngIf="categories().length">
-      <button
-        type="button"
-        class="btn btn-sm"
-        [class.btn-secondary]="activeCategory() === null"
-        [class.btn-outline-secondary]="activeCategory() !== null"
-        (click)="selectCategory(null)"
-      >
-        {{ 'home.services.toutes' | t }}
-      </button>
-      <button
-        type="button"
-        class="btn btn-sm"
-        *ngFor="let cat of categories()"
-        [class.btn-secondary]="activeCategory() === cat.code"
-        [class.btn-outline-secondary]="activeCategory() !== cat.code"
-        (click)="selectCategory(cat.code)"
-      >
-        {{ libelleCategorie(cat) }}
-      </button>
-    </div>
-
-    <div *ngIf="loading()" class="text-center text-muted py-5">{{ 'home.services.chargement' | t }}</div>
-
-    <div *ngIf="error()" class="alert alert-warning text-center mx-auto" style="max-width: 480px">
-      {{ 'home.services.erreur' | t }}
-    </div>
-
-    <div *ngIf="!loading() && !error() && filteredServices().length === 0" class="text-center text-muted py-5">
-      {{ 'home.services.aucun' | t }}
-    </div>
-
-    <div class="row g-4" *ngIf="!loading() && filteredServices().length">
-      <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of servicesPagees()">
-        <div class="card h-100 service-card">
-          @if (serviceImage(service); as photo) {
-            <div class="service-photo-wrap" [style.--fond]="'url(' + photo + ')'">
-              <img [src]="photo" [alt]="nomService(service)" class="service-photo" loading="lazy" />
-            </div>
-          } @else {
-            <div class="service-photo-empty"><i class="ti {{ categoryIcon(service.categorieCode) }}"></i></div>
-          }
-          <div class="card-body d-flex flex-column">
-            <span class="service-category">{{ libelleCategorieDuService(service) }}</span>
-            <h3 class="service-name">{{ nomService(service) }}</h3>
-            <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
-            <div class="d-flex justify-content-between align-items-end mt-3">
-              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes | duree }}</span>
-              <span class="service-price">{{ formatTarif(service.tarif) }}</span>
-            </div>
-            <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">{{ 'home.services.reserver' | t }}</a>
-          </div>
-        </div>
+    @if (categories().length) {
+      <div class="category-pills d-flex flex-wrap justify-content-center gap-2 mb-5">
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-secondary]="activeCategory() === null"
+          [class.btn-outline-secondary]="activeCategory() !== null"
+          (click)="selectCategory(null)"
+        >
+          {{ 'home.services.toutes' | t }}
+        </button>
+        @for (cat of categories(); track cat) {
+          <button
+            type="button"
+            class="btn btn-sm"
+            [class.btn-secondary]="activeCategory() === cat.code"
+            [class.btn-outline-secondary]="activeCategory() !== cat.code"
+            (click)="selectCategory(cat.code)"
+          >
+            {{ libelleCategorie(cat) }}
+          </button>
+        }
       </div>
-    </div>
+    }
+
+    @if (loading()) {
+      <div class="text-center text-muted py-5">{{ 'home.services.chargement' | t }}</div>
+    }
+
+    @if (error()) {
+      <div class="alert alert-warning text-center mx-auto" style="max-width: 480px">
+        {{ 'home.services.erreur' | t }}
+      </div>
+    }
+
+    @if (!loading() && !error() && filteredServices().length === 0) {
+      <div class="text-center text-muted py-5">
+        {{ 'home.services.aucun' | t }}
+      </div>
+    }
+
+    @if (!loading() && filteredServices().length) {
+      <div class="row g-4">
+        @for (service of servicesPagees(); track service) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 service-card">
+              @if (serviceImage(service); as photo) {
+                <div class="service-photo-wrap" [style.--fond]="'url(' + photo + ')'">
+                  <img
+                    [src]="photo"
+                    [alt]="nomService(service)"
+                    class="service-photo"
+                    loading="lazy"
+                    (error)="marquerImageErreur('s:' + service.code)"
+                  />
+                </div>
+              } @else {
+                <div class="service-photo-empty"><i class="ti {{ categoryIcon(service.categorieCode) }}"></i></div>
+              }
+              <div class="card-body d-flex flex-column">
+                <span class="service-category">{{ libelleCategorieDuService(service) }}</span>
+                <h3 class="service-name">{{ nomService(service) }}</h3>
+                <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
+                <div class="d-flex justify-content-between align-items-end mt-3">
+                  <span class="text-muted small">
+                    <i class="ti ti-clock me-1"></i>
+                    {{ service.dureeMinutes | duree }}
+                  </span>
+                  <span class="service-price">{{ formatTarif(service.tarif) }}</span>
+                </div>
+                <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">
+                  {{ 'home.services.reserver' | t }}
+                </a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
     <app-pagination [total]="filteredServices().length" [taille]="tailleServices()" [(page)]="pageServices" />
   </section>
 
@@ -195,13 +262,23 @@
       <div class="col-12 col-md-6" [class.col-lg-3]="horaires().length" [class.col-lg-4]="!horaires().length">
         <h5 class="footer-heading">{{ 'home.footer.liens' | t }}</h5>
         <ul class="footer-links">
-          <li><a routerLink="/reserver">{{ 'home.footer.reservationEnLigne' | t }}</a></li>
-          <li><a routerLink="/accueil" fragment="services">{{ 'home.footer.nosServices' | t }}</a></li>
-          <li><a routerLink="/connexion">{{ 'home.footer.espaceClient' | t }}</a></li>
+          <li>
+            <a routerLink="/reserver">{{ 'home.footer.reservationEnLigne' | t }}</a>
+          </li>
+          <li>
+            <a routerLink="/accueil" fragment="services">{{ 'home.footer.nosServices' | t }}</a>
+          </li>
+          <li>
+            <a routerLink="/connexion">{{ 'home.footer.espaceClient' | t }}</a>
+          </li>
           @if (info()?.siteWeb; as site) {
-            <li><a [href]="site" target="_blank" rel="noopener">{{ 'home.footer.siteWeb' | t }}</a></li>
+            <li>
+              <a [href]="site" target="_blank" rel="noopener">{{ 'home.footer.siteWeb' | t }}</a>
+            </li>
           }
-          <li><a routerLink="/personnel" class="footer-admin-link">{{ 'home.footer.admin' | t }}</a></li>
+          <li>
+            <a routerLink="/personnel" class="footer-admin-link">{{ 'home.footer.admin' | t }}</a>
+          </li>
         </ul>
       </div>
 
@@ -212,10 +289,14 @@
             <p class="mb-1">{{ ligne }}</p>
           }
           @if (info()?.telephone; as tel) {
-            <p class="mb-1"><a class="footer-contact-link" [href]="'tel:' + tel">{{ tel }}</a></p>
+            <p class="mb-1">
+              <a class="footer-contact-link" [href]="'tel:' + tel">{{ tel }}</a>
+            </p>
           }
           @if (info()?.email; as mail) {
-            <p class="mb-1"><a class="footer-contact-link" [href]="'mailto:' + mail">{{ mail }}</a></p>
+            <p class="mb-1">
+              <a class="footer-contact-link" [href]="'mailto:' + mail">{{ mail }}</a>
+            </p>
           }
         } @else {
           <p class="footer-text">{{ 'home.footer.bientot' | t }}</p>
@@ -237,7 +318,10 @@
           <h5 class="footer-heading">{{ 'home.footer.horaires' | t }}</h5>
           <ul class="footer-hours">
             @for (ligne of horaires(); track ligne.jour) {
-              <li><span>{{ ligne.jour }}</span><span>{{ ligne.libelle }}</span></li>
+              <li>
+                <span>{{ ligne.jour }}</span>
+                <span>{{ ligne.libelle }}</span>
+              </li>
             }
           </ul>
         </div>

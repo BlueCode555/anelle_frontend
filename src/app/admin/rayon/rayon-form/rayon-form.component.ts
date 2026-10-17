@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
@@ -11,7 +11,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 
 @Component({
   selector: 'app-rayon-form',
-  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
+  imports: [FormsModule, FormField, TranslatePipe],
   templateUrl: './rayon-form.component.html'
 })
 export class RayonFormComponent implements OnInit {
@@ -69,7 +69,9 @@ export class RayonFormComponent implements OnInit {
       error: (err) => {
         this.saving.set(false);
         this.serverError.set(
-          err?.status === 401 || err?.status === 403 ? this.i18n.t('ts.form.actionRefusee') : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
+          err?.status === 401 || err?.status === 403
+            ? this.i18n.t('ts.form.actionRefusee')
+            : (err?.error?.message ?? this.i18n.t('ts.erreurGenerique'))
         );
       }
     });

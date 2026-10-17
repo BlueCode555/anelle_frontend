@@ -1,6 +1,18 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, computed, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+  computed,
+  effect,
+  inject,
+  signal,
+  viewChild
+} from '@angular/core';
+
 import { Title } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { NgbCarouselModule } from '@ng-bootstrap/ng-bootstrap';
@@ -15,6 +27,8 @@ import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 
 interface GalleryImage {
+  // Identifiant de l'image (ex. "c:CODE"), pour la masquer si elle ne charge pas ; absent pour les images par defaut.
+  cle?: string;
   src: string;
   alt: string;
   caption: string;
@@ -31,11 +45,11 @@ const pexels = (id: number, width: number): string =>
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterModule, NgbCarouselModule, SiteHeaderComponent, TranslatePipe, DureePipe, PaginationComponent],
+  imports: [RouterModule, NgbCarouselModule, SiteHeaderComponent, TranslatePipe, DureePipe, PaginationComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
-export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit {
   // Filet de sécurité : certains navigateurs/SPA "manquent" l'autoplay déclaratif d'une vidéo insérée
   // dynamiquement (ex. via @if) ; un appel explicite à .play() une fois la vue prête rattrape ce cas. Sans
   // effet si la vidéo n'est pas affichée (mobile / mouvement réduit) ou si l'autoplay a déjà démarré seul.
@@ -80,28 +94,22 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   error = signal(false);
   activeCategory = signal<string | null>(null);
 
-  // Carrousel des catégories : 3 cartes par page sur mobile, 6 sur bureau (2 rangées de 3).
   // Soins : 4 par page sur mobile (liste plus courte et plus rapide à parcourir au doigt), 9 sur bureau.
   private ecranEtroit = window.matchMedia('(max-width: 767.98px)');
-  private ecouteurEcran = (e: MediaQueryListEvent) => {
-    this.itemsParPage.set(e.matches ? 3 : 6);
-    this.tailleServices.set(e.matches ? 4 : 9);
-  };
-  itemsParPage = signal(this.ecranEtroit.matches ? 3 : 6);
+
+  // Catégories : une seule rangée qui défile horizontalement. Les flèches font défiler d'environ un écran, se
+  // désactivent aux extrémités et disparaissent si tout tient à l'écran (sur téléphone, on glisse au doigt).
+  piste = viewChild<ElementRef<HTMLElement>>('piste');
+  defilable = signal(false);
+  peutReculer = signal(false);
+  peutAvancer = signal(false);
+
+  // Images qui n'ont pas pu charger (lien cassé, fichier supprime...) : remplacees par l'icone par defaut.
+  private imagesEnErreur = signal<ReadonlySet<string>>(new Set());
 
   // Vidéo du hero sur tous les écrans (cohérent partout), sauf si la personne a demandé moins de mouvement
   // à l'écran (réglage d'accessibilité du système) ; sinon la photo statique suffit comme fond.
   videoActif = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  categorieSlides = computed(() => {
-    const parPage = this.itemsParPage();
-    const cats = this.categories();
-    const pages: CategorieResponse[][] = [];
-    for (let i = 0; i < cats.length; i += parPage) {
-      pages.push(cats.slice(i, i + parPage));
-    }
-    return pages;
-  });
 
   // Les soins s'affichent 9 par page (4 sur mobile) : au-delà, une pagination apparaît.
   pageServices = signal(1);
@@ -143,11 +151,38 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor() {
     effect(() => this.title.setTitle(this.nom()));
-    this.ecranEtroit.addEventListener('change', this.ecouteurEcran);
+    // La rangée de catégories n'existe qu'après le chargement : on recalcule l'état des flèches dès qu'elle change.
+    effect(() => {
+      this.categories();
+      if (this.piste()) {
+        setTimeout(() => this.majDefilement());
+      }
+    });
   }
 
-  ngOnDestroy(): void {
-    this.ecranEtroit.removeEventListener('change', this.ecouteurEcran);
+  // Soins par page : suit le passage mobile / bureau quand la fenetre est redimensionnee ou pivotee.
+  @HostListener('window:resize')
+  majTailleServices(): void {
+    this.tailleServices.set(this.ecranEtroit.matches ? 4 : 9);
+  }
+
+  @HostListener('window:resize')
+  majDefilement(): void {
+    const el = this.piste()?.nativeElement;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    this.defilable.set(max > 1);
+    this.peutReculer.set(el.scrollLeft > 1);
+    this.peutAvancer.set(el.scrollLeft < max - 1);
+  }
+
+  defiler(sens: -1 | 1): void {
+    const el = this.piste()?.nativeElement;
+    el?.scrollBy({ left: sens * el.clientWidth * 0.9, behavior: 'smooth' });
+  }
+
+  marquerImageErreur(cle?: string): void {
+    if (cle) this.imagesEnErreur.update((s) => new Set(s).add(cle));
   }
 
   ngAfterViewInit(): void {
@@ -196,7 +231,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   categorieImage(cat: CategorieResponse): string | null {
-    return this.catalogue.imageSrc(cat.imageUrl ?? null);
+    return this.imagesEnErreur().has('c:' + cat.code) ? null : this.catalogue.imageSrc(cat.imageUrl ?? null);
   }
 
   formatTarif(tarif: number): string {
@@ -216,7 +251,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   };
 
   serviceImage(service: ServiceResponse): string | null {
-    return this.catalogue.imageSrc(service.imageUrl);
+    return this.imagesEnErreur().has('s:' + service.code) ? null : this.catalogue.imageSrc(service.imageUrl);
   }
 
   categoryIcon(categorieCode: string): string {
@@ -228,11 +263,11 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   private defaultGallery(): GalleryImage[] {
     const t = (k: string) => this.i18n.t(k);
     return [
-    { src: pexels(6945567, 1600), alt: t('home.gallery.espace.alt'), caption: t('home.gallery.espace') },
-    { src: pexels(3738349, 1600), alt: t('home.gallery.visage.alt'), caption: t('home.gallery.visage') },
-    { src: pexels(7755296, 1600), alt: t('home.gallery.manucure.alt'), caption: t('home.gallery.manucure') },
-    { src: pexels(8312896, 1600), alt: t('home.gallery.pedicure.alt'), caption: t('home.gallery.pedicure') },
-    { src: pexels(6186764, 1600), alt: t('home.gallery.corps.alt'), caption: t('home.gallery.corps') }
+      { src: pexels(6945567, 1600), alt: t('home.gallery.espace.alt'), caption: t('home.gallery.espace') },
+      { src: pexels(3738349, 1600), alt: t('home.gallery.visage.alt'), caption: t('home.gallery.visage') },
+      { src: pexels(7755296, 1600), alt: t('home.gallery.manucure.alt'), caption: t('home.gallery.manucure') },
+      { src: pexels(8312896, 1600), alt: t('home.gallery.pedicure.alt'), caption: t('home.gallery.pedicure') },
+      { src: pexels(6186764, 1600), alt: t('home.gallery.corps.alt'), caption: t('home.gallery.corps') }
     ];
   }
 
@@ -241,12 +276,13 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.loading()) {
       return [];
     }
+    const erreurs = this.imagesEnErreur();
     const fromCategories = this.categories()
-      .filter((c) => !!c.imageUrl)
-      .map((c) => ({ src: this.catalogue.imageSrc(c.imageUrl) as string, alt: c.libelle, caption: c.libelle }));
+      .filter((c) => !!c.imageUrl && !erreurs.has('c:' + c.code))
+      .map((c) => ({ cle: 'c:' + c.code, src: this.catalogue.imageSrc(c.imageUrl) as string, alt: c.libelle, caption: c.libelle }));
     const fromServices = this.services()
-      .filter((s) => s.actif && !!s.imageUrl)
-      .map((s) => ({ src: this.catalogue.imageSrc(s.imageUrl) as string, alt: s.nomService, caption: s.nomService }));
+      .filter((s) => s.actif && !!s.imageUrl && !erreurs.has('s:' + s.code))
+      .map((s) => ({ cle: 's:' + s.code, src: this.catalogue.imageSrc(s.imageUrl) as string, alt: s.nomService, caption: s.nomService }));
     const dynamic = [...fromCategories, ...fromServices];
     return dynamic.length ? dynamic : this.defaultGallery();
   });

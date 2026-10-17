@@ -179,6 +179,7 @@ export const EN_BOUTIQUE: Record<string, string> = {
   'cmd.courrielCopie': 'Email copied — paste it in your mail app',
   'espace.retraitPret': 'Paid: being prepared, we will let you know as soon as it is ready.',
   'espace.commandePrete': 'Ready: come and pick it up at the salon!',
+  'ts.form.imagePublication': 'Add an image before publishing, or untick "visible on the site".',
   'ts.form.petiteImage': 'This image is small ({n} px wide): it may look blurry on the site. Choose one at least 1,200 px wide.',
   'srv.tarif': 'Price',
   'srv.cadAide': '$ CAD = Canadian dollars (the currency of Canada).',

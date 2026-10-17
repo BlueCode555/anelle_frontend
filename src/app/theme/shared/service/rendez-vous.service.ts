@@ -26,6 +26,8 @@ export interface RendezVous {
   clientTelephone: string | null;
   expireLe: string | null;
   payeLe: string | null;
+  // Référence du paiement : identifiant Square, ou mention saisie par le personnel pour un paiement reçu hors ligne.
+  referencePaiement: string | null;
   note: string | null;
   motifRefus: string | null;
   // Lien de paiement Square, présent seulement quand le rendez-vous est "Acceptée" et Square configuré.

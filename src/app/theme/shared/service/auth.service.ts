@@ -337,9 +337,7 @@ export class AuthService {
         this.enregistrerJetons(jetons);
         return jetons.access_token;
       })
-      .catch((err) => {
-        // Diagnostic temporaire (signalement d'une expiration anormalement rapide) : a retirer une fois la cause trouvee.
-        console.warn('[auth] échec du rafraîchissement du jeton :', err?.status, err?.error ?? err?.message ?? err);
+      .catch(() => {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_KEY);
         localStorage.removeItem(ID_TOKEN_KEY);

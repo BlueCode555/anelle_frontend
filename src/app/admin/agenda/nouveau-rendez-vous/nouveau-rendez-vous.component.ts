@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ChoixCreneau, SlotPickerComponent } from 'src/app/theme/shared/components/slot-picker/slot-picker.component';
@@ -10,7 +10,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 // Saisie d'un rendez-vous par le personnel (client au telephone ou au comptoir) : il est deja accepte.
 @Component({
   selector: 'app-nouveau-rendez-vous',
-  imports: [CommonModule, SlotPickerComponent, TranslatePipe],
+  imports: [SlotPickerComponent, TranslatePipe],
   templateUrl: './nouveau-rendez-vous.component.html'
 })
 export class NouveauRendezVousComponent {

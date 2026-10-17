@@ -1,6 +1,6 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, RouterModule } from '@angular/router';
 
 import { SiteHeaderComponent } from '../site-header/site-header.component';
@@ -15,7 +15,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 
 @Component({
   selector: 'app-reserver',
-  imports: [CommonModule, RouterModule, SiteHeaderComponent, SlotPickerComponent, TranslatePipe],
+  imports: [RouterModule, SiteHeaderComponent, SlotPickerComponent, TranslatePipe],
   templateUrl: './reserver.component.html',
   styleUrl: './reserver.component.scss'
 })

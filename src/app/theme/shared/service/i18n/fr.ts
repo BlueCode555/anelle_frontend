@@ -26,5 +26,9 @@ export const FR: Record<string, string> = {
   'header.deconnexion': 'Déconnexion',
   'header.seConnecter': 'Se connecter',
   'header.confirmerDeconnexion.titre': 'Se déconnecter ?',
-  'header.confirmerDeconnexion.bouton': 'Se déconnecter'
+  'header.confirmerDeconnexion.bouton': 'Se déconnecter',
+
+  // ── Accueil : rangée des catégories ──────────────────────────────────────
+  'home.categories.precedent': 'Catégories précédentes',
+  'home.categories.suivant': 'Catégories suivantes'
 };

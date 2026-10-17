@@ -26,5 +26,9 @@ export const EN: Record<string, string> = {
   'header.deconnexion': 'Log out',
   'header.seConnecter': 'Log in',
   'header.confirmerDeconnexion.titre': 'Log out?',
-  'header.confirmerDeconnexion.bouton': 'Log out'
+  'header.confirmerDeconnexion.bouton': 'Log out',
+
+  // ── Home: categories row ─────────────────────────────────────────────────
+  'home.categories.precedent': 'Previous categories',
+  'home.categories.suivant': 'Next categories'
 };

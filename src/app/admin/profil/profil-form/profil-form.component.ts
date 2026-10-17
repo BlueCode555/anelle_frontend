@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ActionCode, EcranCode, Permission } from 'src/app/theme/shared/service/auth.service';
@@ -16,7 +16,7 @@ interface Colonne {
 // Création / modification d'un profil : nom + grille de droits (un écran par ligne, lire/créer/modifier/supprimer en colonnes).
 @Component({
   selector: 'app-profil-form',
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   templateUrl: './profil-form.component.html'
 })
 export class ProfilFormComponent implements OnInit {

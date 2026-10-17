@@ -1,6 +1,6 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, inject, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
@@ -14,7 +14,7 @@ import { PaginationComponent } from 'src/app/theme/shared/components/pagination/
 
 @Component({
   selector: 'app-service-list',
-  imports: [CommonModule, TranslatePipe, DureePipe, PaginationComponent],
+  imports: [TranslatePipe, DureePipe, PaginationComponent],
   templateUrl: './service-list.component.html',
   styleUrl: './service-list.component.scss'
 })

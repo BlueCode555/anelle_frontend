@@ -1,6 +1,6 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, HostListener, OnDestroy, OnInit, computed, effect, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { LangSwitcherComponent } from 'src/app/theme/shared/component/lang-switcher/lang-switcher.component';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -29,7 +29,7 @@ const COLLAPSE_KEY = 'arnelle.nav.collapsed';
 // Coque du back-office : menu latéral repliable, barre du haut (fil d'Ariane, notifications, profil), contenu, pied de page.
 @Component({
   selector: 'app-admin',
-  imports: [CommonModule, RouterModule, TranslatePipe, LangSwitcherComponent],
+  imports: [RouterModule, TranslatePipe, LangSwitcherComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
@@ -67,7 +67,9 @@ export class AdminComponent implements OnInit, OnDestroy {
     const u = this.auth.user();
     if (!u) return this.i18n.t('admin.role.gestion');
     // Le collaborateur voit le nom du profil avec lequel il travaille en ce moment
-    return u.superAdmin ? this.i18n.t('admin.role.esthéticienne') : (this.auth.profilActif()?.libelle ?? this.i18n.t('admin.role.collaborateur'));
+    return u.superAdmin
+      ? this.i18n.t('admin.role.esthéticienne')
+      : (this.auth.profilActif()?.libelle ?? this.i18n.t('admin.role.collaborateur'));
   });
 
   fil = computed<Miette[]>(() => {
@@ -88,13 +90,18 @@ export class AdminComponent implements OnInit, OnDestroy {
   });
 
   constructor() {
-    this.router.events.pipe(filter((e) => e instanceof NavigationEnd), takeUntilDestroyed()).subscribe(() => {
-      this.url.set(this.router.url);
-      this.mobileOpen.set(false);
-      this.profilOuvert.set(false);
-      this.ouvrirSectionActive();
-      this.chargerDemandes();
-    });
+    this.router.events
+      .pipe(
+        filter((e) => e instanceof NavigationEnd),
+        takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        this.url.set(this.router.url);
+        this.mobileOpen.set(false);
+        this.profilOuvert.set(false);
+        this.ouvrirSectionActive();
+        this.chargerDemandes();
+      });
     // Les demandes à traiter dépendent du fuseau de l'institut, connu une fois ses informations chargées.
     effect(() => {
       this.informations.info();

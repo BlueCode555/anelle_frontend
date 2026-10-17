@@ -3,10 +3,14 @@
   <button type="button" class="btn-close" [attr.aria-label]="'a.fermer' | t" (click)="activeModal.dismiss()"></button>
 </div>
 <div class="modal-body">
-  <div *ngIf="erreur()" class="alert alert-danger">{{ erreur() }}</div>
+  @if (erreur()) {
+    <div class="alert alert-danger">{{ erreur() }}</div>
+  }
 
   <app-slot-picker (choix)="choix.set($event)" />
-  <div *ngIf="soumis() && !choix()" class="text-danger small mt-2">{{ 'a.choisissez_un_soin_un_jour_et_un_creneau' | t }}</div>
+  @if (soumis() && !choix()) {
+    <div class="text-danger small mt-2">{{ 'a.choisissez_un_soin_un_jour_et_un_creneau' | t }}</div>
+  }
 
   <hr />
 
