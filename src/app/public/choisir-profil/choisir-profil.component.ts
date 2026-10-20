@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService, ProfilAcces } from '../../theme/shared/service/auth.service';
@@ -21,21 +21,41 @@ export class ChoisirProfilComponent implements OnInit {
   nom = inject(InformationService).nom;
   private router = inject(Router);
 
+  // Code du profil retenu dans la liste deroulante (le premier par defaut, une fois les profils connus).
+  codeChoisi = signal<string | null>(null);
+  profilChoisi = computed<ProfilAcces | null>(() => {
+    const liste = this.auth.user()?.profils ?? [];
+    return liste.find((p) => p.code === this.codeChoisi()) ?? liste[0] ?? null;
+  });
+
   async ngOnInit(): Promise<void> {
     await this.auth.pret();
     // Rien a choisir (un seul profil, ou esthéticienne) : on ne devrait pas arriver ici, on repart directement.
     if (!this.auth.peutChangerProfil()) {
       this.continuer();
+      return;
     }
+    this.codeChoisi.set(this.auth.user()?.profils?.[0]?.code ?? null);
   }
 
   ecrans(profil: ProfilAcces): string[] {
     return profil.permissions.filter((p) => p.lire).map((p) => p.ecran);
   }
 
-  choisir(profil: ProfilAcces): void {
+  selectionner(event: Event): void {
+    this.codeChoisi.set((event.target as HTMLSelectElement).value);
+  }
+
+  valider(): void {
+    const profil = this.profilChoisi();
+    if (!profil) return;
     this.auth.changerProfil(profil.code);
     this.continuer();
+  }
+
+  // Reprend la connexion a zero (utile pour se reconnecter avec un autre compte).
+  revenir(): void {
+    this.auth.logout();
   }
 
   private continuer(): void {

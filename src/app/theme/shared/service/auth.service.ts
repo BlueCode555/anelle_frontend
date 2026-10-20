@@ -47,7 +47,9 @@ export type EcranCode =
   | 'COMMANDES'
   | 'CLIENTS'
   | 'AUDIT'
-  | 'STATISTIQUES';
+  | 'STATISTIQUES'
+  | 'COLLABORATEURS'
+  | 'PROFILS';
 export type ActionCode = 'lire' | 'creer' | 'modifier' | 'supprimer';
 
 export interface Permission {
