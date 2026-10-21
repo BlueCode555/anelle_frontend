@@ -164,7 +164,7 @@ export class AgendaComponent implements OnInit {
   }
 
   nouveau(): void {
-    const ref = this.modals.open(NouveauRendezVousComponent, { scrollable: true, size: 'lg' });
+    const ref = this.modals.open(NouveauRendezVousComponent, { scrollable: true, size: 'lg', centered: true });
     ref.result.then(
       (r) => {
         if (r === 'saved') this.charger();

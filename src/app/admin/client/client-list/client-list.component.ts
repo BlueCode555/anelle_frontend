@@ -64,7 +64,7 @@ export class ClientListComponent implements OnInit {
   }
 
   voir(client: ClientAdmin): void {
-    const ref = this.modals.open(ClientDetailComponent, { scrollable: true, size: 'lg' });
+    const ref = this.modals.open(ClientDetailComponent, { scrollable: true, size: 'lg', centered: true });
     ref.componentInstance.client = client;
   }
 
