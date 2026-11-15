@@ -107,6 +107,8 @@ export const FR_ADMIN_FORMS: Record<string, string> = {
   'a.categories': 'Catégories',
   'a.rayons': 'Rayons',
   'a.ex_quebec': 'Ex. Québec',
+  'a.ex_ottawa': 'Ex. Ottawa',
+  'a.ex_contact_email': 'Ex. contact@arnelle-institut.com',
   'a.desactive': 'Désactivé',
   'a.supprimer': 'Supprimer',
   'a.categorie': 'Catégorie',

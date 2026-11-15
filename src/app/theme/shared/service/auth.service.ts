@@ -8,6 +8,7 @@ import { environment } from 'src/environments/environment';
 import { chaineAleatoire, defiPkce } from '../_helpers/pkce';
 import { ID_TOKEN_KEY, LOGIN_FLOW_KEY, PROFIL_KEY, REFRESH_KEY, TOKEN_KEY, isTokenExpired, millisAvantExpiration } from '../_helpers/token-storage';
 import { ApiResponse } from './api.model';
+import { PanierService } from './panier.service';
 import { SessionExpireeModalComponent } from '../components/session-expiree/session-expiree-modal.component';
 
 const PKCE_KEY = 'anelle_pkce';
@@ -64,6 +65,7 @@ export interface Permission {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private panier = inject(PanierService);
   private modals = inject(NgbModal);
 
   user = signal<CurrentUser | null>(null);
@@ -202,6 +204,8 @@ export class AuthService {
     localStorage.removeItem(REFRESH_KEY);
     localStorage.removeItem(ID_TOKEN_KEY);
     localStorage.removeItem(PROFIL_KEY);
+    // Le panier appartient a la personne qui vient de partir : il ne doit pas rester visible au visiteur suivant.
+    this.panier.vider();
     if (this.minuteur) clearTimeout(this.minuteur);
     this.user.set(null);
     this.router.navigate([estClient ? '/connexion' : '/personnel'], { queryParams: { inactivite: '1' } });
@@ -235,6 +239,8 @@ export class AuthService {
     localStorage.removeItem(REFRESH_KEY);
     localStorage.removeItem(ID_TOKEN_KEY);
     localStorage.removeItem(PROFIL_KEY);
+    // Le panier appartient a la personne qui se deconnecte : on le vide pour ne pas l'exposer au visiteur suivant.
+    this.panier.vider();
     if (this.minuteur) clearTimeout(this.minuteur);
     this.user.set(null);
     if (environment.keycloak.url) {

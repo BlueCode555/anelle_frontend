@@ -27,9 +27,21 @@ export class AuthCallbackComponent implements OnInit {
     const flux = sessionStorage.getItem(LOGIN_FLOW_KEY);
     sessionStorage.removeItem(LOGIN_FLOW_KEY);
 
+    // Connexion annulee (bouton « Retour a l'application » de Keycloak, refus de l'autorisation Google...) :
+    // Keycloak revient ici sans code. Une cliente ne doit jamais atterrir sur l'espace du personnel : seul
+    // le flux explicitement lance par le personnel y retourne ; dans tous les autres cas (y compris flux
+    // inconnu) on renvoie vers la page d'ou elle est partie, a defaut l'accueil du site public.
+    const personnel = flux === 'personnel';
+    if (!code && !personnel) {
+      const retour = sessionStorage.getItem(RETOUR_CLIENT_KEY);
+      sessionStorage.removeItem(RETOUR_CLIENT_KEY);
+      this.router.navigateByUrl(retour && retour.startsWith('/') && !retour.startsWith('//') ? retour : '/accueil', { replaceUrl: true });
+      return;
+    }
+
     const ok = !!code && !!state && (await this.auth.terminerLogin(code, state));
     if (!ok) {
-      this.router.navigate([flux === 'client' ? '/connexion' : '/personnel'], { queryParams: { erreur: '1' } });
+      this.router.navigate([personnel ? '/personnel' : '/connexion'], { queryParams: { erreur: '1' } });
       return;
     }
 

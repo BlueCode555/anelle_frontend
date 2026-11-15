@@ -64,7 +64,7 @@ export class ServiceListComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(tarif);
   }
 
   // Repli sur le francais si aucune traduction anglaise n'a ete saisie : le nom d'un soin/d'une categorie est

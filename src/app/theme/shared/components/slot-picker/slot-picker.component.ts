@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { CatalogueService } from '../../service/catalogue.service';
 import { ServiceResponse } from '../../service/catalogue.model';
-import { InformationService } from '../../service/information.service';
+import { Horaire, InformationService } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
 import { ajouterJours, aujourdhui, formatHeure } from '../../_helpers/zoned-time';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
@@ -93,7 +93,7 @@ export class SlotPickerComponent implements OnInit {
     }
     const jour = horaires.find((h) => h.jourSemaine === this.jourSemaine(date));
     if (!jour || !jour.ouvert || !jour.plages?.length) {
-      return this.i18n.t('slots.raison.ferme', { jour: this.nomJour(date) });
+      return this.i18n.t('slots.raison.ferme', { jour: this.nomJour(date), horaires: this.joursOuverture(horaires) });
     }
     if (this.soinsChoisis().length) {
       const plusLongue = Math.max(...jour.plages.map((p) => this.minutes(p.heureFin) - this.minutes(p.heureDebut)));
@@ -235,7 +235,7 @@ export class SlotPickerComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(tarif);
   }
 
   // Bouton « Prochain créneau disponible » : cherche à partir du lendemain du jour affiché, pour l'ensemble
@@ -271,6 +271,22 @@ export class SlotPickerComponent implements OnInit {
     const [y, m, d] = date.split('-').map(Number);
     const jour = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
     return jour === 0 ? 7 : jour;
+  }
+
+  // « lundi 10:00–11:00, samedi 09:00–12:00 » : les jours et plages ou l'institut recoit, pour que la personne
+  // choisisse directement un jour valable au lieu de proceder par essais successifs.
+  private joursOuverture(horaires: Horaire[]): string {
+    const lundi = Date.UTC(2024, 0, 1); // un lundi : sert seulement a obtenir le nom du jour dans la langue courante
+    return horaires
+      .filter((h) => h.ouvert && h.plages?.length)
+      .sort((a, b) => a.jourSemaine - b.jourSemaine)
+      .map((h) => {
+        const nom = new Intl.DateTimeFormat(localeCourante(), { timeZone: 'UTC', weekday: 'long' }).format(
+          new Date(lundi + (h.jourSemaine - 1) * 86400000)
+        );
+        return `${nom} ${h.plages.map((p) => `${p.heureDebut.slice(0, 5)}–${p.heureFin.slice(0, 5)}`).join(', ')}`;
+      })
+      .join(' ; ');
   }
 
   private nomJour(date: string): string {

@@ -96,7 +96,7 @@ export class StatistiquesComponent implements OnInit, OnDestroy {
   }
 
   formatMontant(montant: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(montant);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(montant);
   }
 
   private aujourdhui(): string {

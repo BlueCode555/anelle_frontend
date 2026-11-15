@@ -461,6 +461,17 @@
     padding: 1.4rem 1.5rem 1.5rem;
   }
 
+  // Description limitee a 3 lignes : les cartes d'une meme rangee restent alignees (h-100) sans qu'un texte
+  // tres long chez une voisine laisse un grand vide entre la description et la ligne duree / prix.
+  .card-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    margin-bottom: 0;
+  }
+
   .service-category {
     font-size: 0.72rem;
     font-weight: 500;
@@ -543,6 +554,7 @@
   }
 
   .footer-contact-link {
+    overflow-wrap: anywhere;
     color: inherit;
     text-decoration: none;
 

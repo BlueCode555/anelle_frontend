@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                   <label class="form-label" for="ville">{{ 'a.ville' | t }}</label>
-                  <input id="ville" class="form-control" formControlName="ville" />
+                  <input id="ville" class="form-control" formControlName="ville" [placeholder]="'a.ex_ottawa' | t" />
                 </div>
                 <div class="col-md-4 mb-3">
                   <label class="form-label" for="province">{{ 'a.province' | t }}</label>
@@ -121,6 +121,7 @@
                     type="email"
                     class="form-control"
                     formControlName="email"
+                    [placeholder]="'a.ex_contact_email' | t"
                     [class.is-invalid]="hasError('email', 'email')"
                   />
                   <div class="invalid-feedback">{{ 'a.adresse_e_mail_invalide' | t }}</div>
@@ -132,7 +133,7 @@
                 <div class="form-text mb-2">{{ 'info.emailsNotificationAide' | t }}</div>
                 @for (ctrl of emailsNotification.controls; track ctrl; let i = $index) {
                   <div class="email-notif-row">
-                    <input type="email" class="form-control" [formControlName]="i" placeholder="nom@exemple.ca" />
+                    <input type="email" class="form-control" [formControlName]="i" [placeholder]="'a.ex_contact_email' | t" />
                     <button
                       type="button"
                       class="btn-icone"

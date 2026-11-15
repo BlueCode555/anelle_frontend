@@ -153,7 +153,7 @@ export const FR_BOUTIQUE: Record<string, string> = {
   'panier.suite3': "Passez la retirer à l'institut, c'est tout.",
   'panier.sousTotal': 'Sous-total',
   'panier.livraison': 'Livraison',
-  'panier.retraitGratuit': "Retrait à l'institut, gratuit",
+  'panier.retraitGratuit': "Retrait à l'institut",
   'panier.telephone': 'Votre numéro de téléphone',
   'panier.telephoneInvalide': 'Indiquez un numéro valide (au moins 7 chiffres).',
   'panier.telephoneAide': "Pour vous prévenir quand la commande est prête.",

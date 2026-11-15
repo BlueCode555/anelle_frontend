@@ -96,7 +96,7 @@ export class EvolutionChartComponent {
   }
 
   formatMontant(montant: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(montant);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code', maximumFractionDigits: 0 }).format(montant);
   }
 
   formatDateCourte(iso: string): string {

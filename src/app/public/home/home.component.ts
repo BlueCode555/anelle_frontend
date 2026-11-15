@@ -235,7 +235,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(tarif);
   }
 
   // "09:30" -> "9 h 30", "19:00" -> "19 h"

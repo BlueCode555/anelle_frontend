@@ -44,7 +44,7 @@ export class PanierComponent {
   }
 
   formatPrix(prix: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(prix);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(prix);
   }
 
   estClient(): boolean {

@@ -50,7 +50,12 @@ export class DefaultComponent implements OnInit {
     const jour = aujourdhui(this.zone());
     return this.agenda().filter((r) => ['ACCEPTE', 'CONFIRME'].includes(r.statut) && cleJour(r.debut, this.zone()) === jour);
   });
-  confirmes = computed(() => this.agenda().filter((r) => r.statut === 'CONFIRME'));
+  // Rendez-vous confirmes des 7 prochains jours (l'agenda est charge sur 30 jours pour compter toutes les demandes
+  // en attente, comme la cloche et le menu Agenda ; les chiffres « 7 jours » restent donc limites a cette fenetre).
+  confirmes = computed(() => {
+    const limite = ajouterJours(aujourdhui(this.zone()), 7);
+    return this.agenda().filter((r) => r.statut === 'CONFIRME' && cleJour(r.debut, this.zone()) < limite);
+  });
   recettes = computed(() => this.confirmes().reduce((somme, r) => somme + r.prix, 0));
   prochains = computed(() =>
     this.agenda()
@@ -119,7 +124,8 @@ export class DefaultComponent implements OnInit {
       return;
     }
     const debut = aujourdhui(zone);
-    this.rendezVous.agenda(debut, ajouterJours(debut, 7)).subscribe({
+    // 30 jours, comme la cloche et le menu Agenda : un meme compteur de demandes en attente partout.
+    this.rendezVous.agenda(debut, ajouterJours(debut, 30)).subscribe({
       next: (liste) => {
         this.agenda.set(liste);
         this.agendaIndisponible.set(false);
@@ -137,6 +143,6 @@ export class DefaultComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(tarif);
   }
 }

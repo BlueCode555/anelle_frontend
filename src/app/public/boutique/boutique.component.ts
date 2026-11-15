@@ -81,7 +81,7 @@ export class BoutiqueComponent implements OnInit {
   }
 
   formatPrix(prix: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(prix);
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(prix);
   }
 
   ajouter(p: ProduitResponse): void {

@@ -764,3 +764,22 @@
   object-fit: contain;
   filter: brightness(1.18) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
 }
+
+
+// « Voir le site » dans l'en-tete : icone seule sur mobile, icone + texte ensuite.
+.ad-site-btn {
+  width: auto;
+  padding: 0 0.75rem;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+.ad-site-label {
+  display: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+@media (min-width: 768px) {
+  .ad-site-label {
+    display: inline;
+  }
+}

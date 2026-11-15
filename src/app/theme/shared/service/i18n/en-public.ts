@@ -57,7 +57,7 @@ export const EN_PUBLIC: Record<string, string> = {
   'slots.recherche': 'Looking for available slots...',
   'slots.aucun': 'No slot available that day. Try another day.',
   'slots.raison.horairesVides': 'The opening hours have not been set yet, so no slot can be offered.',
-  'slots.raison.ferme': 'The institute is closed on {jour}.',
+  'slots.raison.ferme': 'The institute is closed on {jour}. It is open: {horaires}.',
   'slots.raison.tropLong': 'This treatment takes {duree}, which is longer than the opening hours of that day.',
   'slots.raison.complet': 'All the slots for that day are already taken or past.',
   'slots.prochain': 'Next available slot',

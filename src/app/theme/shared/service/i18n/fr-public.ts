@@ -62,7 +62,7 @@ export const FR_PUBLIC: Record<string, string> = {
   'slots.recherche': 'Recherche des créneaux...',
   'slots.aucun': 'Aucun créneau disponible ce jour-là. Essayez un autre jour.',
   'slots.raison.horairesVides': "Les horaires d'ouverture de l'institut ne sont pas encore renseignés : aucun créneau ne peut être proposé.",
-  'slots.raison.ferme': "L'institut est fermé le {jour}.",
+  'slots.raison.ferme': "L'institut est fermé le {jour}. Il reçoit : {horaires}.",
   'slots.raison.tropLong': "Ce soin dure {duree} : c'est plus long que les plages d'ouverture de ce jour.",
   'slots.raison.complet': 'Tous les créneaux de ce jour sont déjà pris ou passés.',
   'slots.prochain': 'Prochain créneau disponible',

@@ -148,7 +148,7 @@ export const EN_BOUTIQUE: Record<string, string> = {
   'panier.suite3': 'Come and pick it up at the salon, that is all.',
   'panier.sousTotal': 'Subtotal',
   'panier.livraison': 'Delivery',
-  'panier.retraitGratuit': 'Salon pick-up, free',
+  'panier.retraitGratuit': 'Salon pick-up',
   'panier.telephone': 'Your phone number',
   'panier.telephoneInvalide': 'Enter a valid number (at least 7 digits).',
   'panier.telephoneAide': 'So we can reach you when your order is ready.',
