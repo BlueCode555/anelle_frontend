@@ -16,26 +16,38 @@
         <h1 class="h3 mb-2">{{ 'profil.choisirTitre' | t }}</h1>
         <p class="text-muted mb-4">{{ 'profil.choisirIntro' | t }}</p>
 
-        <div class="profils">
-          @for (p of auth.user()?.profils ?? []; track p.code) {
-            <button type="button" class="profil-carte" (click)="choisir(p)">
-              <span class="profil-texte">
-                <span class="profil-nom">{{ p.libelle }}</span>
-                @if (p.description) {
-                  <span class="profil-desc">{{ p.description }}</span>
-                }
-                <span class="profil-ecrans">
-                  @for (e of ecrans(p); track e) {
-                    <span class="pastille">{{ ('ecran.' + e) | t }}</span>
-                  } @empty {
-                    <span class="text-muted small">{{ 'a.aucun_ecran' | t }}</span>
-                  }
-                </span>
-              </span>
-              <i class="ti ti-chevron-right profil-fleche" aria-hidden="true"></i>
-            </button>
-          }
+        <div class="profil-select-groupe text-start">
+          <label for="profil-select" class="form-label">
+            <i class="ti ti-user-shield me-1" aria-hidden="true"></i>{{ 'profil.role' | t }}
+          </label>
+          <select id="profil-select" class="form-select form-select-lg" [value]="profilChoisi()?.code" (change)="selectionner($event)">
+            @for (p of auth.user()?.profils ?? []; track p.code) {
+              <option [value]="p.code">{{ p.libelle }}</option>
+            }
+          </select>
         </div>
+
+        @if (profilChoisi(); as p) {
+          <div class="profil-apercu text-start">
+            @if (p.description) {
+              <p class="profil-desc mb-2">{{ p.description }}</p>
+            }
+            <div class="profil-ecrans">
+              @for (e of ecrans(p); track e) {
+                <span class="pastille">{{ ('ecran.' + e) | t }}</span>
+              } @empty {
+                <span class="text-muted small">{{ 'a.aucun_ecran' | t }}</span>
+              }
+            </div>
+          </div>
+        }
+
+        <button type="button" class="btn btn-primary w-100 mt-4 py-2" (click)="valider()">
+          <i class="ti ti-login-2 me-1" aria-hidden="true"></i>{{ 'profil.accederEspace' | t }}
+        </button>
+        <button type="button" class="btn btn-link mt-2" (click)="revenir()">
+          <i class="ti ti-arrow-left me-1" aria-hidden="true"></i>{{ 'profil.revenirConnexion' | t }}
+        </button>
       </div>
     </div>
   </main>

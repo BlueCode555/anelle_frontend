@@ -80,7 +80,7 @@ export class ProfilListComponent implements OnInit {
   }
 
   private ouvrir(profil: Profil | null, lectureSeule = false): void {
-    const ref = this.modals.open(ProfilFormComponent, { scrollable: true, size: 'lg' });
+    const ref = this.modals.open(ProfilFormComponent, { scrollable: true, size: 'lg', centered: true });
     ref.componentInstance.profil = profil;
     ref.componentInstance.lectureSeule = lectureSeule;
     ref.result.then(

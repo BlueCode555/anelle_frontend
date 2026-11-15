@@ -31,5 +31,7 @@ export const FR_DASH: Record<string, string> = {
   'ecran.CLIENTS': 'Clientèle',
   'ecran.AUDIT': 'Journal d\'audit',
   'ecran.STATISTIQUES': 'Statistiques',
+  'ecran.COLLABORATEURS': 'Collaborateurs',
+  'ecran.PROFILS': 'Profils et droits',
   'confirm.confirmer': 'Confirmer'
 };

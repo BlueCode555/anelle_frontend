@@ -82,7 +82,7 @@ export class CategorieListComponent implements OnInit {
   }
 
   openCreate(): void {
-    const ref = this.modalService.open(CategorieFormComponent, { scrollable: true });
+    const ref = this.modalService.open(CategorieFormComponent, { scrollable: true, centered: true });
     ref.result.then(
       (result) => {
         if (result === 'saved') {
@@ -95,7 +95,7 @@ export class CategorieListComponent implements OnInit {
   }
 
   openEdit(categorie: CategorieResponse): void {
-    const ref = this.modalService.open(CategorieFormComponent, { scrollable: true });
+    const ref = this.modalService.open(CategorieFormComponent, { scrollable: true, centered: true });
     ref.componentInstance.categorieId = categorie.id;
     ref.result.then(
       (result) => {

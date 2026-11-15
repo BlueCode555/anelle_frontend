@@ -72,7 +72,7 @@ export class RayonListComponent implements OnInit {
   }
 
   openCreate(): void {
-    const ref = this.modalService.open(RayonFormComponent, { scrollable: true });
+    const ref = this.modalService.open(RayonFormComponent, { scrollable: true, centered: true });
     ref.result.then(
       (result) => {
         if (result === 'saved') {
@@ -85,7 +85,7 @@ export class RayonListComponent implements OnInit {
   }
 
   openEdit(rayon: RayonResponse): void {
-    const ref = this.modalService.open(RayonFormComponent, { scrollable: true });
+    const ref = this.modalService.open(RayonFormComponent, { scrollable: true, centered: true });
     ref.componentInstance.rayon = rayon;
     ref.result.then(
       (result) => {

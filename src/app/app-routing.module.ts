@@ -28,14 +28,14 @@ const appRoutes: Routes = [
       {
         path: 'collaborateurs',
         canActivate: [droitGuard],
-        data: { proprietaire: true },
+        data: { ecran: 'COLLABORATEURS' },
         loadComponent: () =>
           import('./admin/collaborateur/collaborateur-list/collaborateur-list.component').then((c) => c.CollaborateurListComponent)
       },
       {
         path: 'profils',
         canActivate: [droitGuard],
-        data: { proprietaire: true },
+        data: { ecran: 'PROFILS' },
         loadComponent: () => import('./admin/profil/profil-list/profil-list.component').then((c) => c.ProfilListComponent)
       },
       {

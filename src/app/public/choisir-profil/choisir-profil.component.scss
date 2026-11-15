@@ -1,55 +1,33 @@
-// Carte plus large que celle de connexion (il faut la place pour la liste des profils).
+// Carte plus etroite que l'ancienne version (liste de cartes) : juste la place pour le menu deroulant.
 .choix-profil-card {
-  max-width: none;
+  max-width: 460px;
+  margin: 0 auto;
 }
 
-.profils {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  text-align: left;
-}
+.profil-select-groupe {
+  margin-top: 0.5rem;
 
-.profil-carte {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 100%;
-  padding: 1rem 1.1rem;
-  border: 2px solid var(--ar-nude);
-  border-radius: 1rem;
-  background: #fffdf9;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease,
-    transform 0.15s ease;
-
-  &:hover {
-    border-color: var(--ar-dore);
-    box-shadow: var(--ar-ombre);
+  .form-label {
+    font-weight: 600;
+    color: var(--ar-chocolat-fonce);
   }
 
-  &:active {
-    transform: scale(0.99);
+  .form-select {
+    border: 2px solid var(--ar-nude);
+    border-radius: 0.75rem;
+
+    &:focus {
+      border-color: var(--ar-dore);
+      box-shadow: 0 0 0 0.2rem rgba(201, 162, 39, 0.18);
+    }
   }
 }
 
-.profil-texte {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-width: 0;
-  gap: 0.25rem;
-}
-
-.profil-nom {
-  font-family: var(--ar-titres);
-  font-size: 1.25rem;
-  font-weight: 700;
-  line-height: 1.15;
-  color: var(--ar-chocolat-fonce);
+.profil-apercu {
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: var(--ar-creme-fonce);
 }
 
 .profil-desc {
@@ -61,7 +39,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin-top: 0.35rem;
 }
 
 .pastille {
@@ -69,11 +46,5 @@
   border-radius: 50rem;
   font-size: 0.78rem;
   color: var(--ar-chocolat);
-  background: var(--ar-creme-fonce);
-}
-
-.profil-fleche {
-  flex-shrink: 0;
-  font-size: 1.1rem;
-  color: var(--ar-dore);
+  background: #fffdf9;
 }

@@ -1,3 +1,5 @@
+import { EcranCode } from 'src/app/theme/shared/service/auth.service';
+
 export interface NavigationItem {
   id: string;
   title: string;
@@ -14,7 +16,7 @@ export interface NavigationItem {
   role?: string[];
   isMainParent?: boolean;
   // Droit de lecture exigé sur cet écran pour voir l'entrée du menu
-  ecran?: 'AGENDA' | 'INFORMATIONS' | 'CATEGORIES' | 'SERVICES' | 'PRODUITS' | 'COMMANDES' | 'CLIENTS' | 'AUDIT' | 'STATISTIQUES';
+  ecran?: EcranCode;
   // Entrée réservée à l'esthéticienne
   proprietaire?: boolean;
 }
@@ -35,8 +37,8 @@ export const NavigationItems: NavigationItem[] = [
     type: 'collapse',
     icon: 'ti ti-settings',
     children: [
-      { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', proprietaire: true },
-      { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', proprietaire: true },
+      { id: 'collaborateurs', title: 'Collaborateurs', type: 'item', url: '/collaborateurs', icon: 'ti ti-user-plus', ecran: 'COLLABORATEURS' },
+      { id: 'profils', title: 'Profils et droits', type: 'item', url: '/profils', icon: 'ti ti-shield-lock', ecran: 'PROFILS' },
       { id: 'clients', title: 'Clientèle', type: 'item', url: '/clients', icon: 'ti ti-users', ecran: 'CLIENTS' },
       { id: 'informations', title: 'Mon institut', type: 'item', url: '/informations', icon: 'ti ti-building-store', ecran: 'INFORMATIONS' },
       { id: 'audit', title: 'Journal d\'audit', type: 'item', url: '/audit', icon: 'ti ti-history', ecran: 'AUDIT' }
