@@ -168,8 +168,8 @@
                           }
                         </div>
                         <div class="suivi-titre">
-                          <strong>{{ c.code }}</strong>
-                          <span class="text-muted small">{{ formatTarif(c.total) }} · {{ formatDate(c.creeLe) }}</span>
+                          <strong>{{ resumeProduits(c) }}</strong>
+                          <span class="text-muted small">{{ formatTarif(c.total) }} · {{ formatDate(c.creeLe) }} · {{ c.code }}</span>
                         </div>
                       </div>
                       <ol class="etapes-commande" [attr.data-etape]="etape(c)">
@@ -384,8 +384,8 @@
 <ng-template #ligneCommande let-c>
   <li class="rdv-item">
     <div class="rdv-when">
-      <strong>{{ c.code }}</strong>
-      <span>{{ formatDate(c.creeLe) }}</span>
+      <strong>{{ formatDate(c.creeLe) }}</strong>
+      <span class="small">{{ c.code }}</span>
     </div>
     <div class="rdv-what">
       @for (l of c.lignes; track l.produitCode) {

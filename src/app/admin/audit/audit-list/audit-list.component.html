@@ -4,6 +4,34 @@
     <span class="text-muted small">{{ 'audit.purgeAide' | t }}</span>
   </div>
   <div class="card-body">
+    <div class="row g-2 mb-3 align-items-end">
+      <div class="col-12 col-lg-4">
+        <input type="search" class="form-control" [value]="recherche()" [placeholder]="'audit.recherche' | t"
+          (input)="saisirRecherche($any($event.target).value)" />
+      </div>
+      <div class="col-12 col-sm-4 col-lg-2">
+        <select class="form-select" [value]="type()" (change)="changerFiltre('type', $any($event.target).value)">
+          <option value="">{{ 'audit.tousTypes' | t }}</option>
+          @for (t of types; track t) {
+            <option [value]="t" [selected]="type() === t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2">
+        <label class="form-label small mb-0">{{ 'audit.du' | t }}</label>
+        <input type="date" class="form-control" [value]="du()" (change)="changerFiltre('du', $any($event.target).value)" />
+      </div>
+      <div class="col-6 col-sm-4 col-lg-2">
+        <label class="form-label small mb-0">{{ 'audit.au' | t }}</label>
+        <input type="date" class="form-control" [value]="au()" (change)="changerFiltre('au', $any($event.target).value)" />
+      </div>
+      @if (filtreActif) {
+        <div class="col-12 col-lg-2">
+          <button type="button" class="btn btn-outline-secondary w-100" (click)="reinitialiser()">{{ 'audit.reinitialiser' | t }}</button>
+        </div>
+      }
+    </div>
+
     @if (loading()) {
       <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     }
@@ -15,7 +43,7 @@
     @if (!loading() && !error() && entrees().length === 0) {
       <div class="etat-vide">
         <i class="ti ti-history"></i>
-        <h6>{{ 'audit.aucunePourLeMoment' | t }}</h6>
+        <h6>{{ (filtreActif ? 'audit.aucunResultat' : 'audit.aucunePourLeMoment') | t }}</h6>
       </div>
     }
 
@@ -25,10 +53,10 @@
           <thead>
             <tr>
               <th>{{ 'audit.date' | t }}</th>
-              <th>{{ 'audit.auteur' | t }}</th>
+              <th [title]="'audit.auteurAide' | t">{{ 'audit.auteur' | t }}</th>
               <th>{{ 'audit.action' | t }}</th>
-              <th>{{ 'audit.type' | t }}</th>
-              <th>{{ 'audit.element' | t }}</th>
+              <th [title]="'audit.typeAide' | t">{{ 'audit.type' | t }}</th>
+              <th [title]="'audit.elementAide' | t">{{ 'audit.element' | t }}</th>
             </tr>
           </thead>
           <tbody>

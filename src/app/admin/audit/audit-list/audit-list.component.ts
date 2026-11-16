@@ -27,9 +27,46 @@ export class AuditListComponent {
   loading = signal(true);
   error = signal(false);
 
+  // Filtres (OBS-15) : la saisie libre est appliquee apres une courte pause pour ne pas interroger le serveur a chaque touche.
+  readonly types = ['Client', 'Collaborateur', 'Commande', 'Rendez-vous', 'Service', 'Produit', 'Categorie', 'Rayon', 'Profil', "Informations de l'institut"];
+  recherche = signal('');
+  type = signal('');
+  du = signal('');
+  au = signal('');
+  private rechercheAppliquee = signal('');
+  private minuteur: ReturnType<typeof setTimeout> | null = null;
+
   private recharger = effect(() => {
-    this.charger(this.page());
+    this.charger(this.page(), this.rechercheAppliquee(), this.type(), this.du(), this.au());
   });
+
+  saisirRecherche(valeur: string): void {
+    this.recherche.set(valeur);
+    if (this.minuteur) clearTimeout(this.minuteur);
+    this.minuteur = setTimeout(() => {
+      this.page.set(1);
+      this.rechercheAppliquee.set(valeur.trim());
+    }, 350);
+  }
+
+  changerFiltre(cible: 'type' | 'du' | 'au', valeur: string): void {
+    this.page.set(1);
+    this[cible].set(valeur);
+  }
+
+  get filtreActif(): boolean {
+    return !!(this.recherche() || this.type() || this.du() || this.au());
+  }
+
+  reinitialiser(): void {
+    if (this.minuteur) clearTimeout(this.minuteur);
+    this.page.set(1);
+    this.recherche.set('');
+    this.rechercheAppliquee.set('');
+    this.type.set('');
+    this.du.set('');
+    this.au.set('');
+  }
 
   readonly actionClasses: Record<AuditEntry['action'], string> = {
     CREATION: 'text-bg-success',
@@ -37,10 +74,10 @@ export class AuditListComponent {
     SUPPRESSION: 'text-bg-danger'
   };
 
-  private charger(page: number): void {
+  private charger(page: number, q: string, type: string, du: string, au: string): void {
     this.loading.set(true);
     this.error.set(false);
-    this.audit.list({ page, size: this.taille }).subscribe({
+    this.audit.list({ page, size: this.taille, q: q || undefined, type: type || undefined, du: du || undefined, au: au || undefined }).subscribe({
       next: (res) => {
         this.entrees.set(res.content);
         this.totalElements.set(res.meta.totalElements);

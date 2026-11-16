@@ -79,3 +79,47 @@
     display: block;
   }
 }
+
+// ── Indicateurs ─────────────────────────────────────────
+// Memes styles que ceux du tableau de bord (leur portee est limitee a ce composant) : sans eux, le montant et son
+// libelle s'affichaient l'un contre l'autre sur une seule ligne (« 1 150,00 $Chiffre d'affaires total »).
+.kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 1.1rem;
+  background: #fffdf9;
+  box-shadow: var(--ar-ombre);
+}
+
+.kpi-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 0.9rem;
+  border-radius: 0.9rem;
+  font-size: 1.4rem;
+  color: var(--ar-dore);
+  background: rgba(232, 200, 116, 0.22);
+}
+
+.kpi-value {
+  display: block;
+  font-family: var(--ar-titres);
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ar-chocolat-fonce);
+}
+
+.kpi-label {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--ar-texte-doux);
+}

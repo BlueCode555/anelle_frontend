@@ -68,7 +68,8 @@ export class MonEspaceComponent implements OnInit {
   totalRegle = computed(
     () =>
       this.rdvs().filter((r) => !!r.payeLe && r.statut !== 'ANNULE').reduce((t, r) => t + r.prix, 0) +
-      this.commandes().filter((c) => !!c.payeLe && c.statut !== 'ANNULEE').reduce((t, c) => t + c.total, 0)
+      // Une commande payee, preparee ou remise est reglee meme si sa date de paiement manque (donnee ancienne).
+      this.commandes().filter((c) => c.statut === 'PAYEE' || c.statut === 'PRETE' || c.statut === 'REMISE').reduce((t, c) => t + c.total, 0)
   );
   // ── Ce qui attend une action de la cliente : régler un rendez-vous accepté ou une commande ──
   aPayer = computed(() => [
@@ -266,6 +267,13 @@ export class MonEspaceComponent implements OnInit {
   // Collaborateur affecté, sinon l'institut lui-même s'en occupe.
   avecQui(rdv: RendezVous): string {
     return rdv.collaborateurNom ?? this.informations.info()?.nom ?? '';
+  }
+
+  // Nom(s) du ou des produits commandes (ex. « Vaseline — Lait du corps » ou « A, B +1 ») : c'est ce que la cliente
+  // reconnait, le code technique (CMD-...) reste affiche en information secondaire.
+  resumeProduits(c: { lignes: { nom: string }[] }): string {
+    const noms = c.lignes.map((l) => l.nom);
+    return noms.length > 2 ? `${noms.slice(0, 2).join(', ')} +${noms.length - 2}` : noms.join(', ');
   }
 
   classeRdv(statut: string): string {

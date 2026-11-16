@@ -20,7 +20,8 @@ export interface AuditEntry {
 export class AuditService {
   private api = inject(ApiService);
 
-  list(criteria: PaginationCriteria = { size: 20 }) {
+  // Filtres optionnels du journal : recherche libre (libelle ou type), type d'element, periode (AAAA-MM-JJ).
+  list(criteria: PaginationCriteria & { q?: string; type?: string; du?: string; au?: string } = { size: 20 }) {
     return this.api.list<AuditEntry>('audit', criteria);
   }
 }
