@@ -11,19 +11,19 @@
   <div class="row g-3">
     <div class="col-12 col-md-6">
       <label class="form-label" for="co-prenom">{{ 'a.prenom' | t }}</label>
-      <input id="co-prenom" class="form-control" maxlength="150" [disabled]="lectureSeule"
+      <input id="co-prenom" class="form-control" maxlength="150" placeholder="Ex. Fatou" [disabled]="lectureSeule"
         [class.is-invalid]="soumis() && !prenom().trim()" [value]="prenom()" (input)="texte(prenom, $event)" />
       <div class="invalid-feedback">{{ 'a.le_prenom_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12 col-md-6">
       <label class="form-label" for="co-nom">{{ 'a.nom' | t }}</label>
-      <input id="co-nom" class="form-control" maxlength="150" [disabled]="lectureSeule"
+      <input id="co-nom" class="form-control" maxlength="150" placeholder="Ex. Diop" [disabled]="lectureSeule"
         [class.is-invalid]="soumis() && !nom().trim()" [value]="nom()" (input)="texte(nom, $event)" />
       <div class="invalid-feedback">{{ 'a.le_nom_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12">
       <label class="form-label" for="co-email">{{ 'a.adresse_e_mail' | t }}</label>
-      <input id="co-email" type="email" class="form-control" maxlength="255" [disabled]="lectureSeule || !!collaborateur"
+      <input id="co-email" type="email" class="form-control" maxlength="255" placeholder="Ex. nom@exemple.com" [disabled]="lectureSeule || !!collaborateur"
         [class.is-invalid]="soumis() && !collaborateur && !emailValide()" [value]="email()" (input)="texte(email, $event)" />
       <div class="invalid-feedback">{{ 'a.saisissez_une_adresse_e_mail_valide' | t }}</div>
       @if (!collaborateur) {

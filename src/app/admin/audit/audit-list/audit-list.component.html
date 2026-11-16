@@ -4,6 +4,7 @@
     <span class="text-muted small">{{ 'audit.purgeAide' | t }}</span>
   </div>
   <div class="card-body">
+    <p class="text-muted small audit-aide">{{ 'audit.aide' | t }}</p>
     @if (loading()) {
       <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     }
@@ -29,6 +30,7 @@
               <th>{{ 'audit.action' | t }}</th>
               <th>{{ 'audit.type' | t }}</th>
               <th>{{ 'audit.element' | t }}</th>
+              <th class="text-end">{{ 'audit.detail' | t }}</th>
             </tr>
           </thead>
           <tbody>
@@ -41,7 +43,45 @@
                 </td>
                 <td [attr.data-label]="'audit.type' | t" class="text-muted">{{ e.typeElement }}</td>
                 <td [attr.data-label]="'audit.element' | t" class="fw-semibold">{{ e.libelle }}</td>
+                <td class="text-end">
+                  @if (e.detailDisponible) {
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="basculerDetail(e)">
+                      <i class="ti" [ngClass]="ligneOuverte() === e ? 'ti-chevron-up' : 'ti-chevron-down'"></i>
+                      {{ 'audit.detail' | t }}
+                    </button>
+                  }
+                </td>
               </tr>
+              @if (ligneOuverte() === e) {
+                <tr class="audit-detail-ligne">
+                  <td colspan="6">
+                    @if (detailChargement()) {
+                      <div class="text-muted small py-2">{{ 'a.chargement' | t }}</div>
+                    } @else if (detail().length === 0) {
+                      <div class="text-muted small py-2">{{ 'audit.detailVide' | t }}</div>
+                    } @else {
+                      <table class="table table-sm mb-0 audit-diff">
+                        <thead>
+                          <tr>
+                            <th>{{ 'audit.champ' | t }}</th>
+                            <th>{{ 'audit.avant' | t }}</th>
+                            <th>{{ 'audit.apres' | t }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (d of detail(); track d.champ) {
+                            <tr>
+                              <td class="fw-semibold">{{ d.champ }}</td>
+                              <td class="text-muted">{{ d.avant ?? '—' }}</td>
+                              <td>{{ d.apres ?? '—' }}</td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
+                    }
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>

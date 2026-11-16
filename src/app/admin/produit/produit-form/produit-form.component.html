@@ -32,13 +32,13 @@
 
       <div class="mb-3">
         <label class="form-label" for="prd-desc">{{ 'a.description' | t }}</label>
-        <textarea id="prd-desc" class="form-control" rows="3" [formField]="produitForm.description"></textarea>
+        <textarea id="prd-desc" class="form-control" rows="3" placeholder="Ex. Crème hydratante en pot de 250 ml" [formField]="produitForm.description"></textarea>
       </div>
 
       <div class="row">
         <div class="col-md-4 mb-3">
           <label class="form-label" for="prd-prix">{{ 'prd.prix' | t }}</label>
-          <input id="prd-prix" type="number" step="1" class="form-control" [formField]="produitForm.prix" (keydown)="bloquerCaracteresInterdits($event)"
+          <input id="prd-prix" type="number" step="1" class="form-control" placeholder="Ex. 25" [formField]="produitForm.prix" (keydown)="bloquerCaracteresInterdits($event)"
             [class.is-invalid]="submitted() && produitForm.prix().invalid()" />
           <div class="form-text">{{ 'srv.cadAide' | t }}</div>
           @if (submitted() && produitForm.prix().invalid()) {
@@ -51,7 +51,7 @@
         </div>
         <div class="col-md-4 mb-3">
           <label class="form-label" for="prd-stock">{{ 'prd.stock' | t }}</label>
-          <input id="prd-stock" type="number" step="1" class="form-control" [formField]="produitForm.stock" (keydown)="bloquerCaracteresInterdits($event)"
+          <input id="prd-stock" type="number" step="1" class="form-control" placeholder="Ex. 10" [formField]="produitForm.stock" (keydown)="bloquerCaracteresInterdits($event)"
             [class.is-invalid]="submitted() && produitForm.stock().invalid()" />
           @if (submitted() && produitForm.stock().invalid()) {
             <div class="invalid-feedback">
@@ -83,6 +83,13 @@
         <div class="form-text" *ngIf="uploading()">{{ 'a.envoi_en_cours' | t }}</div>
         <div class="text-danger small mt-1" *ngIf="uploadError()">{{ uploadError() }}</div>
         <div class="text-warning small mt-1" *ngIf="uploadAvertissement()"><i class="ti ti-alert-triangle me-1"></i>{{ uploadAvertissement() }}</div>
+        @if (submitted() && produitForm.imageUrl().invalid()) {
+          <div class="text-danger small mt-1">
+            @for (error of produitForm.imageUrl().errors(); track error.kind) {
+              <div>{{ error.message }}</div>
+            }
+          </div>
+        }
       </div>
     </form>
   </div>

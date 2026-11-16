@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AuditEntry, AuditService } from 'src/app/theme/shared/service/audit.service';
+import { AuditDiffChamp, AuditEntry, AuditService } from 'src/app/theme/shared/service/audit.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
@@ -34,8 +34,32 @@ export class AuditListComponent {
   readonly actionClasses: Record<AuditEntry['action'], string> = {
     CREATION: 'text-bg-success',
     MODIFICATION: 'text-bg-warning',
-    SUPPRESSION: 'text-bg-danger'
+    SUPPRESSION: 'text-bg-danger',
+    CONNEXION: 'text-bg-info',
+    DECONNEXION: 'text-bg-secondary'
   };
+
+  // Detail (avant/apres) d'une ligne, charge a la demande au clic ; une seule ligne ouverte a la fois.
+  ligneOuverte = signal<AuditEntry | null>(null);
+  detail = signal<AuditDiffChamp[]>([]);
+  detailChargement = signal(false);
+
+  basculerDetail(entree: AuditEntry): void {
+    if (this.ligneOuverte() === entree) {
+      this.ligneOuverte.set(null);
+      return;
+    }
+    this.ligneOuverte.set(entree);
+    this.detail.set([]);
+    this.detailChargement.set(true);
+    this.audit.detail(entree).subscribe({
+      next: (champs) => {
+        this.detail.set(champs);
+        this.detailChargement.set(false);
+      },
+      error: () => this.detailChargement.set(false)
+    });
+  }
 
   private charger(page: number): void {
     this.loading.set(true);

@@ -50,17 +50,24 @@ export const FR_PUBLIC: Record<string, string> = {
   'reserver.envoi': 'Envoi en cours...',
   'reserver.envoyer': 'Envoyer ma demande',
   'reserver.sessionExpiree': 'Votre session a expiré pendant que vous choisissiez votre créneau.',
+  'reserver.ajouterAutre': 'Ajouter un autre rendez-vous (jour différent)',
+  'reserver.groupes.titre': 'Rendez-vous déjà mis de côté dans cette demande',
 
   // ── Choix du creneau ──────────────────────────────────────────────────────
   'slots.soin': 'Votre soin',
   'slots.choisirSoin': 'Rechercher un soin',
   'slots.aucunResultat': 'Aucun soin ne correspond à votre recherche.',
   'slots.plusieursSoins': 'Vous pouvez choisir plusieurs soins : ils seront enchaînés sur le même rendez-vous.',
+  'slots.categorie': 'Catégorie',
+  'slots.toutesCategories': 'Toutes les catégories',
+  'slots.affinerRecherche': '{total} résultats — affinez votre recherche ou choisissez une catégorie pour voir les autres.',
   'slots.total': 'Total',
   'slots.min': 'min',
   'slots.dateHeure': 'Date et heure',
   'slots.recherche': 'Recherche des créneaux...',
   'slots.aucun': 'Aucun créneau disponible ce jour-là. Essayez un autre jour.',
+  'slots.aucunAvecJours': 'Aucun créneau disponible ce jour-là. Nous sommes habituellement ouverts le {jours}.',
+  'slots.aucunHoraire': "Aucun créneau disponible : l'institut n'a pas encore configuré ses horaires d'ouverture. Contactez-nous directement.",
   'slots.choisirDabord': "Choisissez d'abord un soin pour voir les créneaux disponibles.",
 
   // ── Mon espace ────────────────────────────────────────────────────────────
@@ -112,6 +119,7 @@ export const FR_PUBLIC: Record<string, string> = {
   'home.categories.eyebrow': 'Explorez',
   'home.categories.titre': 'Nos catégories',
   'home.categories.intro': 'Touchez une catégorie pour voir ses soins.',
+  'home.categories.rechercher': 'Rechercher un soin...',
   'home.services.eyebrow': 'Prestations',
   'home.services.titre': 'Nos services',
   'home.services.intro': 'Découvrez nos prestations, classées par catégorie.',

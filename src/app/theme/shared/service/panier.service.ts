@@ -15,8 +15,10 @@ export interface LignePanier {
 const PANIER_KEY = 'anelle_panier';
 const QUANTITE_MAX = 20;
 
-// Panier du navigateur (localStorage) : il survit au rechargement et à la connexion Google, mais seul le serveur
-// fait foi pour les prix et le stock quand la commande est passée.
+// Panier du navigateur (sessionStorage, PAS localStorage) : il survit au rechargement et à la connexion Google
+// (ce sont des navigations dans le même onglet), mais pas à la fermeture de l'onglet/navigateur — essentiel sur
+// un poste partagé (ex. tablette à l'accueil de l'institut), sinon la personne suivante voit encore les articles
+// laissés par la précédente sans même être connectée. Seul le serveur fait foi pour les prix et le stock à la commande.
 @Injectable({ providedIn: 'root' })
 export class PanierService {
   lignes = signal<LignePanier[]>(this.lire());
@@ -28,7 +30,7 @@ export class PanierService {
     effect(() => {
       const contenu = JSON.stringify(this.lignes());
       try {
-        localStorage.setItem(PANIER_KEY, contenu);
+        sessionStorage.setItem(PANIER_KEY, contenu);
       } catch {
         // stockage indisponible : le panier reste valable pour la session en cours.
       }
@@ -82,7 +84,7 @@ export class PanierService {
 
   private lire(): LignePanier[] {
     try {
-      const brut = localStorage.getItem(PANIER_KEY);
+      const brut = sessionStorage.getItem(PANIER_KEY);
       const lignes = brut ? JSON.parse(brut) : [];
       return Array.isArray(lignes) ? lignes.filter((l) => l && typeof l.code === 'string' && l.quantite > 0) : [];
     } catch {

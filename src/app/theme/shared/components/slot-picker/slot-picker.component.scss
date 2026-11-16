@@ -58,9 +58,11 @@
   }
 }
 
-.soin-liste-vide {
+.soin-liste-vide,
+.soin-liste-plus {
   color: var(--ar-texte-doux, #8a7660);
   cursor: default;
+  font-size: 0.82rem;
 
   &:hover {
     background: transparent !important;

@@ -327,6 +327,52 @@
   border: 2px solid #fffdf9;
 }
 
+.ad-notifs {
+  position: relative;
+}
+
+.ad-notifs-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -0.5rem;
+  width: 280px;
+  padding: 0.4rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 1rem;
+  background: #fffdf9;
+  box-shadow: var(--ar-ombre-forte);
+  animation: ad-pop 0.15s ease;
+  z-index: 20;
+}
+
+.ad-notifs-vide {
+  margin: 0;
+  padding: 0.75rem;
+  color: var(--ar-texte-doux);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.ad-notifs-ligne {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  color: var(--ar-chocolat-fonce);
+  text-decoration: none;
+  font-size: 0.88rem;
+
+  i {
+    color: var(--ar-dore);
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background: var(--ar-creme-fonce);
+  }
+}
+
 .ad-divider {
   width: 1px;
   height: 28px;

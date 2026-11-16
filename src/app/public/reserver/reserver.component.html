@@ -2,7 +2,7 @@
   <app-site-header />
 
   <main class="container reserver-main">
-    @if (confirmation(); as rdv) {
+    @if (confirmations().length) {
       <section class="panel text-center panel-confirmation">
         <span class="confirm-icon-wrap"><i class="ti ti-circle-check confirm-icon"></i></span>
         <span class="ar-eyebrow d-block">{{ 'reserver.envoye' | t }}</span>
@@ -10,12 +10,14 @@
         <p class="text-muted mb-4">
           {{ 'reserver.enRouteTexte' | t }}
         </p>
-        <dl class="recap mx-auto">
-          <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>{{ 'reserver.soin' | t }}</dt><dd>{{ rdv.libelleServices }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-calendar-event"></i><dt>{{ 'reserver.date' | t }}</dt><dd class="text-capitalize">{{ jour(rdv.debut) }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-clock"></i><dt>{{ 'reserver.heure' | t }}</dt><dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd></div>
-          <div class="recap-ligne"><i class="ti ti-coin"></i><dt>{{ 'reserver.prix' | t }}</dt><dd>{{ formatTarif(rdv.prix) }}</dd></div>
-        </dl>
+        @for (rdv of confirmations(); track rdv.id) {
+          <dl class="recap mx-auto">
+            <div class="recap-ligne"><i class="ti ti-sparkles"></i><dt>{{ 'reserver.soin' | t }}</dt><dd>{{ rdv.libelleServices }}</dd></div>
+            <div class="recap-ligne"><i class="ti ti-calendar-event"></i><dt>{{ 'reserver.date' | t }}</dt><dd class="text-capitalize">{{ jour(rdv.debut) }}</dd></div>
+            <div class="recap-ligne"><i class="ti ti-clock"></i><dt>{{ 'reserver.heure' | t }}</dt><dd>{{ heure(rdv.debut) }} – {{ heure(rdv.fin) }}</dd></div>
+            <div class="recap-ligne"><i class="ti ti-coin"></i><dt>{{ 'reserver.prix' | t }}</dt><dd>{{ formatTarif(rdv.prix) }}</dd></div>
+          </dl>
+        }
         <a routerLink="/mon-espace" class="btn btn-primary mt-4">{{ 'reserver.suivre' | t }}</a>
       </section>
     } @else {
@@ -24,6 +26,20 @@
         <h1 class="reserver-titre">{{ 'reserver.titre' | t }}</h1>
         <p class="text-muted">{{ 'reserver.sousTitre' | t }}</p>
       </header>
+
+      @if (groupes().length) {
+        <section class="panel mb-3 panel-groupes">
+          <h2 class="etape-titre h6 mb-3">{{ 'reserver.groupes.titre' | t }}</h2>
+          @for (g of groupes(); track $index) {
+            <div class="groupe-ligne d-flex align-items-center justify-content-between gap-2">
+              <span><i class="ti ti-calendar-event me-1"></i>{{ g.libelleServices }} — {{ jour(g.debut) }} {{ heure(g.debut) }}</span>
+              <button type="button" class="btn btn-sm btn-outline-secondary" (click)="retirerGroupe($index)">
+                <i class="ti ti-x"></i>
+              </button>
+            </div>
+          }
+        </section>
+      }
 
       <section class="panel">
         <app-slot-picker [initialService]="serviceInitial" (choix)="onChoix($event)" />
@@ -49,8 +65,15 @@
           </div>
         }
 
-        <div class="d-flex justify-content-end mt-4">
-          <button type="button" class="btn btn-secondary btn-lg px-4" [disabled]="!choix() || envoi()" (click)="envoyer()">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-2">
+          @if (peutAjouterAutre()) {
+            <button type="button" class="btn btn-outline-secondary" (click)="ajouterAutreRendezVous()">
+              <i class="ti ti-plus me-1"></i>{{ 'reserver.ajouterAutre' | t }}
+            </button>
+          } @else {
+            <span></span>
+          }
+          <button type="button" class="btn btn-secondary btn-lg px-4" [disabled]="(!choix() && !groupes().length) || envoi()" (click)="envoyer()">
             {{ envoi() ? ('reserver.envoi' | t) : ('reserver.envoyer' | t) }}
           </button>
         </div>

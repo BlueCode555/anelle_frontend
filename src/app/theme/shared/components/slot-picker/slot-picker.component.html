@@ -3,6 +3,14 @@
   <div class="etape-contenu">
     <h2 class="etape-titre">{{ 'slots.soin' | t }}</h2>
     <p class="text-muted small mb-2">{{ 'slots.plusieursSoins' | t }}</p>
+    @if (categories().length > 1) {
+      <select class="form-select mb-2" [value]="categorieChoisie()" (change)="onCategorie($event)" [attr.aria-label]="'slots.categorie' | t">
+        <option value="">{{ 'slots.toutesCategories' | t }}</option>
+        @for (c of categories(); track c.code) {
+          <option [value]="c.code">{{ c.libelle }}</option>
+        }
+      </select>
+    }
     <div class="soin-recherche">
       <i class="ti ti-search soin-recherche-icone" aria-hidden="true"></i>
       <input
@@ -34,6 +42,9 @@
             </li>
           } @empty {
             <li class="soin-liste-vide">{{ 'slots.aucunResultat' | t }}</li>
+          }
+          @if (nbResultatsTotal() > servicesFiltres().length) {
+            <li class="soin-liste-plus">{{ 'slots.affinerRecherche' | t: { total: nbResultatsTotal() } }}</li>
           }
         </ul>
       }
@@ -73,7 +84,7 @@
       <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>{{ 'slots.recherche' | t }}</div>
 
       <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted mt-3">
-        {{ 'slots.aucun' | t }}
+        {{ messageAucunCreneau() }}
       </div>
 
       <div class="slots" *ngIf="!loading() && creneaux().length">

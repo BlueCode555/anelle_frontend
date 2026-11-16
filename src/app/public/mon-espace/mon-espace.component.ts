@@ -92,6 +92,14 @@ export class MonEspaceComponent implements OnInit {
     return this.produits.imageSrc(url);
   }
 
+  // Nom des produits commandés plutôt que le code (peu parlant pour la cliente) : le code reste affiché en
+  // plus petit, pratique si elle doit le communiquer pour une demande de suivi.
+  libelleCommande(c: Commande): string {
+    const noms = c.lignes.map((l) => l.nom);
+    if (noms.length <= 2) return noms.join(' + ');
+    return `${noms[0]} + ${noms.length - 1} autre${noms.length - 1 > 1 ? 's' : ''}`;
+  }
+
   // « aujourd'hui », « demain », « dans 3 jours » : plus parlant qu'une date pour ce qui approche.
   dans(iso: string): string {
     const jours = Math.round((new Date(iso).getTime() - Date.now()) / 86400000);

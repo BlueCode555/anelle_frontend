@@ -83,6 +83,9 @@
       </div>
 
       <div class="ad-top-right">
+        <a class="ad-icon-btn ad-voir-site" routerLink="/accueil" [attr.aria-label]="'admin.voirSite' | t" [title]="'admin.voirSite' | t">
+          <i class="ti ti-external-link"></i>
+        </a>
         <app-lang-switcher />
         <button type="button" class="ad-icon-btn" (click)="theme.basculer()"
           [attr.aria-label]="theme.sombre() ? ('admin.themeClair' | t) : ('admin.themeSombre' | t)"
@@ -90,12 +93,35 @@
           <i class="ti" [class.ti-sun]="theme.sombre()" [class.ti-moon]="!theme.sombre()"></i>
         </button>
 
-        <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="'admin.demandesAria' | t: { n: demandes() }" [title]="'admin.demandesTitre' | t">
-          <i class="ti ti-bell"></i>
-          @if (demandes() > 0) {
-            <span class="ad-bell-badge">{{ demandes() > 9 ? '9+' : demandes() }}</span>
+        <div class="ad-notifs">
+          <button type="button" class="ad-icon-btn ad-bell" (click)="basculerNotifs($event)" aria-haspopup="true" [attr.aria-expanded]="notifsOuvertes()"
+            [attr.aria-label]="'admin.demandesAria' | t: { n: totalNotifications() }" [title]="'admin.demandesTitre' | t">
+            <i class="ti ti-bell"></i>
+            @if (totalNotifications() > 0) {
+              <span class="ad-bell-badge">{{ totalNotifications() > 9 ? '9+' : totalNotifications() }}</span>
+            }
+          </button>
+          @if (notifsOuvertes()) {
+            <div class="ad-notifs-panel" (click)="$event.stopPropagation()">
+              @if (totalNotifications() === 0) {
+                <p class="ad-notifs-vide">{{ 'admin.notifs.aucune' | t }}</p>
+              } @else {
+                @if (demandes() > 0) {
+                  <a routerLink="/agenda" class="ad-notifs-ligne" (click)="notifsOuvertes.set(false)">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>{{ 'admin.notifs.rendezVous' | t: { n: demandes() } }}</span>
+                  </a>
+                }
+                @if (commandesAPreparer() > 0) {
+                  <a routerLink="/commandes" class="ad-notifs-ligne" (click)="notifsOuvertes.set(false)">
+                    <i class="ti ti-shopping-bag"></i>
+                    <span>{{ 'admin.notifs.commandes' | t: { n: commandesAPreparer() } }}</span>
+                  </a>
+                }
+              }
+            </div>
           }
-        </a>
+        </div>
 
         <span class="ad-divider" aria-hidden="true"></span>
 

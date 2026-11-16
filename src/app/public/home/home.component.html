@@ -87,6 +87,18 @@
     <h2 class="ar-section-title px-3">{{ 'home.categories.titre' | t }}</h2>
     <p class="ar-section-lead px-3">{{ 'home.categories.intro' | t }}</p>
 
+    <div class="recherche-soin-wrap mx-auto px-3">
+      <i class="ti ti-search recherche-soin-icone" aria-hidden="true"></i>
+      <input
+        type="search"
+        class="form-control recherche-soin-input"
+        [placeholder]="'home.categories.rechercher' | t"
+        [value]="rechercheService()"
+        (input)="onRechercheService($event)"
+        (focus)="onFocusRechercheService()"
+      />
+    </div>
+
     <div class="categories-carousel-wrap mx-auto">
       <ngb-carousel
         [interval]="categorieSlides().length > 1 ? 4500 : 0"
@@ -148,7 +160,7 @@
       {{ 'home.services.aucun' | t }}
     </div>
 
-    <div class="row g-4" *ngIf="!loading() && filteredServices().length">
+    <div class="row g-4 align-items-start" *ngIf="!loading() && filteredServices().length">
       <div class="col-12 col-md-6 col-lg-4" *ngFor="let service of servicesPagees()">
         <div class="card h-100 service-card">
           @if (serviceImage(service); as photo) {
@@ -161,12 +173,14 @@
           <div class="card-body d-flex flex-column">
             <span class="service-category">{{ libelleCategorieDuService(service) }}</span>
             <h3 class="service-name">{{ nomService(service) }}</h3>
-            <p class="card-text text-muted flex-grow-1">{{ service.description }}</p>
-            <div class="d-flex justify-content-between align-items-end mt-3">
-              <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes | duree }}</span>
-              <span class="service-price">{{ formatTarif(service.tarif) }}</span>
+            <p class="card-text text-muted service-description">{{ service.description }}</p>
+            <div class="service-card-footer mt-auto">
+              <div class="d-flex justify-content-between align-items-end mb-3">
+                <span class="text-muted small"><i class="ti ti-clock me-1"></i>{{ service.dureeMinutes | duree }}</span>
+                <span class="service-price">{{ formatTarif(service.tarif) }}</span>
+              </div>
+              <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary">{{ 'home.services.reserver' | t }}</a>
             </div>
-            <a routerLink="/reserver" [queryParams]="{ service: service.code }" class="btn btn-secondary mt-3">{{ 'home.services.reserver' | t }}</a>
           </div>
         </div>
       </div>

@@ -16,6 +16,7 @@ import { ConfirmationService } from '../../shared/service/confirmation.service';
 import { ToastService } from '../../shared/service/toast.service';
 import { InformationService } from '../../shared/service/information.service';
 import { RendezVousService } from '../../shared/service/rendez-vous.service';
+import { CommandeService } from '../../shared/service/boutique.service';
 import { ThemeService } from '../../shared/service/theme.service';
 import { ajouterJours, aujourdhui } from '../../shared/_helpers/zoned-time';
 
@@ -39,6 +40,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private informations = inject(InformationService);
   nom = this.informations.nom;
   private rendezVous = inject(RendezVousService);
+  private commandesApi = inject(CommandeService);
   auth = inject(AuthService);
   private confirmation = inject(ConfirmationService);
   private modals = inject(NgbModal);
@@ -52,6 +54,9 @@ export class AdminComponent implements OnInit, OnDestroy {
   // La section Administration est dépliée par défaut ; les autres s'ouvrent quand la page courante s'y trouve.
   ouverts = signal<string[]>(['administration']);
   demandes = signal(0);
+  commandesAPreparer = signal(0);
+  notifsOuvertes = signal(false);
+  totalNotifications = computed(() => this.demandes() + this.commandesAPreparer());
 
   aujourdhuiTexte = computed(() => {
     this.i18n.langue();
@@ -92,14 +97,17 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.url.set(this.router.url);
       this.mobileOpen.set(false);
       this.profilOuvert.set(false);
+      this.notifsOuvertes.set(false);
       this.ouvrirSectionActive();
       this.chargerDemandes();
+      this.chargerCommandesAPreparer();
     });
     // Les demandes à traiter dépendent du fuseau de l'institut, connu une fois ses informations chargées.
     effect(() => {
       this.informations.info();
       this.chargerDemandes();
     });
+    this.chargerCommandesAPreparer();
     // Le mode sombre est pose sur <body> (pas seulement .ad-shell) car les fenetres modales sont ajoutees
     // par ng-bootstrap en dehors de la coque : c'est le seul moyen de les faire passer sombres aussi.
     // Retire au OnDestroy pour ne jamais deborder sur le site public.
@@ -159,7 +167,14 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   basculerProfil(event: Event): void {
     event.stopPropagation();
+    this.notifsOuvertes.set(false);
     this.profilOuvert.update((v) => !v);
+  }
+
+  basculerNotifs(event: Event): void {
+    event.stopPropagation();
+    this.profilOuvert.set(false);
+    this.notifsOuvertes.update((v) => !v);
   }
 
   // « Changer de profil » : ouvre le choix parmi les profils du collaborateur, puis revient au tableau de bord.
@@ -188,11 +203,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   @HostListener('document:click')
   fermerProfil(): void {
     this.profilOuvert.set(false);
+    this.notifsOuvertes.set(false);
   }
 
   @HostListener('document:keydown.escape')
   echap(): void {
     this.profilOuvert.set(false);
+    this.notifsOuvertes.set(false);
     this.mobileOpen.set(false);
   }
 
@@ -231,6 +248,18 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.rendezVous.agenda(debut, ajouterJours(debut, 30)).subscribe({
       next: (liste) => this.demandes.set(liste.filter((r) => r.statut === 'DEMANDE').length),
       error: () => this.demandes.set(0)
+    });
+  }
+
+  // Cloche : commandes payées, pas encore préparées (ignoré si l'écran Commandes est inaccessible).
+  private chargerCommandesAPreparer(): void {
+    if (!this.auth.peut('COMMANDES')) {
+      this.commandesAPreparer.set(0);
+      return;
+    }
+    this.commandesApi.toutes().subscribe({
+      next: (liste) => this.commandesAPreparer.set(liste.filter((c) => c.statut === 'PAYEE').length),
+      error: () => this.commandesAPreparer.set(0)
     });
   }
 

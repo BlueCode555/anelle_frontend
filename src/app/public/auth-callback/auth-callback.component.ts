@@ -29,7 +29,11 @@ export class AuthCallbackComponent implements OnInit {
 
     const ok = !!code && !!state && (await this.auth.terminerLogin(code, state));
     if (!ok) {
-      this.router.navigate([flux === 'client' ? '/connexion' : '/personnel'], { queryParams: { erreur: '1' } });
+      // Par defaut vers /connexion (cote cliente), pas /personnel : si flux est absent/perdu (ex. annulation
+      // depuis Keycloak sans jamais revenir avec un state exploitable), renvoyer une cliente vers l'ecran de
+      // connexion du personnel est bien plus deroutant que l'inverse — la connexion cliente est de loin la plus
+      // frequente, et seul un flux explicitement 'personnel' doit mener a l'ecran du personnel.
+      this.router.navigate([flux === 'personnel' ? '/personnel' : '/connexion'], { queryParams: { erreur: '1' } });
       return;
     }
 

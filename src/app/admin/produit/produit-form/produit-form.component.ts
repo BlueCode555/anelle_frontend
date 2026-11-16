@@ -61,6 +61,7 @@ export class ProduitFormComponent implements OnInit {
     min(schemaPath.prix, 0.01, { message: this.i18n.t('ts.prd.prix') });
     required(schemaPath.stock, { message: this.i18n.t('ts.prd.stock') });
     min(schemaPath.stock, 0, { message: this.i18n.t('ts.prd.stock') });
+    required(schemaPath.imageUrl, { message: this.i18n.t('ts.prd.image') });
   });
 
   ngOnInit(): void {

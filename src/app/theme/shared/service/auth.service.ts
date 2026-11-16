@@ -8,6 +8,8 @@ import { environment } from 'src/environments/environment';
 import { chaineAleatoire, defiPkce } from '../_helpers/pkce';
 import { ID_TOKEN_KEY, LOGIN_FLOW_KEY, PROFIL_KEY, REFRESH_KEY, TOKEN_KEY, isTokenExpired, millisAvantExpiration } from '../_helpers/token-storage';
 import { ApiResponse } from './api.model';
+import { AuditService } from './audit.service';
+import { PanierService } from './panier.service';
 import { SessionExpireeModalComponent } from '../components/session-expiree/session-expiree-modal.component';
 
 const PKCE_KEY = 'anelle_pkce';
@@ -65,6 +67,8 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private modals = inject(NgbModal);
+  private audit = inject(AuditService);
+  private panier = inject(PanierService);
 
   user = signal<CurrentUser | null>(null);
   // Profil avec lequel le collaborateur travaille (memorise dans le navigateur ; le premier par defaut)
@@ -198,6 +202,8 @@ export class AuthService {
     }
 
     const estClient = this.user()?.type === 'CLIENT';
+    this.tracerDeconnexion();
+    this.panier.vider();
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_KEY);
     localStorage.removeItem(ID_TOKEN_KEY);
@@ -230,6 +236,11 @@ export class AuthService {
   }
 
   logout(): void {
+    this.tracerDeconnexion();
+    // Le panier (localStorage) survit volontairement a une connexion (une cliente qui ajoute un produit avant
+    // de se connecter ne doit pas le perdre), mais pas a une deconnexion : sinon, sur un appareil partage, la
+    // personne suivante voit encore les articles laisses par la precedente, meme sans etre connectee.
+    this.panier.vider();
     const idToken = localStorage.getItem(ID_TOKEN_KEY);
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_KEY);
@@ -322,6 +333,9 @@ export class AuthService {
     } catch {
       return false;
     }
+    // Trace la connexion ici (une seule fois, a l'echange du code) plutot que dans fetchProfile : celle-ci est
+    // aussi appelee a chaque restauration/rafraichissement silencieux de session, qui n'est pas une connexion.
+    this.audit.enregistrerEvenement('CONNEXION').subscribe({ error: () => undefined });
     return new Promise<boolean>((resolve) => this.fetchProfile(() => resolve(true), () => resolve(false)));
   }
 
@@ -373,6 +387,23 @@ export class AuthService {
     if (!localStorage.getItem(REFRESH_KEY)) return;
     const delai = Math.max(5000, millisAvantExpiration(token) - 60000);
     this.minuteur = setTimeout(() => this.rafraichir(), delai);
+  }
+
+  // fetch + keepalive (plutot que HttpClient) : survit a la navigation immediate vers Keycloak juste apres,
+  // contrairement a une requete XHR classique qui risquerait d'etre annulee avant d'avoir atteint le serveur.
+  private tracerDeconnexion(): void {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+    try {
+      fetch(`${environment.apiUrl}/audit/evenements`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ type: 'DECONNEXION' }),
+        keepalive: true
+      }).catch(() => undefined);
+    } catch {
+      // ce n'est qu'une trace : une deconnexion ne doit jamais echouer a cause de ca.
+    }
   }
 
   private fetchProfile(onSuccess?: () => void, onError?: () => void): void {

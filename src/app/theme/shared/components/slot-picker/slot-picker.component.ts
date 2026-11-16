@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { CatalogueService } from '../../service/catalogue.service';
 import { ServiceResponse } from '../../service/catalogue.model';
-import { InformationService } from '../../service/information.service';
+import { InformationService, JOURS_SEMAINE } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
 import { aujourdhui, formatHeure } from '../../_helpers/zoned-time';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
@@ -17,6 +17,8 @@ export interface ChoixCreneau {
   // Soins supplementaires enchaines (meme creneau, un seul rendez-vous) ; vide = un seul soin.
   serviceCodesSupplementaires: string[];
   debut: string;
+  // Pour affichage uniquement (recap cote parent sans avoir a reconsulter le catalogue) : noms des soins choisis.
+  libelleServices: string;
 }
 
 // Choix d'un ou plusieurs soins (enchaines sur un meme creneau), d'un jour, puis d'un creneau libre.
@@ -43,6 +45,8 @@ export class SlotPickerComponent implements OnInit {
 
   // Champ de recherche : filtre la liste, les cases a cocher ajoutent/retirent un soin de la selection.
   rechercheSoin = signal('');
+  // '' = toutes les categories. Un gros catalogue (centaines de soins) se filtre d'abord par categorie.
+  categorieChoisie = signal('');
   menuSoinOuvert = signal(false);
   indexActif = signal(-1);
   creneaux = signal<Creneau[]>([]);
@@ -54,15 +58,48 @@ export class SlotPickerComponent implements OnInit {
   zone = computed(() => this.informations.info()?.fuseauHoraire ?? 'America/Toronto');
   minDate = computed(() => aujourdhui(this.zone()));
 
+  // Jours de la semaine ou l'institut est habituellement ouvert (au moins une plage) : sert a preciser le
+  // message "aucun creneau" au lieu de laisser la cliente deviner quel autre jour essayer.
+  joursOuverts = computed(() => {
+    const horaires = this.informations.info()?.horaires ?? [];
+    return horaires.filter((h) => h.ouvert && h.plages.length > 0).map((h) => JOURS_SEMAINE[h.jourSemaine - 1]);
+  });
+
+  messageAucunCreneau = computed(() => {
+    const jours = this.joursOuverts();
+    return jours.length
+      ? this.i18n.t('slots.aucunAvecJours', { jours: jours.join(', ') })
+      : this.i18n.t('slots.aucunHoraire');
+  });
+
   codesChoisis = computed(() => new Set(this.soinsChoisis().map((s) => s.code)));
   dureeTotale = computed(() => this.soinsChoisis().reduce((t, s) => t + s.dureeMinutes, 0));
   prixTotal = computed(() => this.soinsChoisis().reduce((t, s) => t + s.tarif, 0));
 
-  servicesFiltres = computed(() => {
-    const q = this.normaliser(this.rechercheSoin());
-    const liste = this.services();
-    return q ? liste.filter((s) => this.normaliser(this.libelleSoin(s)).includes(q)) : liste;
+  // Liste des categories presentes dans le catalogue (deduites des soins, triees alphabetiquement).
+  categories = computed(() => {
+    const vues = new Map<string, string>();
+    for (const s of this.services()) {
+      if (!vues.has(s.categorieCode)) vues.set(s.categorieCode, this.categorieLibelle(s));
+    }
+    return [...vues.entries()].map(([code, libelle]) => ({ code, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle));
   });
+
+  // Nombre maximal de soins proposes a la fois dans la liste : au-dela, on demande d'affiner (categorie/recherche)
+  // plutot que de rendre une liste interminable si le catalogue compte des centaines de soins.
+  private readonly MAX_RESULTATS = 10;
+
+  private servicesCorrespondants = computed(() => {
+    const q = this.normaliser(this.rechercheSoin());
+    const categorie = this.categorieChoisie();
+    return this.services().filter(
+      (s) => (!categorie || s.categorieCode === categorie) && (!q || this.normaliser(this.libelleSoin(s)).includes(q))
+    );
+  });
+
+  nbResultatsTotal = computed(() => this.servicesCorrespondants().length);
+
+  servicesFiltres = computed(() => this.servicesCorrespondants().slice(0, this.MAX_RESULTATS));
 
   // Nom dans la langue courante (repli sur le francais si aucune traduction anglaise saisie), comme le nom
   // de l'institut : les noms de soins sont une donnee saisie par l'institut, pas un texte d'interface.
@@ -72,6 +109,16 @@ export class SlotPickerComponent implements OnInit {
 
   libelleSoin(s: ServiceResponse): string {
     return `${this.nomService(s)} · ${new DureePipe().transform(s.dureeMinutes)} · ${this.formatTarif(s.tarif)}`;
+  }
+
+  categorieLibelle(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.categorieLibelleEn : null) || s.categorieLibelle;
+  }
+
+  onCategorie(event: Event): void {
+    this.categorieChoisie.set((event.target as HTMLSelectElement).value);
+    this.menuSoinOuvert.set(true);
+    this.indexActif.set(-1);
   }
 
   estChoisi(s: ServiceResponse): boolean {
@@ -104,7 +151,7 @@ export class SlotPickerComponent implements OnInit {
 
   ngOnInit(): void {
     this.informations.ensureLoaded();
-    this.catalogue.listServices().subscribe({
+    this.catalogue.listServices({ size: 1000 }).subscribe({
       next: (page) => {
         const actifs = page.content.filter((s) => s.actif);
         this.services.set(actifs);
@@ -150,6 +197,19 @@ export class SlotPickerComponent implements OnInit {
     this.soinsChoisis.update((liste) => liste.filter((x) => x.code !== s.code));
   }
 
+  // Remet le picker a zero (soins, date, creneau) sans recharger le catalogue : sert a enchainer un deuxieme
+  // rendez-vous (jour different) dans la meme demande, depuis ReserverComponent.
+  reinitialiser(): void {
+    this.soinsChoisis.set([]);
+    this.rechercheSoin.set('');
+    this.categorieChoisie.set('');
+    this.date.set(this.minDate());
+    this.creneaux.set([]);
+    this.choisi.set(null);
+    this.dejaCharge.set(false);
+    this.choix.emit(null);
+  }
+
   onKeydownRecherche(event: KeyboardEvent): void {
     const liste = this.servicesFiltres();
     if (event.key === 'ArrowDown') {
@@ -176,7 +236,12 @@ export class SlotPickerComponent implements OnInit {
     const [principal, ...reste] = this.soinsChoisis();
     if (!principal) return;
     this.choisi.set(creneau.debut);
-    this.choix.emit({ serviceCode: principal.code, serviceCodesSupplementaires: reste.map((s) => s.code), debut: creneau.debut });
+    this.choix.emit({
+      serviceCode: principal.code,
+      serviceCodesSupplementaires: reste.map((s) => s.code),
+      debut: creneau.debut,
+      libelleServices: this.soinsChoisis().map((s) => this.nomService(s)).join(' + ')
+    });
   }
 
   heure(iso: string): string {
