@@ -15,7 +15,8 @@ import { AuthService } from '../../shared/service/auth.service';
 import { ConfirmationService } from '../../shared/service/confirmation.service';
 import { ToastService } from '../../shared/service/toast.service';
 import { InformationService } from '../../shared/service/information.service';
-import { RendezVousService } from '../../shared/service/rendez-vous.service';
+import { RendezVous, RendezVousService } from '../../shared/service/rendez-vous.service';
+import { CommandeService } from '../../shared/service/boutique.service';
 import { ThemeService } from '../../shared/service/theme.service';
 import { ajouterJours, aujourdhui } from '../../shared/_helpers/zoned-time';
 
@@ -25,6 +26,17 @@ interface Miette {
 }
 
 const COLLAPSE_KEY = 'arnelle.nav.collapsed';
+const NOTIFS_LUES_KEY = 'arnelle.notifs.lues';
+
+// Une ligne du panneau de la cloche : une demande de rendez-vous en attente ou une commande payee a preparer.
+export interface Notification {
+  id: string;
+  type: 'rdv' | 'commande';
+  titre: string;
+  sous: string;
+  date: string;
+  url: string;
+}
 
 // Coque du back-office : menu latéral repliable, barre du haut (fil d'Ariane, notifications, profil), contenu, pied de page.
 @Component({
@@ -39,6 +51,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   private informations = inject(InformationService);
   nom = this.informations.nom;
   private rendezVous = inject(RendezVousService);
+  private commandes = inject(CommandeService);
   auth = inject(AuthService);
   private confirmation = inject(ConfirmationService);
   private modals = inject(NgbModal);
@@ -52,6 +65,24 @@ export class AdminComponent implements OnInit, OnDestroy {
   // La section Administration est dépliée par défaut ; les autres s'ouvrent quand la page courante s'y trouve.
   ouverts = signal<string[]>(['administration']);
   demandes = signal(0);
+
+  // Cloche : panneau des notifications recentes (demandes de rendez-vous, commandes a preparer), marquables comme lues.
+  notifsOuvertes = signal(false);
+  private demandesListe = signal<RendezVous[]>([]);
+  private commandesAPreparer = signal<Notification[]>([]);
+  private lues = signal<string[]>(this.lireLues());
+  notifications = computed<Notification[]>(() => {
+    const rdvs: Notification[] = this.demandesListe().map((r) => ({
+      id: 'rdv:' + r.code,
+      type: 'rdv',
+      titre: r.libelleServices,
+      sous: r.clientNom ?? '',
+      date: r.debut,
+      url: '/agenda'
+    }));
+    return [...rdvs, ...this.commandesAPreparer()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10);
+  });
+  nonLues = computed(() => this.notifications().filter((n) => !this.lues().includes(n.id)).length);
 
   aujourdhuiTexte = computed(() => {
     this.i18n.langue();
@@ -166,6 +197,7 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   basculerProfil(event: Event): void {
     event.stopPropagation();
+    this.notifsOuvertes.set(false);
     this.profilOuvert.update((v) => !v);
   }
 
@@ -195,11 +227,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   @HostListener('document:click')
   fermerProfil(): void {
     this.profilOuvert.set(false);
+    this.notifsOuvertes.set(false);
   }
 
   @HostListener('document:keydown.escape')
   echap(): void {
     this.profilOuvert.set(false);
+    this.notifsOuvertes.set(false);
     this.mobileOpen.set(false);
   }
 
@@ -236,9 +270,69 @@ export class AdminComponent implements OnInit, OnDestroy {
     const zone = this.informations.info()?.fuseauHoraire ?? 'America/Toronto';
     const debut = aujourdhui(zone);
     this.rendezVous.agenda(debut, ajouterJours(debut, 30)).subscribe({
-      next: (liste) => this.demandes.set(liste.filter((r) => r.statut === 'DEMANDE').length),
-      error: () => this.demandes.set(0)
+      next: (liste) => {
+        const demandes = liste.filter((r) => r.statut === 'DEMANDE');
+        this.demandes.set(demandes.length);
+        this.demandesListe.set(demandes);
+      },
+      error: () => {
+        this.demandes.set(0);
+        this.demandesListe.set([]);
+      }
     });
+    this.chargerCommandes();
+  }
+
+  // Commandes payees a preparer (uniquement pour un profil qui a acces a l'ecran Commandes).
+  private chargerCommandes(): void {
+    if (!this.auth.peut('COMMANDES')) {
+      this.commandesAPreparer.set([]);
+      return;
+    }
+    this.commandes.toutes().subscribe({
+      next: (liste) =>
+        this.commandesAPreparer.set(
+          liste
+            .filter((c) => c.statut === 'PAYEE')
+            .map((c) => ({
+              id: 'cmd:' + c.code,
+              type: 'commande' as const,
+              titre: c.lignes.map((l) => l.quantite + ' × ' + l.nom).join(', '),
+              sous: c.clientNom,
+              date: c.payeLe ?? c.creeLe,
+              url: '/commandes'
+            }))
+        ),
+      error: () => this.commandesAPreparer.set([])
+    });
+  }
+
+  basculerNotifs(event: Event): void {
+    event.stopPropagation();
+    this.profilOuvert.set(false);
+    this.notifsOuvertes.update((v) => !v);
+  }
+
+  estLue(n: Notification): boolean {
+    return this.lues().includes(n.id);
+  }
+
+  toutMarquerLu(): void {
+    this.lues.set(Array.from(new Set([...this.lues(), ...this.notifications().map((n) => n.id)])).slice(-200));
+    try {
+      localStorage.setItem(NOTIFS_LUES_KEY, JSON.stringify(this.lues()));
+    } catch {
+      // stockage indisponible : elles restent lues pour la session en cours.
+    }
+  }
+
+  private lireLues(): string[] {
+    try {
+      const brut = JSON.parse(localStorage.getItem(NOTIFS_LUES_KEY) ?? '[]');
+      return Array.isArray(brut) ? brut.filter((x) => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
   }
 
   private lireRepli(): boolean {

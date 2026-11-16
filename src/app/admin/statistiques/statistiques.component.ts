@@ -27,6 +27,8 @@ export class StatistiquesComponent implements OnInit, OnDestroy {
   // rendu, juste un peu estompe le temps que les nouvelles donnees arrivent — jamais de flash ni de saut.
   rafraichissement = signal(false);
   error = signal(false);
+  exportEnCours = signal(false);
+  exportErreur = signal(false);
   stats = signal<Statistiques | null>(null);
 
   du = this.ilYA(30);
@@ -87,6 +89,32 @@ export class StatistiquesComponent implements OnInit, OnDestroy {
         this.rafraichissement.set(false);
       },
       error: () => this.rafraichissement.set(false)
+    });
+  }
+
+  // Telecharge le fichier Excel de la periode affichee (les dates saisies, meme si « Appliquer » n'a pas ete clique).
+  exporter(): void {
+    if (!this.du || !this.au || this.du > this.au || this.exportEnCours()) return;
+    this.exportEnCours.set(true);
+    this.exportErreur.set(false);
+    const du = this.du;
+    const au = this.au;
+    this.service.exporter(du, au).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const lien = document.createElement('a');
+        lien.href = url;
+        lien.download = `statistiques_${du}_${au}.xlsx`;
+        document.body.appendChild(lien);
+        lien.click();
+        lien.remove();
+        URL.revokeObjectURL(url);
+        this.exportEnCours.set(false);
+      },
+      error: () => {
+        this.exportErreur.set(true);
+        this.exportEnCours.set(false);
+      }
     });
   }
 

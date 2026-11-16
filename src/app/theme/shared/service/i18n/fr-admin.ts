@@ -21,6 +21,12 @@ export const FR_ADMIN: Record<string, string> = {
   // ── Coque ─────────────────────────────────────────────────────────────────
   'admin.espaceGestion': 'Espace de gestion',
   'admin.voirSite': 'Voir le site',
+  'admin.notifs.titre': "Notifications",
+  'admin.notifs.toutLu': "Tout marquer comme lu",
+  'admin.notifs.aucune': "Aucune notification pour le moment.",
+  'admin.notifs.rdv': "Nouvelle demande de rendez-vous",
+  'admin.notifs.commande': "Nouvelle commande à préparer",
+  'admin.notifs.voirAgenda': "Voir l'agenda",
   'admin.menuBascule': 'Réduire ou ouvrir le menu',
   'admin.menuPrincipal': 'Menu principal',
   'admin.filAriane': "Fil d'Ariane",

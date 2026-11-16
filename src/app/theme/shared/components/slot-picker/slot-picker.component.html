@@ -3,6 +3,14 @@
   <div class="etape-contenu">
     <h2 class="etape-titre">{{ 'slots.soin' | t }}</h2>
     <p class="text-muted small mb-2">{{ 'slots.plusieursSoins' | t }}</p>
+    @if (categories().length > 1) {
+      <select class="form-select mb-2" [attr.aria-label]="'slots.categorie' | t" (change)="choisirCategorie($any($event.target).value)">
+        <option value="" [selected]="!categorieChoisie()">{{ 'slots.toutesCategories' | t }}</option>
+        @for (c of categories(); track c.code) {
+          <option [value]="c.code" [selected]="categorieChoisie() === c.code">{{ c.libelle }}</option>
+        }
+      </select>
+    }
     <div class="soin-recherche">
       <i class="ti ti-search soin-recherche-icone" aria-hidden="true"></i>
       <input
@@ -34,6 +42,9 @@
             </li>
           } @empty {
             <li class="soin-liste-vide">{{ 'slots.aucunResultat' | t }}</li>
+          }
+          @if (autresResultats() > 0) {
+            <li class="soin-liste-vide" aria-hidden="true">{{ 'slots.autresResultats' | t: { n: autresResultats() } }}</li>
           }
         </ul>
       }

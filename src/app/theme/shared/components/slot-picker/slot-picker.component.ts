@@ -69,11 +69,30 @@ export class SlotPickerComponent implements OnInit {
   dureeTotale = computed(() => this.soinsChoisis().reduce((t, s) => t + s.dureeMinutes, 0));
   prixTotal = computed(() => this.soinsChoisis().reduce((t, s) => t + s.tarif, 0));
 
-  servicesFiltres = computed(() => {
-    const q = this.normaliser(this.rechercheSoin());
-    const liste = this.services();
-    return q ? liste.filter((s) => this.normaliser(this.libelleSoin(s)).includes(q)) : liste;
+  // Selection en deux temps (OBS-08) : on peut d'abord restreindre a une categorie, puis chercher le soin ; la liste
+  // n'affiche jamais plus de LIMITE_AFFICHAGE resultats a la fois (la saisie affine), meme avec un catalogue de
+  // plusieurs centaines de prestations.
+  static readonly LIMITE_AFFICHAGE = 10;
+  categorieChoisie = signal('');
+
+  categories = computed(() => {
+    const parCode = new Map<string, string>();
+    for (const s of this.services()) {
+      if (!parCode.has(s.categorieCode)) parCode.set(s.categorieCode, this.libelleCategorie(s));
+    }
+    return [...parCode.entries()].map(([code, libelle]) => ({ code, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle));
   });
+
+  servicesCorrespondants = computed(() => {
+    const q = this.normaliser(this.rechercheSoin());
+    const categorie = this.categorieChoisie();
+    return this.services().filter(
+      (s) => (!categorie || s.categorieCode === categorie) && (!q || this.normaliser(this.libelleSoin(s)).includes(q))
+    );
+  });
+
+  servicesFiltres = computed(() => this.servicesCorrespondants().slice(0, SlotPickerComponent.LIMITE_AFFICHAGE));
+  autresResultats = computed(() => this.servicesCorrespondants().length - this.servicesFiltres().length);
 
   // Faux seulement quand on sait que l'institut n'a aucun jour d'ouverture : chercher plus loin serait inutile.
   peutChercher = computed(() => {
@@ -109,6 +128,15 @@ export class SlotPickerComponent implements OnInit {
   // de l'institut : les noms de soins sont une donnee saisie par l'institut, pas un texte d'interface.
   nomService(s: ServiceResponse): string {
     return (this.i18n.langue() === 'en' ? s.nomServiceEn : null) || s.nomService;
+  }
+
+  libelleCategorie(s: ServiceResponse): string {
+    return (this.i18n.langue() === 'en' ? s.categorieLibelleEn : null) || s.categorieLibelle;
+  }
+
+  choisirCategorie(code: string): void {
+    this.categorieChoisie.set(code);
+    this.indexActif.set(-1);
   }
 
   libelleSoin(s: ServiceResponse): string {
@@ -155,9 +183,20 @@ export class SlotPickerComponent implements OnInit {
 
   ngOnInit(): void {
     this.informations.ensureLoaded();
-    this.catalogue.listServices().subscribe({
-      next: (page) => {
-        const actifs = page.content.filter((s) => s.actif);
+    this.chargerServices(1, []);
+  }
+
+  // Charge tout le catalogue page par page (200 a la fois) : un catalogue de plusieurs centaines de soins ne doit pas
+  // etre tronque, meme si la liste affichee reste limitee (voir servicesFiltres).
+  private chargerServices(page: number, cumul: ServiceResponse[]): void {
+    this.catalogue.listServices({ page, size: 200 }).subscribe({
+      next: (res) => {
+        const tout = [...cumul, ...res.content];
+        if (res.content.length > 0 && tout.length < res.meta.totalElements && page < 25) {
+          this.chargerServices(page + 1, tout);
+          return;
+        }
+        const actifs = tout.filter((s) => s.actif);
         this.services.set(actifs);
         const demande = this.initialService();
         const service = demande ? actifs.find((s) => s.code === demande) : null;

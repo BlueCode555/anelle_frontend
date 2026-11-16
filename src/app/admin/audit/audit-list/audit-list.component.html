@@ -57,10 +57,11 @@
               <th>{{ 'audit.action' | t }}</th>
               <th [title]="'audit.typeAide' | t">{{ 'audit.type' | t }}</th>
               <th [title]="'audit.elementAide' | t">{{ 'audit.element' | t }}</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
-            @for (e of entrees(); track e.revision + e.typeElement) {
+            @for (e of entrees(); track cle(e)) {
               <tr>
                 <td [attr.data-label]="'audit.date' | t" class="text-muted">{{ formatDate(e.date) }}</td>
                 <td [attr.data-label]="'audit.auteur' | t">{{ e.auteurNom || ('audit.inconnu' | t) }}</td>
@@ -69,7 +70,52 @@
                 </td>
                 <td [attr.data-label]="'audit.type' | t" class="text-muted">{{ e.typeElement }}</td>
                 <td [attr.data-label]="'audit.element' | t" class="fw-semibold">{{ e.libelle }}</td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" [attr.aria-expanded]="ouverte() === cle(e)" (click)="basculerDetail(e)">
+                    {{ (ouverte() === cle(e) ? 'audit.masquerDetail' : 'audit.voirDetail') | t }}
+                  </button>
+                </td>
               </tr>
+              @if (ouverte() === cle(e)) {
+                <tr class="audit-detail">
+                  <td colspan="6">
+                    @switch (contenuDetail(e)) {
+                      @case ('chargement') {
+                        <span class="text-muted small">{{ 'a.chargement' | t }}</span>
+                      }
+                      @case ('erreur') {
+                        <span class="text-danger small">{{ 'audit.detailErreur' | t }}</span>
+                      }
+                      @default {
+                        @if (contenuDetail(e); as liste) {
+                          @if (liste.length === 0) {
+                            <span class="text-muted small">{{ 'audit.detailVide' | t }}</span>
+                          } @else {
+                            <table class="table table-sm mb-0">
+                              <thead>
+                                <tr>
+                                  <th>{{ 'audit.champ' | t }}</th>
+                                  <th>{{ 'audit.avant' | t }}</th>
+                                  <th>{{ 'audit.apres' | t }}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @for (c of $any(liste); track c.champ) {
+                                  <tr>
+                                    <td class="text-muted">{{ c.champ }}</td>
+                                    <td>{{ valeur(c.avant) }}</td>
+                                    <td class="fw-semibold">{{ valeur(c.apres) }}</td>
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          }
+                        }
+                      }
+                    }
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>

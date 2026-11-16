@@ -94,12 +94,44 @@
           <i class="ti" [class.ti-sun]="theme.sombre()" [class.ti-moon]="!theme.sombre()"></i>
         </button>
 
-        <a class="ad-icon-btn ad-bell" routerLink="/agenda" [attr.aria-label]="'admin.demandesAria' | t: { n: demandes() }" [title]="'admin.demandesTitre' | t">
-          <i class="ti ti-bell"></i>
-          @if (demandes() > 0) {
-            <span class="ad-bell-badge">{{ demandes() > 9 ? '9+' : demandes() }}</span>
+        <div class="ad-notifs">
+          <button type="button" class="ad-icon-btn ad-bell" (click)="basculerNotifs($event)" [attr.aria-label]="'admin.demandesAria' | t: { n: nonLues() }"
+            [attr.aria-expanded]="notifsOuvertes()" [title]="'admin.demandesTitre' | t">
+            <i class="ti ti-bell"></i>
+            @if (nonLues() > 0) {
+              <span class="ad-bell-badge">{{ nonLues() > 9 ? '9+' : nonLues() }}</span>
+            }
+          </button>
+          @if (notifsOuvertes()) {
+            <div class="ad-notifs-panel" role="dialog" (click)="$event.stopPropagation()" (keydown.escape)="fermerProfil()" tabindex="-1">
+              <div class="ad-notifs-head">
+                <strong>{{ 'admin.notifs.titre' | t }}</strong>
+                @if (nonLues() > 0) {
+                  <button type="button" class="btn btn-link btn-sm p-0" (click)="toutMarquerLu()">{{ 'admin.notifs.toutLu' | t }}</button>
+                }
+              </div>
+              @if (notifications().length === 0) {
+                <p class="ad-notifs-vide">{{ 'admin.notifs.aucune' | t }}</p>
+              } @else {
+                <ul class="ad-notifs-liste">
+                  @for (n of notifications(); track n.id) {
+                    <li>
+                      <a [routerLink]="n.url" (click)="fermerProfil()" class="ad-notif" [class.is-lue]="estLue(n)">
+                        <i class="ti" [class.ti-calendar-event]="n.type === 'rdv'" [class.ti-shopping-bag]="n.type === 'commande'"></i>
+                        <span class="ad-notif-texte">
+                          <strong>{{ (n.type === 'rdv' ? 'admin.notifs.rdv' : 'admin.notifs.commande') | t }}</strong>
+                          <span>{{ n.titre }}</span>
+                          <small>{{ n.sous }}</small>
+                        </span>
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+              <a routerLink="/agenda" class="ad-notifs-pied" (click)="fermerProfil()">{{ 'admin.notifs.voirAgenda' | t }}</a>
+            </div>
           }
-        </a>
+        </div>
 
         <span class="ad-divider" aria-hidden="true"></span>
 

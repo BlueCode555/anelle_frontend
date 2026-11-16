@@ -19,6 +19,12 @@ export const EN_ADMIN: Record<string, string> = {
 
   'admin.espaceGestion': 'Management area',
   'admin.voirSite': 'View website',
+  'admin.notifs.titre': "Notifications",
+  'admin.notifs.toutLu': "Mark all as read",
+  'admin.notifs.aucune': "No notifications right now.",
+  'admin.notifs.rdv': "New appointment request",
+  'admin.notifs.commande': "New order to prepare",
+  'admin.notifs.voirAgenda': "View agenda",
   'admin.menuBascule': 'Collapse or open the menu',
   'admin.menuPrincipal': 'Main menu',
   'admin.filAriane': 'Breadcrumb',

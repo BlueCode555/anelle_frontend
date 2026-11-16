@@ -34,6 +34,11 @@ export class StatistiquesService {
   private http = inject(HttpClient);
   private url = `${environment.apiUrl}/statistiques`;
 
+  // Fichier Excel (.xlsx) de la periode : synthese + detail des operations.
+  exporter(du: string, au: string): Observable<Blob> {
+    return this.http.get(`${this.url}/export`, { params: { du, au }, responseType: 'blob' });
+  }
+
   calculer(du: string, au: string): Observable<Statistiques> {
     return this.http.get<ApiResponse<Statistiques>>(this.url, { params: { du, au } }).pipe(map((r) => r.data));
   }

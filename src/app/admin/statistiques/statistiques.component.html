@@ -23,7 +23,13 @@
       <button type="button" class="btn btn-sm btn-outline-secondary" (click)="preset(7)">{{ 'stats.preset7' | t }}</button>
       <button type="button" class="btn btn-sm btn-outline-secondary" (click)="preset(30)">{{ 'stats.preset30' | t }}</button>
       <button type="button" class="btn btn-sm btn-outline-secondary" (click)="presetMoisCourant()">{{ 'stats.presetMois' | t }}</button>
+      <button type="button" class="btn btn-sm btn-outline-success" [disabled]="exportEnCours()" (click)="exporter()">
+        <i class="ti ti-file-spreadsheet me-1"></i>{{ (exportEnCours() ? 'stats.exportEnCours' : 'stats.exporter') | t }}
+      </button>
     </div>
+    @if (exportErreur()) {
+      <div class="alert alert-danger py-2 mt-2 mb-0 w-100">{{ 'stats.exportErreur' | t }}</div>
+    }
   </div>
 </div>
 

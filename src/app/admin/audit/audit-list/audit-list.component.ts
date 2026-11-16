@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AuditEntry, AuditService } from 'src/app/theme/shared/service/audit.service';
+import { AuditEntry, AuditService, Changement } from 'src/app/theme/shared/service/audit.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
@@ -88,6 +88,37 @@ export class AuditListComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  // Detail (champ / avant / apres) d'une ligne, charge a la demande puis garde pour la page affichee.
+  ouverte = signal<string | null>(null);
+  details = signal<Record<string, Changement[] | 'chargement' | 'erreur'>>({});
+
+  cle(e: AuditEntry): string {
+    return `${e.tableAudit}:${e.entiteId}:${e.revision}`;
+  }
+
+  basculerDetail(e: AuditEntry): void {
+    const cle = this.cle(e);
+    if (this.ouverte() === cle) {
+      this.ouverte.set(null);
+      return;
+    }
+    this.ouverte.set(cle);
+    if (this.details()[cle] && this.details()[cle] !== 'erreur') return;
+    this.details.update((d) => ({ ...d, [cle]: 'chargement' }));
+    this.audit.detail(e).subscribe({
+      next: (liste) => this.details.update((d) => ({ ...d, [cle]: liste })),
+      error: () => this.details.update((d) => ({ ...d, [cle]: 'erreur' }))
+    });
+  }
+
+  contenuDetail(e: AuditEntry): Changement[] | 'chargement' | 'erreur' | undefined {
+    return this.details()[this.cle(e)];
+  }
+
+  valeur(v: string | null): string {
+    return v === null || v === '' ? '—' : v;
   }
 
   formatDate(iso: string): string {
