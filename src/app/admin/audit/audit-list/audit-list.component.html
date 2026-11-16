@@ -3,6 +3,19 @@
     <h5 class="mb-0">{{ 'audit.titre' | t }}</h5>
     <span class="text-muted small">{{ 'audit.purgeAide' | t }}</span>
   </div>
+  <ul class="nav nav-tabs px-3 pt-2">
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="onglet() === 'donnees'" (click)="onglet.set('donnees')">{{ 'audit.ongletDonnees' | t }}</button>
+    </li>
+    <li class="nav-item">
+      <button type="button" class="nav-link" [class.active]="onglet() === 'connexions'" (click)="onglet.set('connexions')">{{ 'audit.ongletConnexions' | t }}</button>
+    </li>
+  </ul>
+  @if (onglet() === 'connexions') {
+    <div class="card-body">
+      <app-audit-connexions />
+    </div>
+  } @else {
   <div class="card-body">
     <div class="row g-2 mb-3 align-items-end">
       <div class="col-12 col-lg-4">
@@ -123,4 +136,5 @@
       <app-pagination [total]="totalElements()" [taille]="taille" [(page)]="page" />
     }
   </div>
+  }
 </div>

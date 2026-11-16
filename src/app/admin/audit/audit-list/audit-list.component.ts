@@ -5,13 +5,14 @@ import { AuditEntry, AuditService, Changement } from 'src/app/theme/shared/servi
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
+import { AuditConnexionsComponent } from '../audit-connexions/audit-connexions.component';
 import { PaginationComponent } from 'src/app/theme/shared/components/pagination/pagination.component';
 
 // Journal d'audit : qui a créé, modifié ou supprimé quoi, et quand (schéma "audit", purgé après 3 ans
 // automatiquement côté serveur). Pagination côté serveur (le journal peut devenir volumineux).
 @Component({
   selector: 'app-audit-list',
-  imports: [CommonModule, TranslatePipe, PaginationComponent],
+  imports: [CommonModule, TranslatePipe, PaginationComponent, AuditConnexionsComponent],
   templateUrl: './audit-list.component.html',
   styleUrl: './audit-list.component.scss'
 })
@@ -21,6 +22,7 @@ export class AuditListComponent {
 
   readonly taille = 20;
   page = signal(1);
+  onglet = signal<'donnees' | 'connexions'>('donnees');
 
   entrees = signal<AuditEntry[]>([]);
   totalElements = signal(0);
