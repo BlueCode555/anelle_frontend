@@ -27,21 +27,13 @@ export class AuthCallbackComponent implements OnInit {
     const flux = sessionStorage.getItem(LOGIN_FLOW_KEY);
     sessionStorage.removeItem(LOGIN_FLOW_KEY);
 
-    // Connexion annulee (bouton « Retour a l'application » de Keycloak, refus de l'autorisation Google...) :
-    // Keycloak revient ici sans code. Une cliente ne doit jamais atterrir sur l'espace du personnel : seul
-    // le flux explicitement lance par le personnel y retourne ; dans tous les autres cas (y compris flux
-    // inconnu) on renvoie vers la page d'ou elle est partie, a defaut l'accueil du site public.
-    const personnel = flux === 'personnel';
-    if (!code && !personnel) {
-      const retour = sessionStorage.getItem(RETOUR_CLIENT_KEY);
-      sessionStorage.removeItem(RETOUR_CLIENT_KEY);
-      this.router.navigateByUrl(retour && retour.startsWith('/') && !retour.startsWith('//') ? retour : '/accueil', { replaceUrl: true });
-      return;
-    }
-
     const ok = !!code && !!state && (await this.auth.terminerLogin(code, state));
     if (!ok) {
-      this.router.navigate([personnel ? '/personnel' : '/connexion'], { queryParams: { erreur: '1' } });
+      // Par defaut vers /connexion (cote cliente), pas /personnel : si flux est absent/perdu (ex. annulation
+      // depuis Keycloak sans jamais revenir avec un state exploitable), renvoyer une cliente vers l'ecran de
+      // connexion du personnel est bien plus deroutant que l'inverse — la connexion cliente est de loin la plus
+      // frequente, et seul un flux explicitement 'personnel' doit mener a l'ecran du personnel.
+      this.router.navigate([flux === 'personnel' ? '/personnel' : '/connexion'], { queryParams: { erreur: '1' } });
       return;
     }
 
@@ -56,21 +48,7 @@ export class AuthCallbackComponent implements OnInit {
     // Personnel : uniquement la destination demandee par le PERSONNEL (staffGuard) : jamais celle d'une cliente,
     // meme si elle a ete enregistree juste avant sur cet appareil (ex. clic sur "Prendre rendez-vous" sans etre connectee).
     const retour = sessionStorage.getItem(RETOUR_STAFF_KEY);
-    const staffRoutes = [
-      '/default',
-      '/agenda',
-      '/collaborateurs',
-      '/profils',
-      '/clients',
-      '/informations',
-      '/audit',
-      '/statistiques',
-      '/categories',
-      '/services',
-      '/produits',
-      '/rayons',
-      '/commandes'
-    ];
+    const staffRoutes = ['/default', '/agenda', '/collaborateurs', '/profils', '/informations', '/categories', '/services'];
     const versEspaceDeGestion = !!retour && staffRoutes.some((r) => retour === r || retour.startsWith(r + '/'));
     const destination = versEspaceDeGestion ? retour! : '/default';
 

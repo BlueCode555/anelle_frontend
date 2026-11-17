@@ -1,13 +1,12 @@
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
 import { Component, OnInit, computed, effect, inject, input, output, signal, untracked } from '@angular/core';
-
-import { firstValueFrom } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 import { CatalogueService } from '../../service/catalogue.service';
 import { ServiceResponse } from '../../service/catalogue.model';
-import { Horaire, InformationService } from '../../service/information.service';
+import { InformationService, JOURS_SEMAINE } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
-import { ajouterJours, aujourdhui, formatHeure } from '../../_helpers/zoned-time';
+import { aujourdhui, formatHeure } from '../../_helpers/zoned-time';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -18,13 +17,15 @@ export interface ChoixCreneau {
   // Soins supplementaires enchaines (meme creneau, un seul rendez-vous) ; vide = un seul soin.
   serviceCodesSupplementaires: string[];
   debut: string;
+  // Pour affichage uniquement (recap cote parent sans avoir a reconsulter le catalogue) : noms des soins choisis.
+  libelleServices: string;
 }
 
 // Choix d'un ou plusieurs soins (enchaines sur un meme creneau), d'un jour, puis d'un creneau libre.
 // Les heures sont celles de l'institut.
 @Component({
   selector: 'app-slot-picker',
-  imports: [TranslatePipe, DureePipe],
+  imports: [CommonModule, TranslatePipe, DureePipe],
   templateUrl: './slot-picker.component.html',
   styleUrl: './slot-picker.component.scss'
 })
@@ -44,6 +45,8 @@ export class SlotPickerComponent implements OnInit {
 
   // Champ de recherche : filtre la liste, les cases a cocher ajoutent/retirent un soin de la selection.
   rechercheSoin = signal('');
+  // '' = toutes les categories. Un gros catalogue (centaines de soins) se filtre d'abord par categorie.
+  categorieChoisie = signal('');
   menuSoinOuvert = signal(false);
   indexActif = signal(-1);
   creneaux = signal<Creneau[]>([]);
@@ -52,38 +55,41 @@ export class SlotPickerComponent implements OnInit {
   error = signal('');
   dejaCharge = signal(false);
 
-  // Recherche du prochain jour avec des créneaux (au plus 21 jours après le jour affiché).
-  recherche = signal(false);
-  aucunProche = signal(false);
-  private jeton = 0;
-  // Empreinte de la sélection de soins (codes dans l'ordre) : change dès qu'on ajoute, retire ou remplace un soin.
-  private derniereSelection = '';
-  private sautAuto = false;
-  private readonly horizonJours = 21;
-  private dureePipe = new DureePipe();
-
   zone = computed(() => this.informations.info()?.fuseauHoraire ?? 'America/Toronto');
   minDate = computed(() => aujourdhui(this.zone()));
+
+  // Jours de la semaine ou l'institut est habituellement ouvert (au moins une plage) : sert a preciser le
+  // message "aucun creneau" au lieu de laisser la cliente deviner quel autre jour essayer.
+  joursOuverts = computed(() => {
+    const horaires = this.informations.info()?.horaires ?? [];
+    return horaires.filter((h) => h.ouvert && h.plages.length > 0).map((h) => JOURS_SEMAINE[h.jourSemaine - 1]);
+  });
+
+  messageAucunCreneau = computed(() => {
+    const jours = this.joursOuverts();
+    return jours.length
+      ? this.i18n.t('slots.aucunAvecJours', { jours: jours.join(', ') })
+      : this.i18n.t('slots.aucunHoraire');
+  });
 
   codesChoisis = computed(() => new Set(this.soinsChoisis().map((s) => s.code)));
   dureeTotale = computed(() => this.soinsChoisis().reduce((t, s) => t + s.dureeMinutes, 0));
   prixTotal = computed(() => this.soinsChoisis().reduce((t, s) => t + s.tarif, 0));
 
-  // Selection en deux temps (OBS-08) : on peut d'abord restreindre a une categorie, puis chercher le soin ; la liste
-  // n'affiche jamais plus de LIMITE_AFFICHAGE resultats a la fois (la saisie affine), meme avec un catalogue de
-  // plusieurs centaines de prestations.
-  static readonly LIMITE_AFFICHAGE = 10;
-  categorieChoisie = signal('');
-
+  // Liste des categories presentes dans le catalogue (deduites des soins, triees alphabetiquement).
   categories = computed(() => {
-    const parCode = new Map<string, string>();
+    const vues = new Map<string, string>();
     for (const s of this.services()) {
-      if (!parCode.has(s.categorieCode)) parCode.set(s.categorieCode, this.libelleCategorie(s));
+      if (!vues.has(s.categorieCode)) vues.set(s.categorieCode, this.categorieLibelle(s));
     }
-    return [...parCode.entries()].map(([code, libelle]) => ({ code, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle));
+    return [...vues.entries()].map(([code, libelle]) => ({ code, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle));
   });
 
-  servicesCorrespondants = computed(() => {
+  // Nombre maximal de soins proposes a la fois dans la liste : au-dela, on demande d'affiner (categorie/recherche)
+  // plutot que de rendre une liste interminable si le catalogue compte des centaines de soins.
+  private readonly MAX_RESULTATS = 10;
+
+  private servicesCorrespondants = computed(() => {
     const q = this.normaliser(this.rechercheSoin());
     const categorie = this.categorieChoisie();
     return this.services().filter(
@@ -91,38 +97,9 @@ export class SlotPickerComponent implements OnInit {
     );
   });
 
-  servicesFiltres = computed(() => this.servicesCorrespondants().slice(0, SlotPickerComponent.LIMITE_AFFICHAGE));
-  autresResultats = computed(() => this.servicesCorrespondants().length - this.servicesFiltres().length);
+  nbResultatsTotal = computed(() => this.servicesCorrespondants().length);
 
-  // Faux seulement quand on sait que l'institut n'a aucun jour d'ouverture : chercher plus loin serait inutile.
-  peutChercher = computed(() => {
-    const horaires = this.informations.info()?.horaires;
-    return !horaires || horaires.some((h) => h.ouvert && h.plages?.length);
-  });
-
-  // Pourquoi il n'y a aucun créneau ce jour-là (horaires absents, jour fermé, soins trop longs, journée pleine).
-  // Plusieurs soins s'enchaînent sur un même créneau : c'est leur durée totale qui doit tenir dans une plage.
-  raison = computed(() => {
-    const info = this.informations.info();
-    const date = this.date();
-    if (!info || !date) return '';
-    const horaires = info.horaires ?? [];
-    if (!horaires.some((h) => h.ouvert && h.plages?.length)) {
-      return this.i18n.t('slots.raison.horairesVides');
-    }
-    const jour = horaires.find((h) => h.jourSemaine === this.jourSemaine(date));
-    if (!jour || !jour.ouvert || !jour.plages?.length) {
-      return this.i18n.t('slots.raison.ferme', { jour: this.nomJour(date), horaires: this.joursOuverture(horaires) });
-    }
-    if (this.soinsChoisis().length) {
-      const plusLongue = Math.max(...jour.plages.map((p) => this.minutes(p.heureFin) - this.minutes(p.heureDebut)));
-      const duree = this.dureeTotale();
-      if (duree > plusLongue) {
-        return this.i18n.t('slots.raison.tropLong', { duree: this.dureePipe.transform(duree) });
-      }
-    }
-    return this.i18n.t('slots.raison.complet');
-  });
+  servicesFiltres = computed(() => this.servicesCorrespondants().slice(0, this.MAX_RESULTATS));
 
   // Nom dans la langue courante (repli sur le francais si aucune traduction anglaise saisie), comme le nom
   // de l'institut : les noms de soins sont une donnee saisie par l'institut, pas un texte d'interface.
@@ -130,17 +107,18 @@ export class SlotPickerComponent implements OnInit {
     return (this.i18n.langue() === 'en' ? s.nomServiceEn : null) || s.nomService;
   }
 
-  libelleCategorie(s: ServiceResponse): string {
+  libelleSoin(s: ServiceResponse): string {
+    return `${this.nomService(s)} · ${new DureePipe().transform(s.dureeMinutes)} · ${this.formatTarif(s.tarif)}`;
+  }
+
+  categorieLibelle(s: ServiceResponse): string {
     return (this.i18n.langue() === 'en' ? s.categorieLibelleEn : null) || s.categorieLibelle;
   }
 
-  choisirCategorie(code: string): void {
-    this.categorieChoisie.set(code);
+  onCategorie(event: Event): void {
+    this.categorieChoisie.set((event.target as HTMLSelectElement).value);
+    this.menuSoinOuvert.set(true);
     this.indexActif.set(-1);
-  }
-
-  libelleSoin(s: ServiceResponse): string {
-    return `${this.nomService(s)} · ${this.dureePipe.transform(s.dureeMinutes)} · ${this.formatTarif(s.tarif)}`;
   }
 
   estChoisi(s: ServiceResponse): boolean {
@@ -159,20 +137,10 @@ export class SlotPickerComponent implements OnInit {
     effect(() => {
       const soins = this.soinsChoisis();
       const date = this.date();
-      // Nouvelle sélection de soins : si le jour affiché est vide, on saute tout seul au premier jour disponible.
-      const selection = soins.map((s) => s.code).join(',');
-      if (selection !== this.derniereSelection) {
-        this.derniereSelection = selection;
-        this.sautAuto = true;
-      }
       if (soins.length && date) {
         untracked(() => this.charger(soins, date));
       } else {
         untracked(() => {
-          // Plus de soin (ou pas de date) : on annule aussi une recherche de « prochain créneau » en cours.
-          this.jeton++;
-          this.recherche.set(false);
-          this.aucunProche.set(false);
           this.creneaux.set([]);
           this.choisi.set(null);
           this.choix.emit(null);
@@ -183,20 +151,9 @@ export class SlotPickerComponent implements OnInit {
 
   ngOnInit(): void {
     this.informations.ensureLoaded();
-    this.chargerServices(1, []);
-  }
-
-  // Charge tout le catalogue page par page (200 a la fois) : un catalogue de plusieurs centaines de soins ne doit pas
-  // etre tronque, meme si la liste affichee reste limitee (voir servicesFiltres).
-  private chargerServices(page: number, cumul: ServiceResponse[]): void {
-    this.catalogue.listServices({ page, size: 200 }).subscribe({
-      next: (res) => {
-        const tout = [...cumul, ...res.content];
-        if (res.content.length > 0 && tout.length < res.meta.totalElements && page < 25) {
-          this.chargerServices(page + 1, tout);
-          return;
-        }
-        const actifs = tout.filter((s) => s.actif);
+    this.catalogue.listServices({ size: 1000 }).subscribe({
+      next: (page) => {
+        const actifs = page.content.filter((s) => s.actif);
         this.services.set(actifs);
         const demande = this.initialService();
         const service = demande ? actifs.find((s) => s.code === demande) : null;
@@ -240,6 +197,19 @@ export class SlotPickerComponent implements OnInit {
     this.soinsChoisis.update((liste) => liste.filter((x) => x.code !== s.code));
   }
 
+  // Remet le picker a zero (soins, date, creneau) sans recharger le catalogue : sert a enchainer un deuxieme
+  // rendez-vous (jour different) dans la meme demande, depuis ReserverComponent.
+  reinitialiser(): void {
+    this.soinsChoisis.set([]);
+    this.rechercheSoin.set('');
+    this.categorieChoisie.set('');
+    this.date.set(this.minDate());
+    this.creneaux.set([]);
+    this.choisi.set(null);
+    this.dejaCharge.set(false);
+    this.choix.emit(null);
+  }
+
   onKeydownRecherche(event: KeyboardEvent): void {
     const liste = this.servicesFiltres();
     if (event.key === 'ArrowDown') {
@@ -266,7 +236,12 @@ export class SlotPickerComponent implements OnInit {
     const [principal, ...reste] = this.soinsChoisis();
     if (!principal) return;
     this.choisi.set(creneau.debut);
-    this.choix.emit({ serviceCode: principal.code, serviceCodesSupplementaires: reste.map((s) => s.code), debut: creneau.debut });
+    this.choix.emit({
+      serviceCode: principal.code,
+      serviceCodesSupplementaires: reste.map((s) => s.code),
+      debut: creneau.debut,
+      libelleServices: this.soinsChoisis().map((s) => this.nomService(s)).join(' + ')
+    });
   }
 
   heure(iso: string): string {
@@ -274,92 +249,18 @@ export class SlotPickerComponent implements OnInit {
   }
 
   formatTarif(tarif: number): string {
-    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD', currencyDisplay: 'code' }).format(tarif);
-  }
-
-  // Bouton « Prochain créneau disponible » : cherche à partir du lendemain du jour affiché, pour l'ensemble
-  // des soins choisis (ils s'enchaînent sur un même créneau).
-  async prochain(): Promise<void> {
-    const codes = this.soinsChoisis().map((s) => s.code);
-    const depart = this.date();
-    if (!codes.length || !depart) return;
-    const jeton = ++this.jeton;
-    this.recherche.set(true);
-    this.aucunProche.set(false);
-    for (let i = 1; i <= this.horizonJours; i++) {
-      const jour = ajouterJours(depart, i);
-      if (!this.ouvertCeJour(jour)) continue;
-      try {
-        const res = await firstValueFrom(this.rendezVous.creneaux(codes, jour));
-        if (jeton !== this.jeton) return;
-        if (res.creneaux.length) {
-          this.recherche.set(false);
-          this.date.set(jour);
-          return;
-        }
-      } catch {
-        if (jeton !== this.jeton) return;
-      }
-    }
-    this.recherche.set(false);
-    this.aucunProche.set(true);
-  }
-
-  // « Lundi » = 1 ... « dimanche » = 7, comme Horaire.jourSemaine ; date au format « AAAA-MM-JJ ».
-  private jourSemaine(date: string): number {
-    const [y, m, d] = date.split('-').map(Number);
-    const jour = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
-    return jour === 0 ? 7 : jour;
-  }
-
-  // « lundi 10:00–11:00, samedi 09:00–12:00 » : les jours et plages ou l'institut recoit, pour que la personne
-  // choisisse directement un jour valable au lieu de proceder par essais successifs.
-  private joursOuverture(horaires: Horaire[]): string {
-    const lundi = Date.UTC(2024, 0, 1); // un lundi : sert seulement a obtenir le nom du jour dans la langue courante
-    return horaires
-      .filter((h) => h.ouvert && h.plages?.length)
-      .sort((a, b) => a.jourSemaine - b.jourSemaine)
-      .map((h) => {
-        const nom = new Intl.DateTimeFormat(localeCourante(), { timeZone: 'UTC', weekday: 'long' }).format(
-          new Date(lundi + (h.jourSemaine - 1) * 86400000)
-        );
-        return `${nom} ${h.plages.map((p) => `${p.heureDebut.slice(0, 5)}–${p.heureFin.slice(0, 5)}`).join(', ')}`;
-      })
-      .join(' ; ');
-  }
-
-  private nomJour(date: string): string {
-    return new Intl.DateTimeFormat(localeCourante(), { timeZone: 'UTC', weekday: 'long' }).format(new Date(date + 'T12:00:00Z'));
-  }
-
-  private minutes(heure: string): number {
-    const [h, m] = heure.split(':').map(Number);
-    return h * 60 + (m || 0);
-  }
-
-  // Sans horaires connus, on ne saute aucun jour : le serveur répondra.
-  private ouvertCeJour(date: string): boolean {
-    const horaires = this.informations.info()?.horaires;
-    if (!horaires?.length) return true;
-    const jour = horaires.find((h) => h.jourSemaine === this.jourSemaine(date));
-    return !!jour?.ouvert && !!jour.plages?.length;
+    return new Intl.NumberFormat(localeCourante(), { style: 'currency', currency: 'CAD' }).format(tarif);
   }
 
   private normaliser(texte: string): string {
     return texte
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[̀-ͯ]/g, '')
       .toLowerCase()
       .trim();
   }
 
   private charger(soins: ServiceResponse[], date: string): void {
-    // Toute nouvelle recherche annule une recherche de « prochain créneau » encore en cours.
-    this.jeton++;
-    this.recherche.set(false);
-    this.aucunProche.set(false);
-    const saut = this.sautAuto;
-    this.sautAuto = false;
     this.choisi.set(null);
     this.choix.emit(null);
     this.error.set('');
@@ -369,14 +270,13 @@ export class SlotPickerComponent implements OnInit {
         this.creneaux.set(res.creneaux);
         this.dejaCharge.set(true);
         this.loading.set(false);
-        if (saut && res.creneaux.length === 0 && this.peutChercher()) {
-          void this.prochain();
-        }
       },
       error: (err) => {
         this.creneaux.set([]);
         this.loading.set(false);
-        this.error.set(err?.status === 401 ? this.i18n.t('ts.slots.connexion') : (err?.error?.message ?? this.i18n.t('ts.slots.creneaux')));
+        this.error.set(
+          err?.status === 401 ? this.i18n.t('ts.slots.connexion') : (err?.error?.message ?? this.i18n.t('ts.slots.creneaux'))
+        );
       }
     });
   }

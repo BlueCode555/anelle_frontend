@@ -1,24 +1,31 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { ApiResponse } from './api.model';
-
 import { ApiService } from './api.service';
 import { PaginationCriteria } from './api.model';
 
 // Mirrors bj.anelle.anelle_backend.dto.response.AuditEntryResponse.
 export interface AuditEntry {
   revision: number;
-  action: 'CREATION' | 'MODIFICATION' | 'SUPPRESSION';
+  action: 'CREATION' | 'MODIFICATION' | 'SUPPRESSION' | 'CONNEXION' | 'DECONNEXION';
   typeElement: string;
   libelle: string;
   auteurId: string | null;
   auteurNom: string | null;
   date: string;
+  table: string;
   entiteId: number;
-  tableAudit: string;
+  detailDisponible: boolean;
+}
+
+// Mirrors bj.anelle.anelle_backend.dto.response.AuditDiffChamp.
+export interface AuditDiffChamp {
+  champ: string;
+  avant: string | null;
+  apres: string | null;
 }
 
 // Mirrors ConnexionResponse / ConnexionsPageResponse : evenements de connexion releves par Keycloak.
@@ -37,34 +44,36 @@ export interface ConnexionsPage {
   evenements: Connexion[];
 }
 
-// Un champ modifie dans une revision : valeur avant / apres (null = vide).
-export interface Changement {
-  champ: string;
-  avant: string | null;
-  apres: string | null;
-}
-
-// Journal d'audit (lecture seule, réservé à l'esthéticienne) : qui a fait quoi, quand. Purgé automatiquement
-// après 3 ans côté serveur (voir AuditPurgeJob).
+// Journal d'audit (lecture réservée à l'esthéticienne ou au profil ayant le droit sur cet écran) : qui a fait
+// quoi, quand. Purgé automatiquement après 3 ans côté serveur (voir AuditPurgeJob).
 @Injectable({ providedIn: 'root' })
 export class AuditService {
   private api = inject(ApiService);
   private http = inject(HttpClient);
+  private base = environment.apiUrl;
 
-  // Filtres optionnels du journal : recherche libre (libelle ou type), type d'element, periode (AAAA-MM-JJ).
+  // Filtres optionnels : recherche libre (libelle ou type), type d'element, periode (AAAA-MM-JJ).
   list(criteria: PaginationCriteria & { q?: string; type?: string; du?: string; au?: string } = { size: 20 }) {
     return this.api.list<AuditEntry>('audit', criteria);
   }
 
-  // Detail des changements d'une ligne du journal (champ, avant, apres).
-  detail(entry: AuditEntry) {
-    return this.api.findOne<Changement[]>(`audit/${entry.tableAudit}/${entry.entiteId}`, entry.revision);
+  detail(entry: AuditEntry): Observable<AuditDiffChamp[]> {
+    return this.http
+      .get<ApiResponse<AuditDiffChamp[]>>(`${this.base}/audit/${entry.table}/${entry.entiteId}/${entry.revision}/detail`)
+      .pipe(map((r) => r.data));
+  }
+
+  // Appelé juste après une connexion réussie puis juste avant une déconnexion (voir AuthService) : ces deux
+  // événements ne touchent aucune entité métier, donc Envers ne les voit pas — on les trace explicitement.
+  // Volontairement silencieux (l'échec de cette trace ne doit jamais bloquer une connexion/déconnexion).
+  enregistrerEvenement(type: 'CONNEXION' | 'DECONNEXION'): Observable<void> {
+    return this.http.post<ApiResponse<void>>(`${this.base}/audit/evenements`, { type }).pipe(map(() => undefined));
   }
 
   // Journal des connexions (Keycloak) : filtre = connexion | echec | deconnexion | inscription | motdepasse.
   connexions(filtre: string, decalage: number, taille: number) {
     let params = new HttpParams().set('decalage', decalage).set('taille', taille);
     if (filtre) params = params.set('filtre', filtre);
-    return this.http.get<ApiResponse<ConnexionsPage>>(`${environment.apiUrl}/audit/connexions`, { params }).pipe(map((res) => res.data));
+    return this.http.get<ApiResponse<ConnexionsPage>>(`${this.base}/audit/connexions`, { params }).pipe(map((res) => res.data));
   }
 }

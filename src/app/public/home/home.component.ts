@@ -93,6 +93,9 @@ export class HomeComponent implements OnInit, AfterViewInit {
   loading = signal(true);
   error = signal(false);
   activeCategory = signal<string | null>(null);
+  // Recherche par nom (depuis le haut du carrousel de catégories) : filtre la grille de soins plus bas,
+  // sans toucher au filtre par catégorie — les deux se combinent.
+  rechercheService = signal('');
 
   // Soins : 4 par page sur mobile (liste plus courte et plus rapide à parcourir au doigt), 9 sur bureau.
   private ecranEtroit = window.matchMedia('(max-width: 767.98px)');
@@ -120,8 +123,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   filteredServices = computed(() => {
     const code = this.activeCategory();
-    const actifs = this.services().filter((s) => s.actif);
-    return code ? actifs.filter((s) => s.categorieCode === code) : actifs;
+    const q = this.normaliser(this.rechercheService());
+    let actifs = this.services().filter((s) => s.actif);
+    if (code) actifs = actifs.filter((s) => s.categorieCode === code);
+    if (q) actifs = actifs.filter((s) => this.normaliser(this.nomService(s)).includes(q));
+    return actifs;
   });
 
   // Adresse sur deux lignes : rue, puis ville / province / code postal / pays (seulement ce qui est renseigne).
@@ -205,7 +211,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       error: () => this.error.set(true)
     });
 
-    this.catalogue.listServices().subscribe({
+    this.catalogue.listServices({ size: 1000 }).subscribe({
       next: (page) => {
         this.services.set(page.content);
         this.loading.set(false);
@@ -222,6 +228,27 @@ export class HomeComponent implements OnInit, AfterViewInit {
   selectCategory(code: string | null): void {
     this.activeCategory.set(code);
     this.pageServices.set(1);
+  }
+
+  onRechercheService(event: Event): void {
+    this.rechercheService.set((event.target as HTMLInputElement).value);
+    this.pageServices.set(1);
+  }
+
+  // Un seul defilement, au premier caractere tape (pas a chaque frappe, ce qui saccaderait la saisie) : montre
+  // que la recherche agit plus bas, sans perturber la personne pendant qu'elle continue de taper.
+  onFocusRechercheService(): void {
+    if (!this.rechercheService()) {
+      setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300);
+    }
+  }
+
+  private normaliser(texte: string): string {
+    return texte
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .toLowerCase()
+      .trim();
   }
 
   // Choix depuis le carrousel de catégories : filtre puis amène la personne directement sur les services.

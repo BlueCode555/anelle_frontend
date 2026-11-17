@@ -93,6 +93,14 @@ export class MonEspaceComponent implements OnInit {
     return this.produits.imageSrc(url);
   }
 
+  // Nom des produits commandés plutôt que le code (peu parlant pour la cliente) : le code reste affiché en
+  // plus petit, pratique si elle doit le communiquer pour une demande de suivi.
+  libelleCommande(c: Commande): string {
+    const noms = c.lignes.map((l) => l.nom);
+    if (noms.length <= 2) return noms.join(' + ');
+    return `${noms[0]} + ${noms.length - 1} autre${noms.length - 1 > 1 ? 's' : ''}`;
+  }
+
   // « aujourd'hui », « demain », « dans 3 jours » : plus parlant qu'une date pour ce qui approche.
   dans(iso: string): string {
     const jours = Math.round((new Date(iso).getTime() - Date.now()) / 86400000);
@@ -267,13 +275,6 @@ export class MonEspaceComponent implements OnInit {
   // Collaborateur affecté, sinon l'institut lui-même s'en occupe.
   avecQui(rdv: RendezVous): string {
     return rdv.collaborateurNom ?? this.informations.info()?.nom ?? '';
-  }
-
-  // Nom(s) du ou des produits commandes (ex. « Vaseline — Lait du corps » ou « A, B +1 ») : c'est ce que la cliente
-  // reconnait, le code technique (CMD-...) reste affiche en information secondaire.
-  resumeProduits(c: { lignes: { nom: string }[] }): string {
-    const noms = c.lignes.map((l) => l.nom);
-    return noms.length > 2 ? `${noms.slice(0, 2).join(', ')} +${noms.length - 2}` : noms.join(', ');
   }
 
   classeRdv(statut: string): string {

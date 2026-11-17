@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { AuditEntry, AuditService, Changement } from 'src/app/theme/shared/service/audit.service';
+import { AuditDiffChamp, AuditEntry, AuditService } from 'src/app/theme/shared/service/audit.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
 import { localeCourante } from 'src/app/theme/shared/_helpers/zoned-time';
@@ -73,8 +73,32 @@ export class AuditListComponent {
   readonly actionClasses: Record<AuditEntry['action'], string> = {
     CREATION: 'text-bg-success',
     MODIFICATION: 'text-bg-warning',
-    SUPPRESSION: 'text-bg-danger'
+    SUPPRESSION: 'text-bg-danger',
+    CONNEXION: 'text-bg-info',
+    DECONNEXION: 'text-bg-secondary'
   };
+
+  // Detail (avant/apres) d'une ligne, charge a la demande au clic ; une seule ligne ouverte a la fois.
+  ligneOuverte = signal<AuditEntry | null>(null);
+  detail = signal<AuditDiffChamp[]>([]);
+  detailChargement = signal(false);
+
+  basculerDetail(entree: AuditEntry): void {
+    if (this.ligneOuverte() === entree) {
+      this.ligneOuverte.set(null);
+      return;
+    }
+    this.ligneOuverte.set(entree);
+    this.detail.set([]);
+    this.detailChargement.set(true);
+    this.audit.detail(entree).subscribe({
+      next: (champs) => {
+        this.detail.set(champs);
+        this.detailChargement.set(false);
+      },
+      error: () => this.detailChargement.set(false)
+    });
+  }
 
   private charger(page: number, q: string, type: string, du: string, au: string): void {
     this.loading.set(true);
@@ -90,37 +114,6 @@ export class AuditListComponent {
         this.loading.set(false);
       }
     });
-  }
-
-  // Detail (champ / avant / apres) d'une ligne, charge a la demande puis garde pour la page affichee.
-  ouverte = signal<string | null>(null);
-  details = signal<Record<string, Changement[] | 'chargement' | 'erreur'>>({});
-
-  cle(e: AuditEntry): string {
-    return `${e.tableAudit}:${e.entiteId}:${e.revision}`;
-  }
-
-  basculerDetail(e: AuditEntry): void {
-    const cle = this.cle(e);
-    if (this.ouverte() === cle) {
-      this.ouverte.set(null);
-      return;
-    }
-    this.ouverte.set(cle);
-    if (this.details()[cle] && this.details()[cle] !== 'erreur') return;
-    this.details.update((d) => ({ ...d, [cle]: 'chargement' }));
-    this.audit.detail(e).subscribe({
-      next: (liste) => this.details.update((d) => ({ ...d, [cle]: liste })),
-      error: () => this.details.update((d) => ({ ...d, [cle]: 'erreur' }))
-    });
-  }
-
-  contenuDetail(e: AuditEntry): Changement[] | 'chargement' | 'erreur' | undefined {
-    return this.details()[this.cle(e)];
-  }
-
-  valeur(v: string | null): string {
-    return v === null || v === '' ? '—' : v;
   }
 
   formatDate(iso: string): string {

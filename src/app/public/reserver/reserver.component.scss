@@ -31,6 +31,19 @@
   animation: entree 0.5s 0.1s ease both;
 }
 
+.panel-groupes {
+  padding: 1.25rem 1.5rem;
+}
+
+.groupe-ligne {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--ar-nude);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
 @keyframes entree {
   from {
     opacity: 0;

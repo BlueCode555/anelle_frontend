@@ -111,6 +111,7 @@ export const FR_BOUTIQUE: Record<string, string> = {
   'ts.prd.nom': 'Le nom du produit est obligatoire',
   'ts.prd.prix': 'Le prix est obligatoire et doit être supérieur à 0',
   'ts.prd.stock': 'Le stock est obligatoire (0 ou plus)',
+  'ts.prd.image': 'Une image du produit est obligatoire',
   'ts.prd.charger': 'Impossible de charger ce produit.',
   'ts.prd.enregistrer': 'Enregistrer ce produit ?',
   'ts.prd.enregistre': 'Produit enregistré',

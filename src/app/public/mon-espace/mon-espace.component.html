@@ -168,7 +168,7 @@
                           }
                         </div>
                         <div class="suivi-titre">
-                          <strong>{{ resumeProduits(c) }}</strong>
+                          <strong>{{ libelleCommande(c) }}</strong>
                           <span class="text-muted small">{{ formatTarif(c.total) }} · {{ formatDate(c.creeLe) }} · {{ c.code }}</span>
                         </div>
                       </div>
@@ -319,9 +319,6 @@
                       </div>
                       <div class="rdv-what">
                         <span class="text-muted small">{{ 'espace.payeLe' | t: { date: jour(rdv.payeLe!) } }}</span>
-                        @if (rdv.referencePaiement) {
-                          <span class="text-muted small d-block">{{ 'espace.reference' | t: { ref: rdv.referencePaiement! } }}</span>
-                        }
                       </div>
                       <div class="rdv-status">
                         <strong>{{ formatTarif(rdv.prix) }}</strong>
@@ -384,8 +381,8 @@
 <ng-template #ligneCommande let-c>
   <li class="rdv-item">
     <div class="rdv-when">
-      <strong>{{ formatDate(c.creeLe) }}</strong>
-      <span class="small">{{ c.code }}</span>
+      <strong>{{ libelleCommande(c) }}</strong>
+      <span>{{ formatDate(c.creeLe) }} · {{ c.code }}</span>
     </div>
     <div class="rdv-what">
       @for (l of c.lignes; track l.produitCode) {

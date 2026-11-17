@@ -327,6 +327,52 @@
   border: 2px solid #fffdf9;
 }
 
+.ad-notifs {
+  position: relative;
+}
+
+.ad-notifs-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -0.5rem;
+  width: 280px;
+  padding: 0.4rem;
+  border: 1px solid var(--ar-nude);
+  border-radius: 1rem;
+  background: #fffdf9;
+  box-shadow: var(--ar-ombre-forte);
+  animation: ad-pop 0.15s ease;
+  z-index: 20;
+}
+
+.ad-notifs-vide {
+  margin: 0;
+  padding: 0.75rem;
+  color: var(--ar-texte-doux);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.ad-notifs-ligne {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  color: var(--ar-chocolat-fonce);
+  text-decoration: none;
+  font-size: 0.88rem;
+
+  i {
+    color: var(--ar-dore);
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background: var(--ar-creme-fonce);
+  }
+}
+
 .ad-divider {
   width: 1px;
   height: 28px;
@@ -763,100 +809,4 @@
   height: 50px;
   object-fit: contain;
   filter: brightness(1.18) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
-}
-
-
-// « Voir le site » dans l'en-tete : icone seule sur mobile, icone + texte ensuite.
-.ad-site-btn {
-  width: auto;
-  padding: 0 0.75rem;
-  gap: 0.4rem;
-  text-decoration: none;
-}
-.ad-site-label {
-  display: none;
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-@media (min-width: 768px) {
-  .ad-site-label {
-    display: inline;
-  }
-}
-
-
-// ── Panneau de la cloche ────────────────────────────────
-.ad-notifs {
-  position: relative;
-}
-.ad-notifs-panel {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
-  z-index: 1060;
-  width: min(360px, calc(100vw - 1.5rem));
-  max-height: 70vh;
-  overflow-y: auto;
-  border: 1px solid var(--ar-nude);
-  border-radius: 1rem;
-  background: #fffdf9;
-  box-shadow: var(--ar-ombre-forte);
-}
-.ad-notifs-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--ar-nude);
-}
-.ad-notifs-vide {
-  margin: 0;
-  padding: 1.25rem 1rem;
-  color: var(--ar-texte-doux);
-  text-align: center;
-}
-.ad-notifs-liste {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ad-notif {
-  display: flex;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--ar-nude);
-  color: var(--ar-chocolat);
-  text-decoration: none;
-
-  &:hover {
-    background: var(--ar-creme-fonce);
-  }
-  &.is-lue {
-    opacity: 0.6;
-  }
-  > i {
-    font-size: 1.3rem;
-    color: var(--ar-dore);
-  }
-}
-.ad-notif-texte {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-
-  span,
-  small {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  small {
-    color: var(--ar-texte-doux);
-  }
-}
-.ad-notifs-pied {
-  display: block;
-  padding: 0.7rem 1rem;
-  text-align: center;
-  font-size: 0.9rem;
 }

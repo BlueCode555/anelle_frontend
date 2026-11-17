@@ -83,9 +83,8 @@
       </div>
 
       <div class="ad-top-right">
-        <a class="ad-icon-btn ad-site-btn" routerLink="/accueil" [attr.aria-label]="'admin.voirSite' | t" [title]="'admin.voirSite' | t">
+        <a class="ad-icon-btn ad-voir-site" routerLink="/accueil" [attr.aria-label]="'admin.voirSite' | t" [title]="'admin.voirSite' | t">
           <i class="ti ti-external-link"></i>
-          <span class="ad-site-label">{{ 'admin.voirSite' | t }}</span>
         </a>
         <app-lang-switcher />
         <button type="button" class="ad-icon-btn" (click)="theme.basculer()"
@@ -95,40 +94,31 @@
         </button>
 
         <div class="ad-notifs">
-          <button type="button" class="ad-icon-btn ad-bell" (click)="basculerNotifs($event)" [attr.aria-label]="'admin.demandesAria' | t: { n: nonLues() }"
-            [attr.aria-expanded]="notifsOuvertes()" [title]="'admin.demandesTitre' | t">
+          <button type="button" class="ad-icon-btn ad-bell" (click)="basculerNotifs($event)" aria-haspopup="true" [attr.aria-expanded]="notifsOuvertes()"
+            [attr.aria-label]="'admin.demandesAria' | t: { n: totalNotifications() }" [title]="'admin.demandesTitre' | t">
             <i class="ti ti-bell"></i>
-            @if (nonLues() > 0) {
-              <span class="ad-bell-badge">{{ nonLues() > 9 ? '9+' : nonLues() }}</span>
+            @if (totalNotifications() > 0) {
+              <span class="ad-bell-badge">{{ totalNotifications() > 9 ? '9+' : totalNotifications() }}</span>
             }
           </button>
           @if (notifsOuvertes()) {
-            <div class="ad-notifs-panel" role="dialog" (click)="$event.stopPropagation()" (keydown.escape)="fermerProfil()" tabindex="-1">
-              <div class="ad-notifs-head">
-                <strong>{{ 'admin.notifs.titre' | t }}</strong>
-                @if (nonLues() > 0) {
-                  <button type="button" class="btn btn-link btn-sm p-0" (click)="toutMarquerLu()">{{ 'admin.notifs.toutLu' | t }}</button>
-                }
-              </div>
-              @if (notifications().length === 0) {
+            <div class="ad-notifs-panel" (click)="$event.stopPropagation()">
+              @if (totalNotifications() === 0) {
                 <p class="ad-notifs-vide">{{ 'admin.notifs.aucune' | t }}</p>
               } @else {
-                <ul class="ad-notifs-liste">
-                  @for (n of notifications(); track n.id) {
-                    <li>
-                      <a [routerLink]="n.url" (click)="fermerProfil()" class="ad-notif" [class.is-lue]="estLue(n)">
-                        <i class="ti" [class.ti-calendar-event]="n.type === 'rdv'" [class.ti-shopping-bag]="n.type === 'commande'"></i>
-                        <span class="ad-notif-texte">
-                          <strong>{{ (n.type === 'rdv' ? 'admin.notifs.rdv' : 'admin.notifs.commande') | t }}</strong>
-                          <span>{{ n.titre }}</span>
-                          <small>{{ n.sous }}</small>
-                        </span>
-                      </a>
-                    </li>
-                  }
-                </ul>
+                @if (demandes() > 0) {
+                  <a routerLink="/agenda" class="ad-notifs-ligne" (click)="notifsOuvertes.set(false)">
+                    <i class="ti ti-calendar-event"></i>
+                    <span>{{ 'admin.notifs.rendezVous' | t: { n: demandes() } }}</span>
+                  </a>
+                }
+                @if (commandesAPreparer() > 0) {
+                  <a routerLink="/commandes" class="ad-notifs-ligne" (click)="notifsOuvertes.set(false)">
+                    <i class="ti ti-shopping-bag"></i>
+                    <span>{{ 'admin.notifs.commandes' | t: { n: commandesAPreparer() } }}</span>
+                  </a>
+                }
               }
-              <a routerLink="/agenda" class="ad-notifs-pied" (click)="fermerProfil()">{{ 'admin.notifs.voirAgenda' | t }}</a>
             </div>
           }
         </div>

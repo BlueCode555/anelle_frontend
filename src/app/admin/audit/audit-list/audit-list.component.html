@@ -17,6 +17,7 @@
     </div>
   } @else {
   <div class="card-body">
+    <p class="text-muted small audit-aide">{{ 'audit.aide' | t }}</p>
     <div class="row g-2 mb-3 align-items-end">
       <div class="col-12 col-lg-4">
         <input type="search" class="form-control" [value]="recherche()" [placeholder]="'audit.recherche' | t"
@@ -44,7 +45,6 @@
         </div>
       }
     </div>
-
     @if (loading()) {
       <div class="text-center text-muted py-4">{{ 'a.chargement' | t }}</div>
     }
@@ -66,15 +66,15 @@
           <thead>
             <tr>
               <th>{{ 'audit.date' | t }}</th>
-              <th [title]="'audit.auteurAide' | t">{{ 'audit.auteur' | t }}</th>
+              <th>{{ 'audit.auteur' | t }}</th>
               <th>{{ 'audit.action' | t }}</th>
-              <th [title]="'audit.typeAide' | t">{{ 'audit.type' | t }}</th>
-              <th [title]="'audit.elementAide' | t">{{ 'audit.element' | t }}</th>
-              <th></th>
+              <th>{{ 'audit.type' | t }}</th>
+              <th>{{ 'audit.element' | t }}</th>
+              <th class="text-end">{{ 'audit.detail' | t }}</th>
             </tr>
           </thead>
           <tbody>
-            @for (e of entrees(); track cle(e)) {
+            @for (e of entrees(); track e.revision + e.typeElement) {
               <tr>
                 <td [attr.data-label]="'audit.date' | t" class="text-muted">{{ formatDate(e.date) }}</td>
                 <td [attr.data-label]="'audit.auteur' | t">{{ e.auteurNom || ('audit.inconnu' | t) }}</td>
@@ -84,47 +84,40 @@
                 <td [attr.data-label]="'audit.type' | t" class="text-muted">{{ e.typeElement }}</td>
                 <td [attr.data-label]="'audit.element' | t" class="fw-semibold">{{ e.libelle }}</td>
                 <td class="text-end">
-                  <button type="button" class="btn btn-sm btn-outline-secondary" [attr.aria-expanded]="ouverte() === cle(e)" (click)="basculerDetail(e)">
-                    {{ (ouverte() === cle(e) ? 'audit.masquerDetail' : 'audit.voirDetail') | t }}
-                  </button>
+                  @if (e.detailDisponible) {
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="basculerDetail(e)">
+                      <i class="ti" [ngClass]="ligneOuverte() === e ? 'ti-chevron-up' : 'ti-chevron-down'"></i>
+                      {{ 'audit.detail' | t }}
+                    </button>
+                  }
                 </td>
               </tr>
-              @if (ouverte() === cle(e)) {
-                <tr class="audit-detail">
+              @if (ligneOuverte() === e) {
+                <tr class="audit-detail-ligne">
                   <td colspan="6">
-                    @switch (contenuDetail(e)) {
-                      @case ('chargement') {
-                        <span class="text-muted small">{{ 'a.chargement' | t }}</span>
-                      }
-                      @case ('erreur') {
-                        <span class="text-danger small">{{ 'audit.detailErreur' | t }}</span>
-                      }
-                      @default {
-                        @if (contenuDetail(e); as liste) {
-                          @if (liste.length === 0) {
-                            <span class="text-muted small">{{ 'audit.detailVide' | t }}</span>
-                          } @else {
-                            <table class="table table-sm mb-0">
-                              <thead>
-                                <tr>
-                                  <th>{{ 'audit.champ' | t }}</th>
-                                  <th>{{ 'audit.avant' | t }}</th>
-                                  <th>{{ 'audit.apres' | t }}</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                @for (c of $any(liste); track c.champ) {
-                                  <tr>
-                                    <td class="text-muted">{{ c.champ }}</td>
-                                    <td>{{ valeur(c.avant) }}</td>
-                                    <td class="fw-semibold">{{ valeur(c.apres) }}</td>
-                                  </tr>
-                                }
-                              </tbody>
-                            </table>
+                    @if (detailChargement()) {
+                      <div class="text-muted small py-2">{{ 'a.chargement' | t }}</div>
+                    } @else if (detail().length === 0) {
+                      <div class="text-muted small py-2">{{ 'audit.detailVide' | t }}</div>
+                    } @else {
+                      <table class="table table-sm mb-0 audit-diff">
+                        <thead>
+                          <tr>
+                            <th>{{ 'audit.champ' | t }}</th>
+                            <th>{{ 'audit.avant' | t }}</th>
+                            <th>{{ 'audit.apres' | t }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (d of detail(); track d.champ) {
+                            <tr>
+                              <td class="fw-semibold">{{ d.champ }}</td>
+                              <td class="text-muted">{{ d.avant ?? '—' }}</td>
+                              <td>{{ d.apres ?? '—' }}</td>
+                            </tr>
                           }
-                        }
-                      }
+                        </tbody>
+                      </table>
                     }
                   </td>
                 </tr>

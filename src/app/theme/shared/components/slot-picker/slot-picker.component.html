@@ -4,10 +4,10 @@
     <h2 class="etape-titre">{{ 'slots.soin' | t }}</h2>
     <p class="text-muted small mb-2">{{ 'slots.plusieursSoins' | t }}</p>
     @if (categories().length > 1) {
-      <select class="form-select mb-2" [attr.aria-label]="'slots.categorie' | t" (change)="choisirCategorie($any($event.target).value)">
-        <option value="" [selected]="!categorieChoisie()">{{ 'slots.toutesCategories' | t }}</option>
+      <select class="form-select mb-2" [value]="categorieChoisie()" (change)="onCategorie($event)" [attr.aria-label]="'slots.categorie' | t">
+        <option value="">{{ 'slots.toutesCategories' | t }}</option>
         @for (c of categories(); track c.code) {
-          <option [value]="c.code" [selected]="categorieChoisie() === c.code">{{ c.libelle }}</option>
+          <option [value]="c.code">{{ c.libelle }}</option>
         }
       </select>
     }
@@ -43,8 +43,8 @@
           } @empty {
             <li class="soin-liste-vide">{{ 'slots.aucunResultat' | t }}</li>
           }
-          @if (autresResultats() > 0) {
-            <li class="soin-liste-vide" aria-hidden="true">{{ 'slots.autresResultats' | t: { n: autresResultats() } }}</li>
+          @if (nbResultatsTotal() > servicesFiltres().length) {
+            <li class="soin-liste-plus">{{ 'slots.affinerRecherche' | t: { total: nbResultatsTotal() } }}</li>
           }
         </ul>
       }
@@ -65,10 +65,7 @@
         <span class="soin-apercu-icone"><i class="ti ti-sparkles"></i></span>
         <div>
           <strong>{{ 'slots.total' | t }}</strong>
-          <span class="text-muted d-block small">
-            <i class="ti ti-clock me-1"></i>
-            {{ dureeTotale() | duree }} · {{ formatTarif(prixTotal()) }}
-          </span>
+          <span class="text-muted d-block small"><i class="ti ti-clock me-1"></i>{{ dureeTotale() | duree }} · {{ formatTarif(prixTotal()) }}</span>
         </div>
       </div>
     }
@@ -79,58 +76,31 @@
   <span class="etape-numero">2</span>
   <div class="etape-contenu">
     <h2 class="etape-titre">{{ 'slots.dateHeure' | t }}</h2>
-    <input
-      id="sp-date"
-      type="date"
-      class="form-control etape-date"
-      [value]="date()"
-      [min]="minDate()"
-      (change)="onDate($event)"
-      [disabled]="!soinsChoisis().length"
-    />
+    <input id="sp-date" type="date" class="form-control etape-date" [value]="date()" [min]="minDate()" (change)="onDate($event)" [disabled]="!soinsChoisis().length" />
 
-    @if (error()) {
-      <div class="alert alert-warning mt-3">{{ error() }}</div>
-    }
+    <div *ngIf="error()" class="alert alert-warning mt-3">{{ error() }}</div>
 
-    @if (soinsChoisis().length) {
-      @if (loading()) {
-        <div class="text-muted mt-3">
-          <i class="ti ti-loader-2 me-1"></i>
-          {{ 'slots.recherche' | t }}
-        </div>
-      }
-      @if (recherche()) {
-        <div class="text-muted mt-3">
-          <i class="ti ti-loader-2 me-1"></i>
-          {{ 'slots.rechercheProchain' | t }}
-        </div>
-      }
-      @if (!loading() && !recherche() && dejaCharge() && !error() && creneaux().length === 0) {
-        <div class="mt-3">
-          <p class="text-muted mb-2">{{ raison() || ('slots.aucun' | t) }}</p>
-          @if (peutChercher()) {
-            <button type="button" class="btn btn-outline-primary btn-sm" (click)="prochain()">
-              <i class="ti ti-calendar-event me-1"></i>
-              {{ 'slots.prochain' | t }}
-            </button>
-          }
-          @if (aucunProche()) {
-            <p class="text-muted small mt-2 mb-0">{{ 'slots.aucunProche' | t }}</p>
-          }
-        </div>
-      }
-      @if (!loading() && creneaux().length) {
-        <div class="slots">
-          @for (c of creneaux(); track c) {
-            <button type="button" class="slot" [class.slot-active]="choisi() === c.debut" (click)="choisir(c)">
-              {{ heure(c.debut) }}
-            </button>
-          }
-        </div>
-      }
-    } @else {
+    <ng-container *ngIf="soinsChoisis().length; else pickService">
+      <div *ngIf="loading()" class="text-muted mt-3"><i class="ti ti-loader-2 me-1"></i>{{ 'slots.recherche' | t }}</div>
+
+      <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="text-muted mt-3">
+        {{ messageAucunCreneau() }}
+      </div>
+
+      <div class="slots" *ngIf="!loading() && creneaux().length">
+        <button
+          type="button"
+          class="slot"
+          *ngFor="let c of creneaux()"
+          [class.slot-active]="choisi() === c.debut"
+          (click)="choisir(c)"
+        >
+          {{ heure(c.debut) }}
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #pickService>
       <p class="text-muted mt-3 mb-0">{{ 'slots.choisirDabord' | t }}</p>
-    }
+    </ng-template>
   </div>
 </div>

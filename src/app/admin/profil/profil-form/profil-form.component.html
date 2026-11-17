@@ -10,13 +10,13 @@
   <div class="row g-3 mb-3">
     <div class="col-12 col-md-6">
       <label class="form-label" for="pf-libelle">{{ 'a.nom_du_profil' | t }}</label>
-      <input id="pf-libelle" class="form-control" [disabled]="lectureSeule" maxlength="100" [class.is-invalid]="soumis() && !libelle().trim()"
+      <input id="pf-libelle" class="form-control" [disabled]="lectureSeule" maxlength="100" placeholder="Ex. Réceptionniste" [class.is-invalid]="soumis() && !libelle().trim()"
         [value]="libelle()" (input)="texte(libelle, $event)" />
       <div class="invalid-feedback">{{ 'a.le_nom_est_obligatoire' | t }}</div>
     </div>
     <div class="col-12 col-md-6">
       <label class="form-label" for="pf-desc">{{ 'a.description' | t }}</label>
-      <input id="pf-desc" class="form-control" [disabled]="lectureSeule" maxlength="500" [value]="description()" (input)="texte(description, $event)" />
+      <input id="pf-desc" class="form-control" [disabled]="lectureSeule" maxlength="500" placeholder="Ex. Accueil et prise de rendez-vous" [value]="description()" (input)="texte(description, $event)" />
     </div>
     <div class="col-12">
       <div class="form-check form-switch">

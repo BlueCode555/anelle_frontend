@@ -286,6 +286,32 @@
   color: var(--ar-chocolat);
 }
 
+// Deux cartes par ligne sur mobile : on resserre textes et espacements pour que ça reste lisible.
+@media (max-width: 575.98px) {
+  .produit-corps {
+    padding: 0.75rem 0.85rem 0.9rem;
+  }
+
+  .produit-nom {
+    font-size: 1.05rem;
+    margin: 0.25rem 0 0.3rem;
+  }
+
+  .produit-desc {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .produit-prix {
+    font-size: 1.15rem;
+  }
+
+  .produit-pied {
+    flex-wrap: wrap;
+  }
+}
+
 .panier-flottant {
   position: fixed;
   right: 1.25rem;
