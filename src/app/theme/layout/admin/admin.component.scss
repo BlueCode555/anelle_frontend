@@ -810,3 +810,47 @@
   object-fit: contain;
   filter: brightness(1.18) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
 }
+
+// Liste detaillee sous les deux lignes de la cloche (demandes + commandes recentes).
+.ad-notifs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--ar-nude);
+  font-size: 0.85rem;
+}
+.ad-notif {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--ar-nude);
+  color: var(--ar-chocolat);
+  text-decoration: none;
+
+  &:hover {
+    background: var(--ar-creme-fonce);
+  }
+  &.is-lue {
+    opacity: 0.55;
+  }
+  > i {
+    font-size: 1.2rem;
+    color: var(--ar-dore);
+  }
+}
+.ad-notif-texte {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+
+  span,
+  small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  small {
+    color: var(--ar-texte-doux);
+  }
+}

@@ -26,6 +26,17 @@ interface Miette {
 }
 
 const COLLAPSE_KEY = 'arnelle.nav.collapsed';
+const NOTIFS_LUES_KEY = 'arnelle.notifs.lues';
+
+// Une ligne du panneau de la cloche : une demande de rendez-vous en attente ou une commande payee a preparer.
+export interface Notification {
+  id: string;
+  type: 'rdv' | 'commande';
+  titre: string;
+  sous: string;
+  date: string;
+  url: string;
+}
 
 // Coque du back-office : menu latéral repliable, barre du haut (fil d'Ariane, notifications, profil), contenu, pied de page.
 @Component({
@@ -56,7 +67,15 @@ export class AdminComponent implements OnInit, OnDestroy {
   demandes = signal(0);
   commandesAPreparer = signal(0);
   notifsOuvertes = signal(false);
-  totalNotifications = computed(() => this.demandes() + this.commandesAPreparer());
+  // Liste detaillee (demandes + commandes) et suivi « lu » : la pastille compte ce qui n'a pas encore ete lu,
+  // les chiffres du panneau (demandes(), commandesAPreparer()) restent ceux des elements a traiter.
+  private notifsRdv = signal<Notification[]>([]);
+  private notifsCommandes = signal<Notification[]>([]);
+  private lues = signal<string[]>(this.lireLues());
+  notifications = computed<Notification[]>(() =>
+    [...this.notifsRdv(), ...this.notifsCommandes()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6)
+  );
+  totalNotifications = computed(() => [...this.notifsRdv(), ...this.notifsCommandes()].filter((n) => !this.lues().includes(n.id)).length);
 
   aujourdhuiTexte = computed(() => {
     this.i18n.langue();
@@ -171,6 +190,29 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.profilOuvert.update((v) => !v);
   }
 
+  estLue(n: Notification): boolean {
+    return this.lues().includes(n.id);
+  }
+
+  toutMarquerLu(): void {
+    const ids = [...this.notifsRdv(), ...this.notifsCommandes()].map((n) => n.id);
+    this.lues.set(Array.from(new Set([...this.lues(), ...ids])).slice(-200));
+    try {
+      localStorage.setItem(NOTIFS_LUES_KEY, JSON.stringify(this.lues()));
+    } catch {
+      // stockage indisponible : elles restent lues pour la session en cours.
+    }
+  }
+
+  private lireLues(): string[] {
+    try {
+      const brut = JSON.parse(localStorage.getItem(NOTIFS_LUES_KEY) ?? '[]');
+      return Array.isArray(brut) ? brut.filter((x) => typeof x === 'string') : [];
+    } catch {
+      return [];
+    }
+  }
+
   basculerNotifs(event: Event): void {
     event.stopPropagation();
     this.profilOuvert.set(false);
@@ -241,13 +283,23 @@ export class AdminComponent implements OnInit, OnDestroy {
   private chargerDemandes(): void {
     if (!this.auth.peut('AGENDA')) {
       this.demandes.set(0);
+      this.notifsRdv.set([]);
       return;
     }
     const zone = this.informations.info()?.fuseauHoraire ?? 'America/Toronto';
     const debut = aujourdhui(zone);
     this.rendezVous.agenda(debut, ajouterJours(debut, 30)).subscribe({
-      next: (liste) => this.demandes.set(liste.filter((r) => r.statut === 'DEMANDE').length),
-      error: () => this.demandes.set(0)
+      next: (liste) => {
+        const demandes = liste.filter((r) => r.statut === 'DEMANDE');
+        this.demandes.set(demandes.length);
+        this.notifsRdv.set(
+          demandes.map((r) => ({ id: 'rdv:' + r.code, type: 'rdv' as const, titre: r.libelleServices, sous: r.clientNom ?? '', date: r.debut, url: '/agenda' }))
+        );
+      },
+      error: () => {
+        this.demandes.set(0);
+        this.notifsRdv.set([]);
+      }
     });
   }
 
@@ -255,11 +307,28 @@ export class AdminComponent implements OnInit, OnDestroy {
   private chargerCommandesAPreparer(): void {
     if (!this.auth.peut('COMMANDES')) {
       this.commandesAPreparer.set(0);
+      this.notifsCommandes.set([]);
       return;
     }
     this.commandesApi.toutes().subscribe({
-      next: (liste) => this.commandesAPreparer.set(liste.filter((c) => c.statut === 'PAYEE').length),
-      error: () => this.commandesAPreparer.set(0)
+      next: (liste) => {
+        const payees = liste.filter((c) => c.statut === 'PAYEE');
+        this.commandesAPreparer.set(payees.length);
+        this.notifsCommandes.set(
+          payees.map((c) => ({
+            id: 'cmd:' + c.code,
+            type: 'commande' as const,
+            titre: c.lignes.map((l) => l.quantite + ' × ' + l.nom).join(', '),
+            sous: c.clientNom,
+            date: c.payeLe ?? c.creeLe,
+            url: '/commandes'
+          }))
+        );
+      },
+      error: () => {
+        this.commandesAPreparer.set(0);
+        this.notifsCommandes.set([]);
+      }
     });
   }
 

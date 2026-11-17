@@ -118,6 +118,22 @@
                     <span>{{ 'admin.notifs.commandes' | t: { n: commandesAPreparer() } }}</span>
                   </a>
                 }
+                <div class="ad-notifs-head">
+                  <strong>{{ 'admin.notifs.recentes' | t }}</strong>
+                  @if (totalNotifications() > 0) {
+                    <button type="button" class="btn btn-link btn-sm p-0" (click)="toutMarquerLu()">{{ 'admin.notifs.toutLu' | t }}</button>
+                  }
+                </div>
+                @for (n of notifications(); track n.id) {
+                  <a [routerLink]="n.url" class="ad-notif" [class.is-lue]="estLue(n)" (click)="notifsOuvertes.set(false)">
+                    <i class="ti" [class.ti-calendar-event]="n.type === 'rdv'" [class.ti-shopping-bag]="n.type === 'commande'"></i>
+                    <span class="ad-notif-texte">
+                      <strong>{{ (n.type === 'rdv' ? 'admin.notifs.rdv' : 'admin.notifs.commande') | t }}</strong>
+                      <span>{{ n.titre }}</span>
+                      <small>{{ n.sous }}</small>
+                    </span>
+                  </a>
+                }
               }
             </div>
           }
