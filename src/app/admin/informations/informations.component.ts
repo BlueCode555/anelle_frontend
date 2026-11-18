@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { NgbAccordionDirective, NgbAccordionModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { Information, InformationForm, InformationService } from 'src/app/theme/shared/service/information.service';
+import { CatalogueService } from 'src/app/theme/shared/service/catalogue.service';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -19,6 +20,7 @@ export class InformationsComponent implements OnInit {
   private i18n = inject(TranslationService);
   private fb = inject(FormBuilder);
   private informations = inject(InformationService);
+  private catalogue = inject(CatalogueService);
   private confirmation = inject(ConfirmationService);
 
   // Deplie toutes les sections si l'enregistrement echoue, pour qu'un champ en erreur ne reste jamais caché.
@@ -63,6 +65,7 @@ export class InformationsComponent implements OnInit {
     lienInstagram: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     lienFacebook: ['', Validators.pattern(/^$|^https:\/\/\S+$/)],
     bannierePromo: ['', Validators.maxLength(255)],
+    visuelAccueil: [''],
     fuseauHoraire: ['America/Toronto']
   });
 
@@ -177,6 +180,7 @@ export class InformationsComponent implements OnInit {
       lienInstagram: text(info.lienInstagram),
       lienFacebook: text(info.lienFacebook),
       bannierePromo: text(info.bannierePromo),
+      visuelAccueil: text(info.visuelAccueil),
       fuseauHoraire: info.fuseauHoraire ?? 'America/Toronto'
     });
     this.emailsNotification.clear();
@@ -184,6 +188,60 @@ export class InformationsComponent implements OnInit {
     // Conserves tels quels (geres depuis l'ecran Agenda) et renvoyes inchanges avec le reste de la fiche.
     this.horairesActuels = info.horaires;
     this.form.markAsPristine();
+  }
+
+  // ── Visuel d'accueil (OBS-22) : image ou courte video remplacable, avec retour au visuel par defaut ──
+  static readonly MAX_IMAGE = 5 * 1024 * 1024;
+  static readonly MAX_VIDEO = 20 * 1024 * 1024;
+  visuelEnvoi = signal(false);
+  visuelErreur = signal('');
+
+  get visuelAccueil(): string {
+    return this.form.controls['visuelAccueil'].value ?? '';
+  }
+
+  get visuelEstVideo(): boolean {
+    return /\.(mp4|webm)$/i.test(this.visuelAccueil);
+  }
+
+  visuelSrc(): string | null {
+    return this.catalogue.imageSrc(this.visuelAccueil || null);
+  }
+
+  choisirVisuel(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const fichier = input.files?.[0];
+    input.value = '';
+    if (!fichier) return;
+    this.visuelErreur.set('');
+    const video = fichier.type === 'video/mp4' || fichier.type === 'video/webm';
+    const image = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'].includes(fichier.type);
+    if (!video && !image) {
+      this.visuelErreur.set(this.i18n.t('info.visuelFormat'));
+      return;
+    }
+    if (fichier.size > (video ? InformationsComponent.MAX_VIDEO : InformationsComponent.MAX_IMAGE)) {
+      this.visuelErreur.set(this.i18n.t(video ? 'info.visuelTropLourdeVideo' : 'info.visuelTropLourdeImage'));
+      return;
+    }
+    this.visuelEnvoi.set(true);
+    this.catalogue.uploadImage(fichier).subscribe({
+      next: (res) => {
+        this.form.controls['visuelAccueil'].setValue(res.url);
+        this.form.markAsDirty();
+        this.visuelEnvoi.set(false);
+      },
+      error: () => {
+        this.visuelErreur.set(this.i18n.t('info.visuelEchec'));
+        this.visuelEnvoi.set(false);
+      }
+    });
+  }
+
+  // Retour au visuel par defaut : on vide le champ, le site retombe sur la banniere d'origine.
+  retablirVisuel(): void {
+    this.form.controls['visuelAccueil'].setValue('');
+    this.form.markAsDirty();
   }
 
   private payload(): InformationForm {

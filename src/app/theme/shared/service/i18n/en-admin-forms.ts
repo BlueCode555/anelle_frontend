@@ -84,6 +84,8 @@ export const EN_ADMIN_FORMS: Record<string, string> = {
   'a.adresse_siege': 'Address (headquarters)',
   'a.adresse_e_mail': 'Email address',
   'a.collaborateurs': 'Team members',
+  'a.collaborateursAide': "Number of team members this profile is assigned to. A team member can have several profiles and is then counted in each. Click the number to see the list.",
+  'a.collaborateursDuProfil': "Team members with this profile:",
   'a.nouveau_profil': 'New profile',
   'a.voir_les_acces': 'View access',
   'a.nom_du_service': 'Service name',

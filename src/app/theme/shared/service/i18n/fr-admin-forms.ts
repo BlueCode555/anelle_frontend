@@ -84,6 +84,8 @@ export const FR_ADMIN_FORMS: Record<string, string> = {
   'a.adresse_siege': 'Adresse (siège)',
   'a.adresse_e_mail': 'Adresse e-mail',
   'a.collaborateurs': 'Collaborateurs',
+  'a.collaborateursAide': "Nombre de collaborateurs à qui ce profil est attribué. Un collaborateur peut avoir plusieurs profils : il est alors compté dans chacun. Cliquez sur le nombre pour voir la liste.",
+  'a.collaborateursDuProfil': "Collaborateurs ayant ce profil :",
   'a.nouveau_profil': 'Nouveau profil',
   'a.voir_les_acces': 'Voir les accès',
   'a.nom_du_service': 'Nom du service',

@@ -2,11 +2,11 @@
   <app-site-header />
 
   <section id="top" class="hero px-3">
-    @if (videoActif && !videoErreur()) {
+    @if (videoActif && !videoErreur() && heroVideoUtile()) {
       <video
         #heroVideo
         class="hero-video"
-        [poster]="heroImage"
+        [poster]="heroFond() || heroImage"
         [muted]="true"
         autoplay
         loop
@@ -14,10 +14,10 @@
         (error)="onVideoErreur()"
         aria-hidden="true"
       >
-        <source [src]="heroVideoSrc" type="video/mp4" />
+        <source [src]="heroVideoUtile()" [type]="heroPersoEstVideo() && heroVideoUtile().endsWith('.webm') ? 'video/webm' : 'video/mp4'" />
       </video>
     } @else {
-      <div class="hero-video hero-video-repli" [style.background-image]="'url(' + heroImage + ')'" aria-hidden="true"></div>
+      <div class="hero-video hero-video-repli" [style.background-image]="'url(' + (heroFond() || heroImage) + ')'" aria-hidden="true"></div>
     }
     <div class="hero-overlay" aria-hidden="true"></div>
 

@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
+import { Collaborateur, EquipeService, Profil } from 'src/app/theme/shared/service/equipe.service';
 import { ProfilFormComponent } from '../profil-form/profil-form.component';
 import { ConfirmationService } from 'src/app/theme/shared/service/confirmation.service';
 import { ToastService } from 'src/app/theme/shared/service/toast.service';
@@ -25,8 +25,38 @@ export class ProfilListComponent implements OnInit {
   chargement = signal(true);
   erreur = signal('');
 
+  // OBS-17 : le nombre de la colonne « Collaborateurs » est cliquable et deplie la liste des personnes a qui le profil est
+  // attribue. Un collaborateur pouvant avoir plusieurs profils, la somme des lignes peut depasser l'effectif total.
+  ouvert = signal<string | null>(null);
+  private tous = signal<Collaborateur[] | null>(null);
+  chargementEquipe = signal(false);
+
   ngOnInit(): void {
     this.charger();
+  }
+
+  concernes(profil: Profil): Collaborateur[] {
+    return (this.tous() ?? []).filter((c) => c.profils.some((p) => p.code === profil.code));
+  }
+
+  basculerCollaborateurs(profil: Profil): void {
+    if (this.ouvert() === profil.code) {
+      this.ouvert.set(null);
+      return;
+    }
+    this.ouvert.set(profil.code);
+    if (this.tous() !== null || this.chargementEquipe()) return;
+    this.chargementEquipe.set(true);
+    this.equipe.collaborateurs().subscribe({
+      next: (liste) => {
+        this.tous.set(liste);
+        this.chargementEquipe.set(false);
+      },
+      error: () => {
+        this.tous.set([]);
+        this.chargementEquipe.set(false);
+      }
+    });
   }
 
   charger(): void {

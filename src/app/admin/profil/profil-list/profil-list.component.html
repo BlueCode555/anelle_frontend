@@ -29,7 +29,7 @@
             <tr>
               <th>{{ 'a.profil' | t }}</th>
               <th>{{ 'a.acces' | t }}</th>
-              <th>{{ 'a.collaborateurs' | t }}</th>
+              <th [title]="'a.collaborateursAide' | t">{{ 'a.collaborateurs' | t }}</th>
               <th>{{ 'a.statut' | t }}</th>
               <th class="text-end">{{ 'a.actions' | t }}</th>
             </tr>
@@ -44,7 +44,15 @@
                   }
                 </td>
                 <td [attr.data-label]="'a.acces' | t">{{ resume(profil) }}</td>
-                <td [attr.data-label]="'a.collaborateurs' | t">{{ profil.nombreCollaborateurs }}</td>
+                <td [attr.data-label]="'a.collaborateurs' | t">
+                  @if (profil.nombreCollaborateurs > 0) {
+                    <button type="button" class="btn btn-link p-0" [attr.aria-expanded]="ouvert() === profil.code" [title]="'a.collaborateursAide' | t" (click)="basculerCollaborateurs(profil)">
+                      {{ profil.nombreCollaborateurs }}
+                    </button>
+                  } @else {
+                    0
+                  }
+                </td>
                 <td [attr.data-label]="'a.statut' | t">
                   <span class="badge" [ngClass]="profil.actif ? 'text-bg-success' : 'text-bg-secondary'">
                     {{ profil.actif ? ('a.actif' | t) : ('a.desactive' | t) }}
@@ -58,6 +66,22 @@
                   </div>
                 </td>
               </tr>
+              @if (ouvert() === profil.code) {
+                <tr>
+                  <td colspan="5" class="bg-light">
+                    @if (chargementEquipe()) {
+                      <span class="text-muted small">{{ 'a.chargement' | t }}</span>
+                    } @else {
+                      <strong class="small">{{ 'a.collaborateursDuProfil' | t }}</strong>
+                      <ul class="mb-0 small">
+                        @for (c of concernes(profil); track c.id) {
+                          <li>{{ c.prenom }} {{ c.nom }} <span class="text-muted">— {{ c.email }}</span></li>
+                        }
+                      </ul>
+                    }
+                  </td>
+                </tr>
+              }
             }
           </tbody>
         </table>

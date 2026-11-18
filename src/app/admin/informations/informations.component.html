@@ -149,6 +149,43 @@
       </div>
     </div>
 
+    <div ngbAccordionItem="visuel" [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton type="button"><i class="ti ti-photo"></i>{{ 'info.visuelTitre' | t }}</button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <p class="text-muted small">{{ 'info.visuelAide' | t }}</p>
+            @if (visuelSrc(); as src) {
+              <div class="mb-3">
+                @if (visuelEstVideo) {
+                  <video [src]="src" class="rounded" style="max-width: 100%; max-height: 220px" muted loop playsinline controls></video>
+                } @else {
+                  <img [src]="src" alt="" class="rounded" style="max-width: 100%; max-height: 220px" />
+                }
+              </div>
+            } @else {
+              <p class="small fst-italic">{{ 'info.visuelParDefaut' | t }}</p>
+            }
+            <div class="d-flex flex-wrap gap-2">
+              <label class="btn btn-outline-primary mb-0" [class.disabled]="visuelEnvoi()">
+                <i class="ti ti-upload me-1"></i>{{ (visuelEnvoi() ? 'info.visuelEnvoi' : 'info.visuelChoisir') | t }}
+                <input type="file" class="d-none" accept="image/jpeg,image/png,image/webp,image/avif,video/mp4,video/webm" [disabled]="visuelEnvoi()" (change)="choisirVisuel($event)" />
+              </label>
+              @if (visuelAccueil) {
+                <button type="button" class="btn btn-outline-secondary" (click)="retablirVisuel()">{{ 'info.visuelRetablir' | t }}</button>
+              }
+            </div>
+            <div class="form-text">{{ 'info.visuelLimites' | t }}</div>
+            @if (visuelErreur()) {
+              <div class="text-danger small mt-2">{{ visuelErreur() }}</div>
+            }
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
     <div ngbAccordionItem="promo" [collapsed]="true">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton type="button"><i class="ti ti-gift"></i>{{ 'a.banniere_promotionnelle' | t }}</button>

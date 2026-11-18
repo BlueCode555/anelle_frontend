@@ -40,6 +40,8 @@ export interface Information {
   lienInstagram: string | null;
   lienFacebook: string | null;
   bannierePromo: string | null;
+  // Visuel de la banniere d'accueil (image ou courte video) choisi par l'institut ; null = visuel par defaut.
+  visuelAccueil: string | null;
   fuseauHoraire: string | null;
   horaires: Horaire[];
 }

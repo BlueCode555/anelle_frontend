@@ -67,6 +67,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   // demarrer vite et ne jamais accrocher/bufferer en pleine lecture.
   readonly heroVideoSrc = 'https://videos.pexels.com/video-files/6750874/6750874-hd_1920_1080_25fps.mp4';
   // Vrai si la vidéo a échoué à charger (réseau, format...) : on revient alors silencieusement à la photo fixe.
+  // Visuel choisi par l'institut (OBS-22) : image ou courte video ; absent = visuel par defaut (heroImage / heroVideoSrc).
+  heroPerso = computed(() => this.catalogue.imageSrc(this.info()?.visuelAccueil ?? null));
+  heroPersoEstVideo = computed(() => /\.(mp4|webm)$/i.test(this.info()?.visuelAccueil ?? ''));
+  heroFond = computed(() => (this.heroPerso() && !this.heroPersoEstVideo() ? (this.heroPerso() as string) : this.heroPerso() ? '' : this.heroImage));
+  // Une video perso remplace la video par defaut ; une image perso supprime la video (l'image devient le fond).
+  heroVideoUtile = computed(() => (this.heroPerso() ? (this.heroPersoEstVideo() ? (this.heroPerso() as string) : '') : this.heroVideoSrc));
   videoErreur = signal(false);
 
   info = this.informations.info;
@@ -180,6 +186,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.defilable.set(max > 1);
     this.peutReculer.set(el.scrollLeft > 1);
     this.peutAvancer.set(el.scrollLeft < max - 1);
+    // Proche de la fin (moins de deux largeurs visibles restantes) ou rangee sans defilement : charger la tranche suivante.
+    if (max - el.scrollLeft < el.clientWidth * 2) this.chargerCategories();
   }
 
   defiler(sens: -1 | 1): void {
@@ -203,13 +211,40 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.videoErreur.set(true);
   }
 
+  // Chargement progressif des categories (OBS-23) : une premiere tranche au chargement de la page, les suivantes quand la
+  // personne approche de la fin de la rangee (ou si la rangee ne remplit pas l'ecran). Invisible pour elle : pas de bouton.
+  private static readonly TAILLE_CATEGORIES = 12;
+  private categoriesRecues = 0;
+  private categoriesTotal = Number.POSITIVE_INFINITY;
+  private categoriesEnCours = false;
+
+  private chargerCategories(): void {
+    if (this.categoriesEnCours || this.categoriesRecues >= this.categoriesTotal) return;
+    this.categoriesEnCours = true;
+    const page = Math.floor(this.categoriesRecues / HomeComponent.TAILLE_CATEGORIES) + 1;
+    this.catalogue.listCategories({ page, size: HomeComponent.TAILLE_CATEGORIES }).subscribe({
+      next: (res) => {
+        this.categoriesRecues += res.content.length;
+        // Aucun element recu : on arrete (evite une boucle si le total annonce est incoherent).
+        this.categoriesTotal = res.content.length === 0 ? this.categoriesRecues : res.meta.totalElements;
+        const connus = new Set(this.categories().map((c) => c.code));
+        const nouvelles = res.content.filter((c) => c.actif !== false && !connus.has(c.code));
+        this.categories.update((liste) => [...liste, ...nouvelles]);
+        this.categoriesEnCours = false;
+        // La rangee peut etre encore trop courte pour defiler : on verifie apres affichage s'il faut une tranche de plus.
+        setTimeout(() => this.majDefilement());
+      },
+      error: () => {
+        this.categoriesEnCours = false;
+        this.error.set(true);
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.informations.ensureLoaded();
 
-    this.catalogue.listCategories().subscribe({
-      next: (page) => this.categories.set(page.content.filter((c) => c.actif !== false)),
-      error: () => this.error.set(true)
-    });
+    this.chargerCategories();
 
     this.catalogue.listServices({ size: 1000 }).subscribe({
       next: (page) => {
