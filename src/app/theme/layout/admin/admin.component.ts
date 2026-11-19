@@ -279,6 +279,12 @@ export class AdminComponent implements OnInit, OnDestroy {
     return visibles;
   }
 
+  // Date et heure d'une notification (rendez-vous demande, commande), dans le fuseau de l'institut.
+  dateNotif(iso: string): string {
+    const zone = this.informations.info()?.fuseauHoraire ?? 'America/Toronto';
+    return new Intl.DateTimeFormat(localeCourante(), { dateStyle: 'medium', timeStyle: 'short', timeZone: zone }).format(new Date(iso));
+  }
+
   // Cloche : demandes de rendez-vous en attente sur les 30 prochains jours (ignoré si l'agenda est inaccessible).
   private chargerDemandes(): void {
     if (!this.auth.peut('AGENDA')) {

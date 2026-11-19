@@ -35,6 +35,8 @@ export const FR_ADMIN: Record<string, string> = {
   'admin.notifs.rendezVous': '{n} demande(s) de rendez-vous en attente',
   'admin.notifs.commandes': '{n} commande(s) payée(s) à préparer',
   'admin.notifs.recentes': "Récentes",
+  'prd.sansImage': "Sans image",
+  'prd.sansImageAide': "Ce produit n'est pas visible en boutique tant qu'il n'a pas d'image. Modifiez-le pour en ajouter une.",
   'admin.notifs.toutLu': "Tout marquer comme lu",
   'admin.notifs.rdv': "Nouvelle demande de rendez-vous",
   'admin.notifs.commande': "Nouvelle commande à préparer",

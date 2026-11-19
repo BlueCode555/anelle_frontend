@@ -131,6 +131,7 @@
                       <strong>{{ (n.type === 'rdv' ? 'admin.notifs.rdv' : 'admin.notifs.commande') | t }}</strong>
                       <span>{{ n.titre }}</span>
                       <small>{{ n.sous }}</small>
+                      <small class="ad-notif-date">{{ dateNotif(n.date) }}</small>
                     </span>
                   </a>
                 }

@@ -30,7 +30,9 @@ export class BoutiqueComponent implements OnInit {
   // Produit dont la photo est agrandie (fenêtre de zoom).
   zoom = signal<ProduitResponse | null>(null);
 
-  visibles = computed(() => this.liste().filter((p) => p.actif));
+  // Un produit sans image n'est pas presente en boutique (l'image est obligatoire a la publication ; ceux crees
+  // avant cette regle restent visibles en administration, signales, jusqu'a ce qu'une image leur soit ajoutee).
+  visibles = computed(() => this.liste().filter((p) => p.actif && !!this.produits.imageSrc(p.imageUrl)));
   rayons = computed(() =>
     [
       ...new Set(

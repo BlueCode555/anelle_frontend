@@ -33,6 +33,8 @@ export const EN_ADMIN: Record<string, string> = {
   'admin.notifs.rendezVous': '{n} pending appointment request(s)',
   'admin.notifs.commandes': '{n} paid order(s) to prepare',
   'admin.notifs.recentes': "Recent",
+  'prd.sansImage': "No image",
+  'prd.sansImageAide': "This product is hidden from the shop until it has an image. Edit it to add one.",
   'admin.notifs.toutLu': "Mark all as read",
   'admin.notifs.rdv': "New appointment request",
   'admin.notifs.commande': "New order to prepare",

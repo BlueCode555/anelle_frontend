@@ -52,7 +52,12 @@
                     <span class="row-thumb row-thumb-empty"><i class="ti ti-photo"></i></span>
                   }
                 </td>
-                <td [attr.data-label]="'a.nom' | t" class="fw-semibold">{{ p.nom }}</td>
+                <td [attr.data-label]="'a.nom' | t" class="fw-semibold">
+                  {{ p.nom }}
+                  @if (!imageSrc(p.imageUrl)) {
+                    <span class="badge text-bg-warning ms-1" [title]="'prd.sansImageAide' | t">{{ 'prd.sansImage' | t }}</span>
+                  }
+                </td>
                 <td [attr.data-label]="'prd.rayon' | t" class="text-muted">{{ p.rayonLibelle || '—' }}</td>
                 <td [attr.data-label]="'a.tarif' | t" class="fw-bold text-primary">{{ formatPrix(p.prix) }}</td>
                 <td [attr.data-label]="'prd.stock' | t">
