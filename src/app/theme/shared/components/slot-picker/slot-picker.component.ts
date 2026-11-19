@@ -6,7 +6,7 @@ import { CatalogueService } from '../../service/catalogue.service';
 import { ServiceResponse } from '../../service/catalogue.model';
 import { InformationService, JOURS_SEMAINE } from '../../service/information.service';
 import { Creneau, RendezVousService } from '../../service/rendez-vous.service';
-import { aujourdhui, formatHeure } from '../../_helpers/zoned-time';
+import { ajouterJours, aujourdhui, formatHeure } from '../../_helpers/zoned-time';
 import { DureePipe } from 'src/app/theme/shared/_helpers/duree.pipe';
 import { TranslatePipe } from 'src/app/theme/shared/_helpers/translate.pipe';
 import { TranslationService } from 'src/app/theme/shared/service/i18n/translation.service';
@@ -62,8 +62,81 @@ export class SlotPickerComponent implements OnInit {
   // message "aucun creneau" au lieu de laisser la cliente deviner quel autre jour essayer.
   joursOuverts = computed(() => {
     const horaires = this.informations.info()?.horaires ?? [];
-    return horaires.filter((h) => h.ouvert && h.plages.length > 0).map((h) => JOURS_SEMAINE[h.jourSemaine - 1]);
+    return horaires
+      .filter((h) => h.ouvert && h.plages.length > 0)
+      .sort((x, y) => x.jourSemaine - y.jourSemaine)
+      .map((h) => `${JOURS_SEMAINE[h.jourSemaine - 1]} ${h.plages.map((p) => `${p.heureDebut.slice(0, 5)}–${p.heureFin.slice(0, 5)}`).join(', ')}`);
   });
+
+  // Prochaine date ou un creneau existe, cherchee quand le jour choisi n'en a aucun (OBS-09) : evite a la
+  // cliente de tester les jours un par un. On ne verifie que les jours ou l'institut ouvre habituellement.
+  prochaineDate = signal<string | null>(null);
+  rechercheProchaine = signal(false);
+  prochaineRecherchee = signal(false);
+  private rechercheId = 0;
+  private readonly JOURS_RECHERCHE_MAX = 21;
+
+  libelleDate(cle: string): string {
+    return new Intl.DateTimeFormat(localeCourante(), { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(
+      new Date(cle + 'T00:00:00Z')
+    );
+  }
+
+  private chercherProchaine(soins: ServiceResponse[], depuis: string): void {
+    const id = ++this.rechercheId;
+    const ouverts = new Set(
+      (this.informations.info()?.horaires ?? []).filter((h) => h.ouvert && h.plages.length > 0).map((h) => h.jourSemaine)
+    );
+    // Sans horaires configures, on ne devine pas de jours : la phrase « horaires non configures » s'affiche deja.
+    const candidats: string[] = [];
+    if (ouverts.size) {
+      for (let i = 1; i <= this.JOURS_RECHERCHE_MAX; i++) {
+        const cle = ajouterJours(depuis, i);
+        const [y, m, d] = cle.split('-').map(Number);
+        const jourSemaine = ((new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7) + 1; // 1 = lundi ... 7 = dimanche
+        if (ouverts.has(jourSemaine)) candidats.push(cle);
+      }
+    }
+    this.prochaineDate.set(null);
+    this.prochaineRecherchee.set(false);
+    if (!candidats.length) {
+      this.prochaineRecherchee.set(true);
+      return;
+    }
+    this.rechercheProchaine.set(true);
+    const codes = soins.map((x) => x.code);
+    const essayer = (index: number): void => {
+      if (id !== this.rechercheId) return; // une recherche plus recente a pris le relais (autre jour ou autre soin)
+      if (index >= candidats.length) {
+        this.rechercheProchaine.set(false);
+        this.prochaineRecherchee.set(true);
+        return;
+      }
+      this.rendezVous.creneaux(codes, candidats[index]).subscribe({
+        next: (res) => {
+          if (id !== this.rechercheId) return;
+          if (res.creneaux.length) {
+            this.prochaineDate.set(candidats[index]);
+            this.rechercheProchaine.set(false);
+            this.prochaineRecherchee.set(true);
+          } else {
+            essayer(index + 1);
+          }
+        },
+        error: () => {
+          if (id !== this.rechercheId) return;
+          this.rechercheProchaine.set(false);
+          this.prochaineRecherchee.set(true);
+        }
+      });
+    };
+    essayer(0);
+  }
+
+  allerALaProchaineDate(): void {
+    const prochaine = this.prochaineDate();
+    if (prochaine) this.date.set(prochaine);
+  }
 
   messageAucunCreneau = computed(() => {
     const jours = this.joursOuverts();
@@ -265,11 +338,16 @@ export class SlotPickerComponent implements OnInit {
     this.choix.emit(null);
     this.error.set('');
     this.loading.set(true);
+    this.rechercheId++; // annule une recherche de « prochaine date » en cours pour l'ancien jour
+    this.prochaineDate.set(null);
+    this.rechercheProchaine.set(false);
+    this.prochaineRecherchee.set(false);
     this.rendezVous.creneaux(soins.map((s) => s.code), date).subscribe({
       next: (res) => {
         this.creneaux.set(res.creneaux);
         this.dejaCharge.set(true);
         this.loading.set(false);
+        if (!res.creneaux.length) this.chercherProchaine(soins, date);
       },
       error: (err) => {
         this.creneaux.set([]);

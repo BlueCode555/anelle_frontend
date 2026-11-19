@@ -87,6 +87,14 @@
         {{ messageAucunCreneau() }}
       </div>
 
+      <div *ngIf="!loading() && dejaCharge() && !error() && creneaux().length === 0" class="mt-2">
+        <span *ngIf="rechercheProchaine()" class="text-muted small"><i class="ti ti-loader-2 me-1"></i>{{ 'slots.rechercheProchaine' | t }}</span>
+        <button *ngIf="prochaineDate() as prochaine" type="button" class="btn btn-outline-secondary btn-sm" (click)="allerALaProchaineDate()">
+          <i class="ti ti-calendar-event me-1"></i>{{ 'slots.prochaine' | t: { date: libelleDate(prochaine) } }}
+        </button>
+        <span *ngIf="prochaineRecherchee() && !prochaineDate() && joursOuverts().length" class="text-muted small">{{ 'slots.aucunProche' | t }}</span>
+      </div>
+
       <div class="slots" *ngIf="!loading() && creneaux().length">
         <button
           type="button"

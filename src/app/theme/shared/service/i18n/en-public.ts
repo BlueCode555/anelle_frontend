@@ -69,7 +69,9 @@ export const EN_PUBLIC: Record<string, string> = {
   'slots.prochain': 'Next available slot',
   'slots.rechercheProchain': 'Looking for the next available slot...',
   'slots.aucunProche': 'No slot available in the next 21 days. Please check back later or contact the institute.',
-  'slots.aucunAvecJours': 'No slot available that day. We are usually open on {jours}.',
+  'slots.aucunAvecJours': 'No slot available that day. We are usually open: {jours}.',
+  'slots.rechercheProchaine': "Looking for the next available date…",
+  'slots.prochaine': "Next available date: {date}",
   'slots.aucunHoraire': 'No slot available: the institute has not set its opening hours yet. Please contact us directly.',
   'slots.choisirDabord': 'Choose a treatment first to see the available slots.',
 

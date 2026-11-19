@@ -74,7 +74,9 @@ export const FR_PUBLIC: Record<string, string> = {
   'slots.prochain': 'Prochain créneau disponible',
   'slots.rechercheProchain': 'Recherche du prochain créneau disponible...',
   'slots.aucunProche': 'Aucun créneau disponible dans les 21 prochains jours. Revenez plus tard ou contactez l\'institut.',
-  'slots.aucunAvecJours': 'Aucun créneau disponible ce jour-là. Nous sommes habituellement ouverts le {jours}.',
+  'slots.aucunAvecJours': 'Aucun créneau disponible ce jour-là. Nous sommes habituellement ouverts : {jours}.',
+  'slots.rechercheProchaine': "Recherche de la prochaine date disponible…",
+  'slots.prochaine': "Prochaine date disponible : {date}",
   'slots.aucunHoraire': "Aucun créneau disponible : l'institut n'a pas encore configuré ses horaires d'ouverture. Contactez-nous directement.",
   'slots.choisirDabord': "Choisissez d'abord un soin pour voir les créneaux disponibles.",
 
