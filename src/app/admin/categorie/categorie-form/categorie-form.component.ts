@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import { FormsModule } from '@angular/forms';
 import { FormField, form, required } from '@angular/forms/signals';
@@ -13,7 +14,7 @@ import { TranslationService } from 'src/app/theme/shared/service/i18n/translatio
 
 @Component({
   selector: 'app-categorie-form',
-  imports: [FormsModule, FormField, TranslatePipe],
+  imports: [CommonModule, FormsModule, FormField, TranslatePipe],
   templateUrl: './categorie-form.component.html',
   styleUrl: './categorie-form.component.scss'
 })
