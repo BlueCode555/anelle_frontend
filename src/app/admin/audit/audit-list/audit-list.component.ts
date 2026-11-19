@@ -32,15 +32,29 @@ export class AuditListComponent {
   // Filtres (OBS-15) : la saisie libre est appliquee apres une courte pause pour ne pas interroger le serveur a chaque touche.
   readonly types = ['Client', 'Collaborateur', 'Commande', 'Rendez-vous', 'Service', 'Produit', 'Categorie', 'Rayon', 'Profil', "Informations de l'institut"];
   recherche = signal('');
+  readonly actions: AuditEntry['action'][] = ['CREATION', 'MODIFICATION', 'SUPPRESSION'];
   type = signal('');
+  action = signal('');
   du = signal('');
   au = signal('');
+  auteur = signal('');
   private rechercheAppliquee = signal('');
+  private auteurApplique = signal('');
   private minuteur: ReturnType<typeof setTimeout> | null = null;
+  private minuteurAuteur: ReturnType<typeof setTimeout> | null = null;
 
   private recharger = effect(() => {
-    this.charger(this.page(), this.rechercheAppliquee(), this.type(), this.du(), this.au());
+    this.charger(this.page(), this.rechercheAppliquee(), this.type(), this.du(), this.au(), this.auteurApplique(), this.action());
   });
+
+  saisirAuteur(valeur: string): void {
+    this.auteur.set(valeur);
+    if (this.minuteurAuteur) clearTimeout(this.minuteurAuteur);
+    this.minuteurAuteur = setTimeout(() => {
+      this.page.set(1);
+      this.auteurApplique.set(valeur.trim());
+    }, 350);
+  }
 
   saisirRecherche(valeur: string): void {
     this.recherche.set(valeur);
@@ -51,13 +65,13 @@ export class AuditListComponent {
     }, 350);
   }
 
-  changerFiltre(cible: 'type' | 'du' | 'au', valeur: string): void {
+  changerFiltre(cible: 'type' | 'action' | 'du' | 'au', valeur: string): void {
     this.page.set(1);
     this[cible].set(valeur);
   }
 
   get filtreActif(): boolean {
-    return !!(this.recherche() || this.type() || this.du() || this.au());
+    return !!(this.recherche() || this.auteur() || this.type() || this.action() || this.du() || this.au());
   }
 
   reinitialiser(): void {
@@ -65,7 +79,11 @@ export class AuditListComponent {
     this.page.set(1);
     this.recherche.set('');
     this.rechercheAppliquee.set('');
+    if (this.minuteurAuteur) clearTimeout(this.minuteurAuteur);
+    this.auteur.set('');
+    this.auteurApplique.set('');
     this.type.set('');
+    this.action.set('');
     this.du.set('');
     this.au.set('');
   }
@@ -100,10 +118,10 @@ export class AuditListComponent {
     });
   }
 
-  private charger(page: number, q: string, type: string, du: string, au: string): void {
+  private charger(page: number, q: string, type: string, du: string, au: string, auteur: string, action: string): void {
     this.loading.set(true);
     this.error.set(false);
-    this.audit.list({ page, size: this.taille, q: q || undefined, type: type || undefined, du: du || undefined, au: au || undefined }).subscribe({
+    this.audit.list({ page, size: this.taille, q: q || undefined, type: type || undefined, du: du || undefined, au: au || undefined, auteur: auteur || undefined, action: action || undefined }).subscribe({
       next: (res) => {
         this.entrees.set(res.content);
         this.totalElements.set(res.meta.totalElements);

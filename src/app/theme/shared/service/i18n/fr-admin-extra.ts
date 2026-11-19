@@ -86,6 +86,8 @@ export const FR_ADMIN_EXTRA: Record<string, string> = {
   'audit.elementAide': "Nom ou identifiant de l'objet concerné (ex. code de la commande).",
   'audit.recherche': 'Rechercher un élément, un code...',
   'audit.tousTypes': "Tous les types",
+  'audit.rechercheAuteur': "Rechercher un auteur (nom, système…)",
+  'audit.toutesActions': "Toutes les actions",
   'audit.du': 'Du',
   'audit.au': 'Au',
   'audit.reinitialiser': 'Réinitialiser',

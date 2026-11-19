@@ -52,8 +52,8 @@ export class AuditService {
   private http = inject(HttpClient);
   private base = environment.apiUrl;
 
-  // Filtres optionnels : recherche libre (libelle ou type), type d'element, periode (AAAA-MM-JJ).
-  list(criteria: PaginationCriteria & { q?: string; type?: string; du?: string; au?: string } = { size: 20 }) {
+  // Filtres optionnels : recherche libre (libelle ou type), type d'element, periode (AAAA-MM-JJ), auteur (nom) et action (CREATION, MODIFICATION, SUPPRESSION).
+  list(criteria: PaginationCriteria & { q?: string; type?: string; du?: string; au?: string; auteur?: string; action?: string } = { size: 20 }) {
     return this.api.list<AuditEntry>('audit', criteria);
   }
 

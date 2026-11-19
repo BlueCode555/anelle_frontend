@@ -86,6 +86,8 @@ export const EN_ADMIN_EXTRA: Record<string, string> = {
   'audit.elementAide': 'Name or identifier of the item concerned (e.g. order code).',
   'audit.recherche': 'Search an item, a code...',
   'audit.tousTypes': 'All types',
+  'audit.rechercheAuteur': "Search an author (name, system…)",
+  'audit.toutesActions': "All actions",
   'audit.du': 'From',
   'audit.au': 'To',
   'audit.reinitialiser': 'Reset',

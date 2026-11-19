@@ -23,11 +23,23 @@
         <input type="search" class="form-control" [value]="recherche()" [placeholder]="'audit.recherche' | t"
           (input)="saisirRecherche($any($event.target).value)" />
       </div>
-      <div class="col-12 col-sm-4 col-lg-2">
+      <div class="col-12 col-lg-4">
+        <input type="search" class="form-control" [value]="auteur()" [placeholder]="'audit.rechercheAuteur' | t"
+          (input)="saisirAuteur($any($event.target).value)" />
+      </div>
+      <div class="col-6 col-lg-2">
         <select class="form-select" [value]="type()" (change)="changerFiltre('type', $any($event.target).value)">
           <option value="">{{ 'audit.tousTypes' | t }}</option>
           @for (t of types; track t) {
             <option [value]="t" [selected]="type() === t">{{ t }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-6 col-lg-2">
+        <select class="form-select" [value]="action()" (change)="changerFiltre('action', $any($event.target).value)">
+          <option value="">{{ 'audit.toutesActions' | t }}</option>
+          @for (a of actions; track a) {
+            <option [value]="a" [selected]="action() === a">{{ libelleAction(a) }}</option>
           }
         </select>
       </div>
