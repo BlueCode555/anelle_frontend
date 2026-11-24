@@ -570,9 +570,18 @@
   .footer-contact-link {
     color: inherit;
     text-decoration: none;
+    // En demi-largeur sur telephone, une longue adresse e-mail doit pouvoir passer a la ligne.
+    overflow-wrap: anywhere;
 
     &:hover {
       color: var(--ar-dore-clair);
+    }
+  }
+
+  // Telephone : Liens utiles et Contact cote a cote, donc textes un peu plus compacts.
+  @media (max-width: 767.98px) {
+    .footer-contact {
+      font-size: 0.88rem;
     }
   }
 
